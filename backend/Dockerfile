@@ -18,7 +18,7 @@ CMD [ "node healthcheck.js" ]
 
 COPY . /code
 
-CMD [ "node ./dist/index.js" ]
+CMD [ "npx prisma migrate dev --name init && npx prisma generate && node ./dist/index.js" ]
 
 # FROM development as dev-envs
 # RUN <<EOF

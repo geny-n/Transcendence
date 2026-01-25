@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>PONG GAME</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+	<div class="board" tabindex="0">
+		<h1 class="message">Press Enter to play Pong</h1>
+		<div class="center-line"></div>
+		<div class='ball'></div>
+		<div class="paddle_1 paddle"></div>
+		<div class="paddle_2 paddle"></div>
+		<h1 class="player_1_score">0</h1>
+		<h1 class="player_2_score">0</h1>
+	</div>
+		<script>
+			window.onload = function() {
+				const board = document.querySelector('.board');
+				board.focus();
+				// Force le focus sur .board à chaque clic dans la fenêtre
+				window.addEventListener('click', function() {
+					board.focus();
+				});
+				// Redirige les keydown de .board vers le code du jeu
+				board.addEventListener('keydown', function(e) {
+					// Simule l'événement sur document pour compatibilité
+					document.dispatchEvent(new KeyboardEvent('keydown', e));
+				});
+			};
+		</script>
+		<script src="index.js?v=1736786111111"></script>
+</body>
+</html>

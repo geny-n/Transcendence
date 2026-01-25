@@ -1,19 +1,20 @@
-import "dotenv/config";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "../generated/prisma/client";
-
-const globalForPrisma = global as unknown as {
-	prisma:	PrismaClient
+generator client {
+	provider = "prisma-client"
+	output   = "../generated/prisma"
 }
 
-const adapter = new PrismaPg({
-	connectionString:	process.env["DATABASE_URL"] || "postgresql://Aimrad:test@localhost:5432/ma_db?schema=public",
-})
+datasource db {
+	provider = "mysql"
+}
 
-const	prisma = globalForPrisma.prisma || new PrismaClient({
-	adapter,
-})
-
-if (process.env["NODE_ENV"] !== 'production') globalForPrisma.prisma = prisma
-
-export default prisma
+// schema.prisma
+model User {
+	id				String  	@id @default(uuid())
+	email			String		@unique
+	password		String		// Nullable pour OAuth users rajouter ? a la fin pour ca
+	username		String		@unique
+	avatarUrl		String?		@default("default_avatar.png")
+	createdAt		DateTime	@default(now())
+	isOnline		Boolean		@default(false)
+	refreshToken	String?
+}

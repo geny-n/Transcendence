@@ -1,20 +1,23 @@
-generator client {
-	provider = "prisma-client"
-	output   = "../generated/prisma"
+import "dotenv/config";
+import { PrismaMariaDb } from "@prisma/adapter-mariadb";
+import { PrismaClient } from "../generated/prisma/client";
+
+const globalForPrisma = global as unknown as {
+	prisma:	PrismaClient
 }
 
-datasource db {
-	provider = "mysql"
-}
+const adapter = new PrismaMariaDb({
+	host: process.env.DATABASE_HOST || "localhost",
+	user: process.env.DATABASE_USER || "root",
+	password: process.env.DATABASE_PASSWORD || "",
+	database: process.env.DATABASE_NAME || "transcendence",
+	connectionLimit: 5
+})
 
-// schema.prisma
-model User {
-	id				String  	@id @default(uuid())
-	email			String		@unique
-	password		String		// Nullable pour OAuth users rajouter ? a la fin pour ca
-	username		String		@unique
-	avatarUrl		String?		@default("default_avatar.png")
-	createdAt		DateTime	@default(now())
-	isOnline		Boolean		@default(false)
-	refreshToken	String?
-}
+const	prisma = globalForPrisma.prisma || new PrismaClient({
+	adapter,
+})
+
+if (process.env["NODE_ENV"] !== 'production') globalForPrisma.prisma = prisma
+
+export default prisma

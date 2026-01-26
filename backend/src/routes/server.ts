@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { serverHealth } from "../handlers/server";
+import { serverHealth, refreshTokens } from "../handlers/server";
 
 const router = Router();
 
 router.get('/health', serverHealth);
-router.post('/refresh');
+router.post('/refresh', refreshTokens);
 
 export default router;

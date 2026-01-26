@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import prisma from "../lib/prisma";
+import prisma from "../../lib/prisma";
 import { matchedData, validationResult } from "express-validator";
 import { comparePassword, generateAccessToken, generateRefreshToken, hashPassword } from "../utils/helpers";
 import { CreateUserDto } from "../dtos/CreateUser.dto";

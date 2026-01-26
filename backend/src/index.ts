@@ -1,6 +1,6 @@
 import express from 'express';
 import routes from './routes/index';
-import prisma from './lib/prisma';
+import prisma from '../lib/prisma';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 
@@ -9,7 +9,7 @@ dotenv.config();
 
 // Initialiser Express
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3100;
 
 // Middlewares
 app.use(express.json());

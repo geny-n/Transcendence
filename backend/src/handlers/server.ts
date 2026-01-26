@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { generateAccessToken, verifyToken } from "../utils/helpers";
-import prisma from "../lib/prisma";
+import prisma from "../../lib/prisma";
 
 export async function serverHealth(request: Request, response: Response) {
 	return response.status(200).json({ status : 'OK' });

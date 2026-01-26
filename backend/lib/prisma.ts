@@ -7,10 +7,10 @@ const globalForPrisma = global as unknown as {
 }
 
 const adapter = new PrismaMariaDb({
-	host: process.env.DATABASE_HOST || "localhost",
+	host: process.env.DATABASE_HOST || "db",
 	user: process.env.DATABASE_USER || "root",
-	password: process.env.DATABASE_PASSWORD || "",
-	database: process.env.DATABASE_NAME || "transcendence",
+	password: process.env.DATABASE_PASSWORD || "root",
+	database: process.env.DATABASE_NAME || "mydb",
 	connectionLimit: 5
 })
 

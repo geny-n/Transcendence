@@ -12,7 +12,7 @@ Serveur Express.js + Prisma (MySQL/MariaDB) suivant le pattern **routes → hand
 
 ## Installation & Démarrage
 1. Copier `.env` → `.env`
-2. `docker compose -f 'docker-compose.yml' up -d --build`
+2. Copier `dokcer-compose.yml` → `dokcer-compose.yml`
 
 ## Concepts clés & Explications
 

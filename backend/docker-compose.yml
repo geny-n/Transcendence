@@ -3,8 +3,6 @@ services:
     build: ./backend
     command: ["sh", "-c", "npm run bsd:deploy && npm run start:dev"]
     env_file: .env
-    ports:
-      - 3100:3100
     volumes:
       - ./backend/src:/code/src:ro
       - ./backend/package.json:/code/package.json

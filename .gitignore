@@ -4,17 +4,26 @@ node_modules/
 # Build outputs
 dist/
 build/
+*.tsbuildinfo
 
 # Logs
 *.log
+npm-debug.log*
 
 # OS
 .DS_Store
+Thumbs.db
 
 # IDE
 .vscode/
 .idea/
 *.swp
+*.swo
+
+# Prisma
+*.db
+*.db-journal
 
 # Misc
 *.pem
+.cache/

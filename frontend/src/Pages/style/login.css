@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+@layer components
+{
+    .form-box{
+        @apply w-[90%] max-w-sm md:max-w-md
+        lg:max-w-md p-5 bg-gray-900 flex-col
+        flex items-center gap-3 rounded-xl shadow-slate-500
+        shadow-lg;
+    }
+
+    .btn-txt{
+        @apply !text-white ml-1;
+    }
+    .btn-txt:hover{
+        @apply !underline;
+    }    
+
+    .input-field{
+        @apply bg-transparent border-0 outline-none text-sm md:text-base;
+    }
+
+    .icon-field{
+        @apply w-full flex items-center bg-gray-800 p-2 rounded-xl gap-2 relative
+    }
+
+    .btn-sign{
+        @apply w-full p-2 bg-blue-500 rounded-xl mt-3 text-sm md:text-base
+    }
+    .btn-sign:hover{
+        @apply bg-blue-600
+    }
+
+    .icon-btn{
+        @apply p-2 md:px-10 bg-slate-700 cursor-pointer rounded-xl;
+    }
+    .icon-btn:hover{
+        @apply bg-slate-800;
+    }
+}

@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+@layer components
+{
+    .nav-style{
+        @apply fixed left-1/2 top-[20px] -translate-x-1/2 
+        flex justify-between items-center gap-16 
+        py-3 px-10 rounded-full 
+        bg-black/60 backdrop-blur-md 
+        text-white shadow-lg z-10;
+    }
+
+    .btn-nav{
+        @apply absolute left-0 bottom-[-5px]
+        w-0 h-1 rounded-xl bg-gradient-to-r
+        from-red-600 to-orange-500 transition-all duration-300;
+    }
+    .group:hover .btn-nav{
+        @apply w-full
+    }
+
+    .btn-login{
+        @apply bg-gradient-to-r from-red-600 to-orange-500
+        py-1 px-6 rounded-3xl shadow-2xl
+        text-white text-lg font-semibold;
+    }
+    .btn-login:hover{
+        @apply from-red-500 to-orange-400;
+    }
+}

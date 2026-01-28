@@ -4,7 +4,8 @@ WORKDIR /app
 
 # Copier package.json et package-lock.json
 COPY package*.json ./
-RUN npm ci --only=production=false
+RUN npm ci
+#RUN npm ci --only=production=false
 
 # Copier tout le code source
 COPY . .

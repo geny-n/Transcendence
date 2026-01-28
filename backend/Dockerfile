@@ -13,6 +13,9 @@ COPY package.json /code/package.json
 COPY package-lock.json /code/package-lock.json
 RUN npm ci
 
+COPY prisma /code/prisma
+RUN npx prisma generate
+
 COPY . /code
 
 RUN npx tsc

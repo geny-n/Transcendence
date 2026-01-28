@@ -7,10 +7,6 @@ RESET = \033[0m
 
 all: build up
 
-#get tree
-tree:
-	tree -L 4
-
 #build images
 build:
 	$(DOC_COMP) build
@@ -26,7 +22,8 @@ bd:
 
 fclean:
 	$(DOC_COMP) down -v --rmi all --remove-orphans 2>/dev/null || true
-	docker system prune -af --volumes 2>/dev/null || true
+	docker system prune -af
+	docker volume prune -f
 	echo "$(GREEN)Everithing is clean !$(RESET)"
 
 re: fclean all

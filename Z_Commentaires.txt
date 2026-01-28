@@ -12,7 +12,7 @@ pour voir les bases de données :
         .schema players;
         SELECT * FROM players;
         sortir : CTRL + D
-pour voir les logs backend :
+pour voir lzes logs backend :
         docker compose logs backend --tail=25 -f 
 autres :
         tree -L 3 backend -I "node_modules"   /  tree -L 4 -I "node_modules"            

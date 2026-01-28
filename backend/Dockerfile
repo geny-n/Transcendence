@@ -1,7 +1,7 @@
 FROM node:lts AS development
 
-ARG NODE_ENV=production
-ENV NODE_ENV $NODE_ENV
+#ARG NODE_ENV=production
+#ENV NODE_ENV $NODE_ENV
 
 WORKDIR /code
 
@@ -16,6 +16,9 @@ RUN npm ci
 COPY . /code
 
 RUN npx tsc
+
+ARG NODE_ENV=production
+ENV NODE_ENV $NODE_ENV
 
 HEALTHCHECK --interval=30s \
     CMD [ "node", "healthcheck.js" ]

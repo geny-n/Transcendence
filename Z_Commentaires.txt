@@ -40,3 +40,12 @@ Pour un dev full-stack comme vous, c'est fortement recommandé pour la productiv
 
 modifier aussi : @import "tailwindcss";
 créer /home/jfgeny/Transcendence_Ninon/git_tran/frontend/src/vite-env.d.ts
+
+websocket
+The WebSocket API makes it possible to open a two-way interactive communication session between the user's browser and a server. 
+With this API, you can send messages to a server and receive responses without having to poll the server for a reply.
+
+socket.io
+bibliothèques qui permet la communication a faible latence, bidirectionnelle et basee sur les evenement entre un client et un server
+https://socket.io/fr/docs/v4/
+

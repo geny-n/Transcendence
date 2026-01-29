@@ -9,8 +9,7 @@ ARG PORT=80
 ENV PORT $PORT
 EXPOSE $PORT
 
-COPY package.json /code/package.json
-COPY package-lock.json /code/package-lock.json
+COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY prisma /code/prisma

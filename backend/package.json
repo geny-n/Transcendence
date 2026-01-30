@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc --build",
     "start": "node ./dist/index.js",
-    "bsd:deploy": "npx prisma migrate dev --name init && npx prisma generate",
+    "db:deploy": "npx prisma migrate dev --name init && npx prisma generate",
     "start:dev": "nodemon --exec \"tsx\" ./src/index.ts"
   },
   "keywords": [],
@@ -16,7 +16,6 @@
   "type": "module",
   "dependencies": {
     "@prisma/adapter-mariadb": "^7.3.0",
-    "@prisma/adapter-pg": "^7.2.0",
     "@prisma/client": "^7.3.0",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
@@ -24,7 +23,8 @@
     "express": "^5.2.1",
     "express-validator": "^7.3.1",
     "jsonwebtoken": "^9.0.3",
-    "pg": "^8.17.1"
+    "passport": "^0.7.0",
+    "passport-42": "^1.2.6"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
@@ -32,7 +32,8 @@
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.0.10",
-    "@types/pg": "^8.16.0",
+    "@types/passport": "^1.0.17",
+    "@types/passport-42": "^1.1.2",
     "nodemon": "^3.1.11",
     "prisma": "^7.3.0",
     "ts-node": "^10.9.2",

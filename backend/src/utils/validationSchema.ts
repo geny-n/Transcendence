@@ -2,11 +2,17 @@ export const registerUsersSchema = {
 	email: {
 		trim: true,
 		escape: true,
+		notEmpty: {
+			errorMessage: "A username is required."
+		},
 		isEmail: {
 			errorMessage : "Please enter a valid email."
 		}
 	},
 	password : {
+		notEmpty: {
+			errorMessage: "A username is required."
+		},
 		isStrongPassword: {
 			options : {
 				minLength: 8,
@@ -39,11 +45,17 @@ export const loginSchema = {
 	email: {
 		trim: true,
 		escape: true,
+		notEmpty: {
+			errorMessage: "A username is required."
+		},
 		isEmail: {
 			errorMessage : "Please enter a valid email."
 		}
 	},
 	password : {
+		notEmpty: {
+			errorMessage: "A username is required."
+		},
 		isStrongPassword: {
 			options : {
 				minLength: 8,

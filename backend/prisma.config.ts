@@ -9,6 +9,6 @@ export default defineConfig({
 		path: "prisma/migrations",
 	},
 	datasource: {
-		url: process.env["DATABASE_URL"] || "mysql://root:root@db:3306/mydb",
+		url: process.env["DATABASE_URL"] || "mysql://root:root@localhost:3306/mydb",
 	},
 });

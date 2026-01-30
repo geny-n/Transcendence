@@ -8,7 +8,7 @@ export async function serverHealth(request: Request, response: Response) {
 
 export async function refreshTokens(request: Request, response: Response) {
 	const refreshToken = request.cookies?.refresh_token;
-	console.log("token:", refreshToken);
+	console.log("Inside refreshTokens: token:", refreshToken);
 
 	if (!refreshToken) {
 		return response.status(401).json({

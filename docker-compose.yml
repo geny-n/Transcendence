@@ -1,12 +1,15 @@
 services:
   backend:
-    build: ./backend
-    command: ["sh", "-c", "npm run bsd:deploy && npm run start:dev"]
+    build: backend
+    command: ["sh", "-c", "npm run db:deploy && npm run start:dev"]
     env_file: .env
+    ports:
+      - 3100:3100
     volumes:
       - ./backend/src:/code/src:ro
       - ./backend/package.json:/code/package.json
       - ./backend/package-lock.json:/code/package-lock.json
+      # - back-notused:/opt/app/node_modules
     networks:
       - transcended_network
     depends_on:
@@ -15,7 +18,10 @@ services:
 
   db:
     image: mariadb
+    command: '--default-authentication-plugin=mysql_native_password'
     restart: always
+    # volumes:
+    #   - db-data:/var/lib/mysql
     networks:
       - transcended_network
     env_file: .env
@@ -28,3 +34,17 @@ services:
 networks:
   transcended_network:
     driver: bridge
+
+# volumes:
+#   back-notused:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       device: packages/infrastructure/auth
+#       o: bind
+#   db-data:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       device: packages/infrastructure/database
+#       o: bind

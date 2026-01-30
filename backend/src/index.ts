@@ -2,8 +2,6 @@ import express from 'express';
 import routes from './routes/index.js';
 import prisma from './lib/prisma.js';
 import dotenv from 'dotenv';
-import { Server } from 'socket.io' //moi
-import { createServer } from 'node:http' //moi
 import cookieParser from 'cookie-parser';
 import path from 'path';
 
@@ -13,8 +11,6 @@ dotenv.config();
 // Initialiser Express
 const app = express();
 const PORT = process.env.PORT || 3000;
-const httpServer = createServer(app); //moi
-const io = new Server(httpServer); //moi
 
 // Middlewares
 app.use(express.json());
@@ -25,10 +21,10 @@ try {
 	prisma.$connect();
 	console.log('Database connected');
 
-	httpServer.listen(PORT, () => {
+	// httpServer.listen(PORT, () => {
+	// 	console.log(`Server is running on http://localhost:${PORT}`);
+	app.listen(PORT, () => {
 		console.log(`Server is running on http://localhost:${PORT}`);
-	//app.listen(PORT, () => {
-	//	console.log(`Server is running on http://localhost:${PORT}`);
 	});
 } catch (error) {
 	console.log('Failed to start server:', error);
@@ -46,7 +42,3 @@ process.on('SIGTERM', async ()=> {
 	console.info('Prisma disconnected', new Date().toISOString());
 	process.exit(0);
 });
-
-io.on('connection', (socket) => {
-	console.log('a user connected');
-});//moi

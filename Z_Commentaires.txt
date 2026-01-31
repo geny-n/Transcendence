@@ -1,0 +1,51 @@
+tout supprimer :    
+        docker-compose down --rmi all --volumes --remove-orphans
+        docker system prune -af
+        docker volume prune -f
+pour démarrer :     
+        docker-compose build
+        docker-compose up -d
+pour voir les bases de données : 
+        docker compose exec backend  bash
+        sqlite3 /app/data/transcendence.sqlite
+        .tables
+        .schema players;
+        SELECT * FROM players;
+        sortir : CTRL + D
+pour voir lzes logs backend :
+        docker compose logs backend --tail=25 -f 
+autres :
+        tree -L 3 backend -I "node_modules"   /  tree -L 4 -I "node_modules"            
+
+Pas de dossier node_modules
+C'est logique dans ton cas car tu utilises Docker.
+Pourquoi ? Regarde tes Dockerfile : tu fais RUN npm install (ou npm ci) à l'intérieur de l'image Docker. Les dépendances sont donc installées dans le conteneur, pas sur ton ordinateur (ton host).
+Le problème : Ton éditeur (VS Code) ne trouve pas les bibliothèques pour l'autocomplétion.
+La solution : Pour avoir l'autocomplétion et enlever les erreurs rouges dans ton code, tu devrais ouvrir un terminal dans tes dossiers frontend/ 
+et backend/ (sur ta machine, pas dans Docker) et taper : npm install
+Cela créera les dossiers node_modules localement pour ton éditeur.
+
+L'autocomplétion est une fonctionnalité des éditeurs comme VS Code qui propose automatiquement des suggestions de code (noms de fonctions, variables, modules) pendant que vous tapez, pour accélérer l'écriture et réduire les erreurs.
+Option ou nécessaire ?
+C'est une option, pas une nécessité pour que votre code fonctionne ou que Docker tourne correctement.
+​Aantages pratiques
+Gain de temps : Évite de retaper ou mémoriser les APIs des bibliothèques comme Fastify ou React.
+Moins d'erreurs : Signale les problèmes (types, imports manquants) avant l'exécution.
+Découverte : Montre les méthodes disponibles sur un objet (ex: req.body. suggère les propriétés).
+Dans votre cas Docker
+Sans node_modules local, VS Code ne "voit" pas les dépendances installées dans le conteneur, d'où les erreurs rouges.
+npm install local (frontend/backend) crée juste ce dossier pour l'éditeur (~500 Mo, ignoré par Docker via .dockerignore).
+Alternative : Utilisez le Dev Container de VS Code pour un environnement Dockerisé avec autocomplétion intégrée.
+Pour un dev full-stack comme vous, c'est fortement recommandé pour la productivité
+
+modifier aussi : @import "tailwindcss";
+créer /home/jfgeny/Transcendence_Ninon/git_tran/frontend/src/vite-env.d.ts
+
+websocket
+The WebSocket API makes it possible to open a two-way interactive communication session between the user's browser and a server. 
+With this API, you can send messages to a server and receive responses without having to poll the server for a reply.
+
+socket.io
+bibliothèques qui permet la communication a faible latence, bidirectionnelle et basee sur les evenement entre un client et un server
+https://socket.io/fr/docs/v4/
+

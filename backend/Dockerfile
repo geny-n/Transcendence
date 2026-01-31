@@ -1,7 +1,7 @@
-FROM node:lts AS development
+FROM node:lts
 
-# ARG NODE_ENV=production
-# ENV NODE_ENV=$NODE_ENV
+ARG NODE_ENV=development
+ENV NODE_ENV=$NODE_ENV
 
 WORKDIR /code
 
@@ -17,5 +17,6 @@ HEALTHCHECK --interval=30s \
 CMD node healthcheck.js
 
 COPY . /code
+RUN npx prisma generate
 
-CMD [ "node", "src/index.js" ]
+CMD [ "sh", "-c", "npm run db:deploy && npm run start:dev" ]

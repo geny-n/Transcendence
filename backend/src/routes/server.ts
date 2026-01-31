@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { serverHealth, refreshTokens } from "../handlers/server";
+import { serverHealth, refreshTokens } from "../handlers/server.js";
 
 const router = Router();
 

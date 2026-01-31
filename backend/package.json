@@ -1,13 +1,13 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Serveur Express.js + Prisma (MySQL/MariaDB) suivant le pattern **routes → handlers → Prisma**.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc --build",
-    "start": "node ./dist/index.js",
-    "db:deploy": "npx prisma migrate dev --name init && npx prisma generate",
+    "start": "node ./dist/src/index.js",
+    "db:deploy": "npx prisma db push && npx prisma generate",
     "start:dev": "nodemon --exec \"tsx\" ./src/index.ts"
   },
   "keywords": [],
@@ -31,7 +31,7 @@
     "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^25.0.10",
+    "@types/node": "^25.1.0",
     "@types/passport": "^1.0.17",
     "@types/passport-42": "^1.1.2",
     "nodemon": "^3.1.11",
@@ -39,5 +39,8 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
+  },
+  "directories": {
+    "lib": "lib"
   }
 }

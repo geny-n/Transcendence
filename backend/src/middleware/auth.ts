@@ -1,6 +1,6 @@
-import { NextFunction, Request, response, Response } from "express";
-import { AuthentificatedRequest } from "../dtos/AuthenticatedRequest.dto";
-import { verifyToken } from "../utils/helpers";
+import type { NextFunction, Request, response, Response } from "express";
+import type { AuthentificatedRequest } from "../dtos/AuthenticatedRequest.dto.js";
+import { verifyToken } from "../utils/helpers.js";
 
 export async function authenticateToken(
 	request: AuthentificatedRequest,

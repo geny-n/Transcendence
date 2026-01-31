@@ -1,9 +1,9 @@
 import type { Request, Response } from "express";
-import prisma from "../../lib/prisma";
+import prisma from "../../lib/prisma.js";
 import { matchedData, validationResult } from "express-validator";
-import { comparePassword, generateAccessToken, generateRefreshToken, hashPassword } from "../utils/helpers";
-import { CreateUserDto } from "../dtos/CreateUser.dto";
-import { AuthentificatedRequest } from "../dtos/AuthenticatedRequest.dto";
+import { comparePassword, generateAccessToken, generateRefreshToken, hashPassword } from "../utils/helpers.js";
+import type { CreateUserDto } from "../dtos/CreateUser.dto.js";
+import type { AuthentificatedRequest } from "../dtos/AuthenticatedRequest.dto.js";
 
 export async function registerUsers(request: Request, response: Response) {
 	const result = validationResult(request);

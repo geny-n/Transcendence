@@ -1,7 +1,16 @@
 services:
+  frontend:
+    container_name: frontend
+    build: ./frontend
+    volumes:
+      - frontend-build:/app/dist 
+    depends_on:
+      - backend
+    networks:
+      - app-network
+  
   backend:
-    build: backend
-    command: ["sh", "-c", "npm run db:deploy && npm run start:dev"]
+    build: ./backend
     env_file: .env
     ports:
       - 3100:3100
@@ -9,42 +18,54 @@ services:
       - ./backend/src:/code/src:ro
       - ./backend/package.json:/code/package.json
       - ./backend/package-lock.json:/code/package-lock.json
-      # - back-notused:/opt/app/node_modules
     networks:
-      - transcended_network
+      - app-network
     depends_on:
-      db:
+      bd:
         condition: service_healthy
 
-  db:
-    image: mariadb
-    command: '--default-authentication-plugin=mysql_native_password'
-    restart: always
-    # volumes:
-    #   - db-data:/var/lib/mysql
+  nginx:
+    container_name: nginx
+    image: nginx:alpine
+    ports:
+      - "1443:443"  # HTTPS obligatoire
+      - "8080:80"    # HTTP (optionnel, pour redirection)
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+      - frontend-build:/usr/share/nginx/html:ro
+    depends_on:
+      - backend
+      - frontend
     networks:
-      - transcended_network
-    env_file: .env
+      - app-network
+
+  bd:
+    container_name: bd
+    image: mariadb:10.11
+    command: '--default-authentication-plugin=mysql_native_password'
+    environment:
+      MYSQL_ROOT_PASSWORD: ${BDD_ROOT_PWD}
+      MYSQL_USER: ${DATABASE_USER}
+      MYSQL_PASSWORD: ${DATABASE_PASSWORD}
+      MYSQL_DATABASE: ${DATABASE_NAME}
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - app-network
+    ports:
+      - "3307:3306"
     healthcheck:
-      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost"]
-      interval: 10s
+      test: ["CMD-SHELL", "mariadb-admin ping -h localhost -u $$MYSQL_USER --password=$$MYSQL_PASSWORD"]
+      interval: 5s
       timeout: 5s
       retries: 5
+      start_period: 30s
+
+volumes:
+  mariadb_data:
+  frontend-build:
 
 networks:
-  transcended_network:
+  app-network:
     driver: bridge
-
-# volumes:
-#   back-notused:
-#     driver: local
-#     driver_opts:
-#       type: none
-#       device: packages/infrastructure/auth
-#       o: bind
-#   db-data:
-#     driver: local
-#     driver_opts:
-#       type: none
-#       device: packages/infrastructure/database
-#       o: bind

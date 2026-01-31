@@ -1,10 +1,10 @@
 import express from 'express';
-import routes from './routes/index';
-import prisma from '../lib/prisma';
+import routes from './routes/index.js';
+import prisma from '../lib/prisma.js';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
-import './strategies/42-strategy';
+import './strategies/42-strategy.js';
 
 // Charger les variables d'environnement
 dotenv.config();

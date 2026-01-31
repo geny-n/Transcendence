@@ -1,6 +1,6 @@
 import passport from "passport";
 import Strategy from "passport-42";
-import prisma from "../../lib/prisma";
+import prisma from "../../lib/prisma.js";
 
 const options = {
 	clientID: process.env["42_APP_ID"] || "u-s4t2ud-e002018159131e4059b031968d41954251050765695dcd3ed86d50e43a8d7629",

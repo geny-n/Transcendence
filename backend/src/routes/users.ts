@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { authHandler, loginUser, logoutUser, registerUsers } from "../handlers/users";
+import { authHandler, loginUser, logoutUser, registerUsers } from "../handlers/users.js";
 import { checkSchema } from "express-validator";
-import { loginSchema, registerUsersSchema } from "../utils/validationSchema";
-import { authenticateToken } from "../middleware/auth";
+import { loginSchema, registerUsersSchema } from "../utils/validationSchema.js";
+import { authenticateToken } from "../middleware/auth.js";
 import passport from "passport";
 
 const router = Router();

@@ -1,5 +1,5 @@
-import { Request } from "express";
-import { User as PrismaUser } from '../../generated/prisma/client'
+import type { Request } from "express";
+import type { User as PrismaUser } from '../../generated/prisma/client.js'
 
 export interface AuthentificatedRequest extends Request {
 	userId? : string;

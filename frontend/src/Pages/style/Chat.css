@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+@layer components
+{
+    .all_screan{
+        @apply h-screen pt-20 pb-15;
+    }
+    .chat_screen{/* plus besoin de la couleur */
+        @apply flex h-full rounded-lg;
+    }
+    .box_1{
+        @apply bg-amber-300 h-10;
+    }
+    .box_2{
+        @apply bg-blue-300 flex-1;
+    }
+    .search {
+        @apply
+        mx-2 h-12
+         border 
+        border-red-500 /* couleur du contour */
+        bg-yellow-700 /* couleur interieur */
+        bg-gray-600 h-10 rounded-lg
+        
+    }
+}

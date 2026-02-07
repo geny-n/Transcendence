@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import prisma from "../lib/prisma.js";
+import prisma from "../../lib/prisma.js";
 import { matchedData, validationResult } from "express-validator";
 import { comparePassword, generateAccessToken, generateRefreshToken, hashPassword } from "../utils/helpers.js";
 import type { CreateUserDto } from "../dtos/CreateUser.dto.js";
@@ -7,7 +7,7 @@ import type { AuthentificatedRequest } from "../dtos/AuthenticatedRequest.dto.js
 
 export async function registerUsers(request: Request, response: Response) {
 	const result = validationResult(request);
-	console.log("Result:", result);
+	console.log("Inside registerUsers: Result:", result);
 
 	if (!result.isEmpty()) {
 		return response.status(400).json({
@@ -72,7 +72,7 @@ export async function registerUsers(request: Request, response: Response) {
 
 export async function loginUser(request: Request, response: Response) {
 	const result = validationResult(request);
-	console.log("Result:", result);
+	console.log("Inside loginUser: Result:", result);
 
 	if (!result.isEmpty()) {
 		return response.status(400).json({
@@ -99,7 +99,7 @@ export async function loginUser(request: Request, response: Response) {
 			});
 		}
 
-		if (!user) {
+		if (!user || !user.password) {
 			return response.status(401).json({
 				success: false,
 				message: "Incorrect credentials"
@@ -172,7 +172,7 @@ export async function loginUser(request: Request, response: Response) {
 
 export async function logoutUser(request: AuthentificatedRequest, response: Response) {
 	const cookie = request.cookies?.access_token;
-	console.log("cookie:", cookie);
+	console.log("Inside logoutUser: cookie:", cookie);
 
 	if (!cookie) {
 		return response.status(401).json({
@@ -190,4 +190,58 @@ export async function logoutUser(request: AuthentificatedRequest, response: Resp
 
 	response.clearCookie(cookie);
 	return response.redirect('/');
+}
+
+export async function authHandler(request: Request, response: Response) {
+	try {
+		// Verification
+		// console.log('req.user after passport:', request.user);
+		// console.log('Type of req.user:', typeof request.user);
+		// console.log('Keys:', request.user ? Object.keys(request.user) : 'null');
+		if (!request.user) {
+			throw new Error("No user found after authentication");
+		}
+
+		// Maintenant que TypeScript connais la structure
+		const { id, username } = request.user;
+		console.log(`Inside authHandler: User ${username} (${id}) authenticated via 42`);
+
+		// Generer les tokens
+		const accessToken = generateAccessToken(id);
+		console.log('accessToken:', accessToken);
+		const refreshToken = generateRefreshToken(id);
+		console.log('refreshToken:', refreshToken);	
+		
+		// Mettre a jour le refresh token en BDD
+		await prisma.user.update({
+			where : { id: id },
+			data: {
+				refreshToken: refreshToken,
+				isOnline: true
+			}
+		});
+
+		// Set cookies et rediriger
+		response.cookie("access_token", accessToken, {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === "production",
+			sameSite: "lax",
+			maxAge: 15 * 60 * 1000
+		})
+
+		response.cookie("refresh_token", refreshToken, {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === "production",
+			sameSite: "lax",
+			maxAge: 7 * 24 * 60 * 60 * 1000
+		});
+
+		// redirection frontend
+		return response.redirect("http://localhost:3100/health");
+
+	} catch (error) {
+		console.error('Callback error:', error);
+		return response.redirect("http://google.com");
+	}
+
 }

@@ -1,9 +1,12 @@
 import express from 'express';
 import routes from './routes/index.js';
-import prisma from './lib/prisma.js';
+import prisma from '../lib/prisma.js';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
-import path from 'path';
+import passport from 'passport';
+import { Server } from 'socket.io';//moi
+import { createServer } from 'https';//moi
+import './strategies/42-strategy.js';
 
 // Charger les variables d'environnement
 dotenv.config();
@@ -15,6 +18,7 @@ const PORT = process.env.PORT || 3000;
 // Middlewares
 app.use(express.json());
 app.use(cookieParser());
+app.use(passport.initialize());
 app.use(routes);
 
 try {

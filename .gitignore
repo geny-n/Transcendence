@@ -3,27 +3,19 @@ node_modules/
 
 # Build outputs
 dist/
-build/
-*.tsbuildinfo
-
-# Logs
-*.log
-npm-debug.log*
-
-# OS
-.DS_Store
-Thumbs.db
+#chache de configuration typescript
+*.tsbuildinfo 
 
 # IDE
 .vscode/
-.idea/
-*.swp
-*.swo
 
 # Prisma
-*.db
-*.db-journal
+/prisma/generated/prisma
 
-# Misc
-*.pem
-.cache/
+/generated/prisma
+
+/generated/prisma
+
+/generated/prisma
+
+/generated/prisma

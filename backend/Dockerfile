@@ -1,43 +1,22 @@
-FROM node:20-alpine AS development
+FROM node:lts
 
-#ARG NODE_ENV=production
-#ENV NODE_ENV $NODE_ENV
+ARG NODE_ENV=development
+ENV NODE_ENV=$NODE_ENV
 
 WORKDIR /code
 
-ARG PORT=80
-ENV PORT $PORT
+ARG PORT=3100
+ENV PORT=$PORT
 EXPOSE $PORT
 
-COPY package.json package-lock.json ./
+COPY package.json /code/package.json
+COPY package-lock.json /code/package-lock.json
 RUN npm ci
 
-COPY prisma /code/prisma
-RUN npx prisma generate
+HEALTHCHECK --interval=30s \
+CMD node healthcheck.js
 
 COPY . /code
+RUN npx prisma generate
 
-RUN npx tsc
-
-ARG NODE_ENV=production
-ENV NODE_ENV $NODE_ENV
-
-HEALTHCHECK --interval=30s \
-    CMD [ "node", "healthcheck.js" ]
-
-#CMD ["/bin/sh", "-c", "npx prisma db push && npx prisma generate && node dist/index.js"]
-CMD ["/bin/sh", "-c", "npx prisma db push && node dist/index.js"]
-
-# FROM development as dev-envs
-# RUN <<EOF
-# apt-get update
-# apt-get install --no-install-recommends git
-# EOF
-
-# RUN <<EOF
-# useradd -s /bin/bash -m vscode
-# grouppadd docker
-# usermod -aG docker vscode
-# EOF
-
-# COPY --from=gloursdocker/docker / /
+CMD [ "sh", "-c", "npm run db:deploy && npm run start:dev" ]

@@ -49,3 +49,12 @@ socket.io
 bibliothèques qui permet la communication a faible latence, bidirectionnelle et basee sur les evenement entre un client et un server
 https://socket.io/fr/docs/v4/
 
+
+
+# Backend dans Docker (car dépend de MariaDB)
+cd backend
+docker compose up -d
+
+# Frontend en local (hot-reload natif)
+cd frontend
+npm run dev

@@ -1,22 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
 generator client {
-  provider = "prisma-client-js"
+	provider = "prisma-client"
+	output   = "../generated/prisma"
 }
 
 datasource db {
-  provider = "mysql"
+	provider = "mysql"
 }
 
+// schema.prisma
 model User {
-  id              String   @id @default(uuid())
-  email           String   @unique
-  password        String
-  username        String   @unique
-  avatarUrl       String?  @default("default_avatar.png")
-  createdAt       DateTime @default(now())
-  isOnline        Boolean  @default(false)
-  refreshToken    String?   @db.Text
-  messageSent     Message[] @relation("SentMessages")
-  messageReceive  Message[] @relation("ReceivedMessages")
+	id				String		@id @default(uuid())
+	email			String?		@unique
+	password		String?		// Nullable pour OAuth users rajouter ? a la fin pour ca
+	username		String		@unique
+	fortyTwoId		String?		@unique
+	avatarUrl		String?		@default("default_avatar.png")
+	createdAt		DateTime	@default(now())
+	isOnline		Boolean		@default(false)
+	refreshToken	String?		@db.Text
+
+	 // Relations
+	messageSent     Message[] @relation("SentMessages")
+  	messageReceive  Message[] @relation("ReceivedMessages")
+    sentFriendRequests        Friendship[]    @relation("sender")
+    receivedFriendRequests    Friendship[]    @relation("receiver")
+
+    // Pour recuperer facilement tous les amis
+    friendshipAsUser1    Friend[]    @relation("user1")
+    friendshipAsUser2    Friend[]    @relation("user2")
+}
+
+// Table pour les demandes d'amitie EN ATTENTE
+model Friendship {
+    id            String                @id @default(uuid())
+    senderId    String
+    receiverId    String
+    status        FriendRequestStatus    @default(PENDING) // PENDING, ACCEPTED, REJECTED, BLOCKED
+    createdAt    DateTime            @default(now())
+    updateAt    DateTime            @updatedAt
+
+    // Relations
+    sender        User    @relation("sender", fields: [senderId], references: [id])
+    receiver    User    @relation("receiver", fields: [receiverId], references: [id])
+
+    // Empeche les doublons
+    @@unique([senderId, receiverId])
+    @@unique([receiverId, senderId])
+}
+
+// Table separee pour les amities CONFIRMEES
+model Friend {
+    id            String        @id @default(uuid())
+    user1Id        String
+    user2Id        String
+    createdAt    DateTime    @default(now())
+
+    user1    User    @relation("user1", fields: [user1Id], references: [id])
+    user2    User    @relation("user2", fields: [user2Id    ], references: [id])
+
+    @@unique([user1Id, user2Id])
+}
+
+enum FriendRequestStatus {
+    PENDING
+    ACCEPTED
+    REJECTED
+    BLOCKED
 }
 
 model Message {

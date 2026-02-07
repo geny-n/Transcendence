@@ -15,7 +15,7 @@ build:
 #build containers
 up:
 	$(DOC_COMP) up -d
-	echo "$(GREEN)Welcome to https://localhost $(RESET)"
+	echo "$(GREEN)Welcome to https://localhost:1443 $(RESET)"
 
 bd:
 	docker exec -it bd mysql -u user_root -p123 mydb
@@ -23,7 +23,7 @@ bd:
 fclean:
 	$(DOC_COMP) down -v --rmi all --remove-orphans 2>/dev/null || true
 	docker system prune -af
-	docker volume prune -f
+	docker volume prune -af
 	echo "$(GREEN)Everithing is clean !$(RESET)"
 
 re: fclean all

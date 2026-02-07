@@ -33,7 +33,7 @@ export const generateRefreshToken = (userId: string) : string => {
 export const verifyToken = (token: string, isRefresh = false) : any => {
 	try {
 		const secret = isRefresh ? JWT_REFRESH_SECRET : JWT_ACCESS_SECRET;
-		console.log("secret:", secret);
+		console.log("Inside verifyToken: secret:", secret);
 		return jwt.verify(token, secret);
 	} catch (error) {
 		return null;

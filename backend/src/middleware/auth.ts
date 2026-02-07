@@ -9,7 +9,7 @@ export async function authenticateToken(
 ) {
 	// Chercher le token dans les cookies ou le header
 	const token = request.cookies?.access_token;
-	console.log("token:", token);
+	console.log("Inside authenticateToken: token:", token);
 
 	if (!token) {
 		return response.status(401).json({

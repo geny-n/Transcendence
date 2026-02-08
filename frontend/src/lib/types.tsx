@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { PasswordRegex } from "./regex";
+import { PasswordRegex, ForbidenRegex } from "./regex";
 
 export const connexionForm = z.object({
   email: z.string().email({message: "Email invalide"}),
@@ -12,8 +12,10 @@ export const inscriptionForm = z.object({
   email: z.string().email({message: "Email valide requis"}),
   password: z
   .string()
-  .min(10, "minimum 10 characteres requis")
-  .regex(PasswordRegex, "1 minuscule, 1 majuscule, 1 chiffre et 1 charactere special requis "),
+  .min(10, "Ne peux contenir moins de 10 caracteres")
+  .max(24, "Ne peux contenir plus de 24 caracteres")
+  .regex(PasswordRegex, "Doit inclure minuscule, majuscule, chiffre et caractere special")
+  .regex(ForbidenRegex, "Characteres speciaux autorises: !@#$%&*()_-+="),
   confirmPass: z.string()
 }).refine(data => data.password === data.confirmPass, {
     message: "Les mots de passes doivent etre similaires",

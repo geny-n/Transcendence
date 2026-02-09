@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import type { FieldValues } from 'react-hook-form'
+import { CgProfile } from "react-icons/cg";
 import { CiMail, CiLock } from "react-icons/ci"; // mail && lock icon
 import { LuEye,LuEyeClosed } from "react-icons/lu"; //eyes icon
 import { Si42 } from "react-icons/si"; //42 icon
@@ -48,6 +49,16 @@ const Register = () => {
         </p>
 
         <div className="w-full flex flex-col gap-3">
+
+          <div className="icon-field">
+            <CgProfile />
+            <input {...(register("username"))} 
+            type="text"
+            placeholder="Nom d'utilisateur"
+            className="input-field w-full" />
+          </div>
+          {errors.username && <p className="text-left text-red-500 text-xs">{`${errors.username.message}`}</p>}
+
           <div className="icon-field">
             <CiMail />
             <input {...(register("email"))} 

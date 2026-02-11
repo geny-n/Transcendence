@@ -9,7 +9,7 @@ all: build up
 
 #build images
 build:
-	$(DOC_COMP) build --no-cache backend
+	$(DOC_COMP) build backend
 	echo "$(GREEN)images created with success !$(RESET)"
 
 #build containers

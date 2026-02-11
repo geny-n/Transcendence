@@ -16,6 +16,8 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false); //creates getter/setter and sets to them to bool false
   const passwordVisibility = () => setShowPassword(!showPassword); //ft to set showPassword to true or false
 
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -23,8 +25,6 @@ const Login = () => {
   } = useForm<T_connexionForm>({
     resolver: zodResolver(connexionForm),
   });
-
-  const navigate = useNavigate();
 
   const onSubmit = async (data: FieldValues) => {
     console.log("Form data :", data);

@@ -8,7 +8,7 @@ export default function Chat ()
   //permet de garder en memoire touts les messages (le 1er message n es pas ecraser par le 2eme)
   const sendMsg = () => {
     setmessages([...messages, msg]);
-    setMsg('');
+    setMsg('gsgsg');
   }
   
     return (

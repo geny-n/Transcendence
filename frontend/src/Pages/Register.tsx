@@ -20,6 +20,8 @@ const Register = () => {
   const [showConfirmPass, setShowConfirmPass] = useState<boolean>(false);
   const ConfirmPassVisibility = () => setShowConfirmPass(!showConfirmPass);
 
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -27,8 +29,6 @@ const Register = () => {
   } = useForm<T_inscriptionForm>({
     resolver: zodResolver(inscriptionForm),
   });
-
-  const navigate = useNavigate();
 
   const onSubmit = async (data: FieldValues) => {
     console.log("Form data :", data);
@@ -106,16 +106,16 @@ const Register = () => {
         <button disabled={isSubmitting} type="submit" className="btn-sign">S'inscrire</button>
 
         <div className="relative w-full flex items-center justify-between py-3">
-                  <div className="icon-btn">
-                    <FaGithub className="text-lg md:text-xl"/>
-                  </div>
-                  <div className="icon-btn">
-                    <Si42 className="text-lg md:text-xl"/>
-                  </div>
-                  <div className="icon-btn">
-                    <FcGoogle className="text-lg md:text-xl"/>
-                  </div>
-                </div>
+          <div className="icon-btn">
+            <FaGithub className="text-lg md:text-xl"/>
+          </div>
+          <div className="icon-btn">
+            <Si42 className="text-lg md:text-xl"/>
+          </div>
+          <div className="icon-btn">
+            <FcGoogle className="text-lg md:text-xl"/>
+          </div>
+          </div>
       </div>
     </form>
   )

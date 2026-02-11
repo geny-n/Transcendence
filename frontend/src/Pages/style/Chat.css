@@ -2,25 +2,55 @@
 
 @layer components
 {
-    .all_screan{
-        @apply h-screen pt-20 pb-15;
+    .all_screan {
+        @apply h-screen pt-25 pb-5;
     }
-    .chat_screen{/* plus besoin de la couleur */
-        @apply flex h-full rounded-lg;
+    .chat_screen {/* plus besoin de la couleur */
+        @apply flex mx-5 h-full;
     }
-    .box_1{
-        @apply bg-amber-300 h-10;
+    .box_friend {
+        @apply bg-amber-300;
+        @apply h-13;
+        @apply rounded-tr-lg;
     }
-    .box_2{
-        @apply bg-blue-300 flex-1;
+    .box_list {
+        @apply bg-gray-500;
+        @apply flex-1;
+        @apply rounded-bl-lg;
+    }
+    .box_message {
+        @apply bg-gray-400 flex-1;
+    }
+    .box_send {
+        @apply bg-gray-600 py-2 px-4;
+        @apply flex gap-3;
+        @apply rounded-br-lg;
+    }
+    .send_msg {
+        @apply bg-gray-500;
+        @apply flex-1 px-2 py-2;
+        @apply rounded-lg;
+        @apply focus:outline-none focus:ring-2 focus:ring-green-400;
+    }
+    .send_but {
+        @apply bg-orange-400 hover:bg-orange-500 transition rounded-lg;
+        @apply px-6 py-2;
+    }
+
+    .display_Msg {
+        @apply bg-gray-300 ;
+        @apply px-4 py-2 my-2;
+        @apply rounded-sm;
     }
     .search {
         @apply
-        mx-2 h-12
+        w-full py-2 px-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+
+        /* mx-2
          border 
         border-red-500 /* couleur du contour */
-        bg-yellow-700 /* couleur interieur */
-        bg-gray-600 h-10 rounded-lg
+        /* bg-yellow-700  *//* couleur interieur */
+        /* bg-gray-600 h-10 rounded-lg */ 
         
     }
 }

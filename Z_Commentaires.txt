@@ -58,3 +58,47 @@ docker compose up -d
 # Frontend en local (hot-reload natif)
 cd frontend
 npm run dev
+
+
+
+# bdd   cree moi 4 users alice, bea, jean et tom alice et ami avec bea et tom et jean est ami avec tom et bea 
+INSERT INTO User (id, username, email, password, avatarUrl, isOnline, createdAt)
+VALUES 
+  (UUID(), 'alice', 'alice@test.com', '$2b$10$dummy', 'avatar1.png', 1, NOW()),
+  (UUID(), 'bea', 'bea@test.com', '$2b$10$dummy', 'avatar2.png', 1, NOW()),
+  (UUID(), 'jean', 'jean@test.com', '$2b$10$dummy', 'avatar3.png', 0, NOW()),
+  (UUID(), 'tom', 'tom@test.com', '$2b$10$dummy', 'avatar4.png', 1, NOW());
+
+-- Récupérer les IDs dans des variables
+SELECT @alice_id := id FROM User WHERE username = 'alice';
+SELECT @bea_id := id FROM User WHERE username = 'bea';
+SELECT @jean_id := id FROM User WHERE username = 'jean';
+SELECT @tom_id := id FROM User WHERE username = 'tom';
+
+-- Créer les amitiés
+-- Alice ↔ Bea
+INSERT INTO Friend (id, user1Id, user2Id, createdAt)
+VALUES (UUID(), @alice_id, @bea_id, NOW());
+
+-- Alice ↔ Tom
+INSERT INTO Friend (id, user1Id, user2Id, createdAt)
+VALUES (UUID(), @alice_id, @tom_id, NOW());
+
+-- Jean ↔ Tom
+INSERT INTO Friend (id, user1Id, user2Id, createdAt)
+VALUES (UUID(), @jean_id, @tom_id, NOW());
+
+-- Jean ↔ Bea
+INSERT INTO Friend (id, user1Id, user2Id, createdAt)
+VALUES (UUID(), @jean_id, @bea_id, NOW());
+
+-- Vérifier les utilisateurs
+SELECT id, username, email, isOnline FROM User;
+
+-- Vérifier les amitiés (format lisible)
+SELECT 
+  u1.username AS user1,
+  u2.username AS user2
+FROM Friend f
+JOIN User u1 ON f.user1Id = u1.id
+JOIN User u2 ON f.user2Id = u2.id;

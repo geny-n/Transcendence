@@ -8,19 +8,59 @@
     .chat_screen {/* plus besoin de la couleur */
         @apply flex mx-5 h-full;
     }
+
+    /* 88888888888888888888888888888888888888888888888888 */
+
     .box_friend {
-        @apply bg-amber-300;
-        @apply h-13;
+        @apply bg-amber-500;
+        @apply h-13 py-2 px-2;
         @apply rounded-tr-lg;
+        @apply flex gap-3
     }
+
+    .friend_status {
+        @apply absolute;
+        @apply bottom-2 right-0 w-2 h-2;
+        @apply border-1 border-white rounded-full;
+
+    }
+
+    /* 88888888888888888888888888888888888888888888888888 */
+
     .box_list {
         @apply bg-gray-500;
         @apply flex-1;
         @apply rounded-bl-lg;
     }
-    .box_message {
-        @apply bg-gray-400 flex-1;
+
+    .display_lst {
+        @apply bg-gray-400 ;
+        @apply px-2 py-2 my-1 mx-1;
+        @apply hover:bg-orange-500 transition;
+        @apply rounded-lg;
     }
+
+    .display_status {
+        @apply absolute;
+        @apply bottom-0 right-0 w-3 h-3;
+        @apply border-1 border-white rounded-full;
+    }
+
+    /* 88888888888888888888888888888888888888888888888888 */
+    
+    .box_message {
+        @apply bg-gray-400;
+        @apply flex-1 px-2 py-2;
+        @apply overflow-y-auto;
+    }
+    .display_Msg {
+        @apply bg-gray-600 ;
+        @apply px-2 py-2 my-2;
+        @apply rounded-sm;
+    }
+
+    /* 88888888888888888888888888888888888888888888888888 */
+
     .box_send {
         @apply bg-gray-600 py-2 px-4;
         @apply flex gap-3;
@@ -33,24 +73,27 @@
         @apply focus:outline-none focus:ring-2 focus:ring-green-400;
     }
     .send_but {
-        @apply bg-orange-400 hover:bg-orange-500 transition rounded-lg;
+        @apply bg-orange-400;
+        @apply hover:bg-orange-500 transition;
+        @apply rounded-lg;
         @apply px-6 py-2;
     }
 
-    .display_Msg {
-        @apply bg-gray-300 ;
-        @apply px-4 py-2 my-2;
-        @apply rounded-sm;
+    /* 88888888888888888888888888888888888888888888888888 */
+    .box_search {
+        @apply bg-red-300;
+        @apply h-13;
+        @apply py-1 px-1;
+        @apply rounded-tl-lg;
+        @apply bg-yellow-600;
+
     }
     .search {
-        @apply
-        w-full py-2 px-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
-
-        /* mx-2
-         border 
-        border-red-500 /* couleur du contour */
-        /* bg-yellow-700  *//* couleur interieur */
-        /* bg-gray-600 h-10 rounded-lg */ 
         
+        @apply bg-gray-400;
+        @apply h-full w-full;
+        @apply border border-gray-300;
+        @apply rounded-md;
+        @apply focus:outline-none focus:ring-2 focus:ring-green-400;        
     }
 }

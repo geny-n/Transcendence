@@ -24,4 +24,50 @@ model User {
 	createdAt		DateTime	@default(now())
 	isOnline		Boolean		@default(false)
 	refreshToken	String?		@db.Text
+
+	// Relations
+	sentFriendRequests		Friendship[]	@relation("sender")
+	receivedFriendRequests	Friendship[]	@relation("receiver")
+
+	// Pour recuperer facilement tous les amis
+	friendshipAsUser1	Friend[]	@relation("user1")
+	friendshipAsUser2	Friend[]	@relation("user2")
+}
+
+// Table pour les demandes d'amitie EN ATTENTE
+model Friendship {
+	id			String				@id @default(uuid())
+	senderId	String
+	receiverId	String
+	status		FriendRequestStatus	@default(PENDING) // PENDING, ACCEPTED, REJECTED, BLOCKED
+	createdAt	DateTime			@default(now())
+	updateAt	DateTime			@updatedAt
+
+	// Relations
+	sender		User	@relation("sender", fields: [senderId], references: [id])
+	receiver	User	@relation("receiver", fields: [receiverId], references: [id])
+
+	// Empeche les doublons
+	@@unique([senderId, receiverId])
+	@@unique([receiverId, senderId])
+}
+
+// Table separee pour les amities CONFIRMEES
+model Friend {
+	id			String		@id @default(uuid())
+	user1Id		String
+	user2Id		String
+	createdAt	DateTime	@default(now())
+
+	user1	User	@relation("user1", fields: [user1Id], references: [id])
+	user2	User	@relation("user2", fields: [user2Id	], references: [id])
+
+	@@unique([user1Id, user2Id])
+}
+
+enum FriendRequestStatus {
+	PENDING
+	ACCEPTED
+	REJECTED
+	BLOCKED
 }

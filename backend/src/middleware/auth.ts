@@ -1,12 +1,8 @@
 import type { NextFunction, Request, response, Response } from "express";
-import type { AuthentificatedRequest } from "../dtos/AuthenticatedRequest.dto.js";
 import { verifyToken } from "../utils/helpers.js";
+import prisma from "../lib/prisma.js";
 
-export async function authenticateToken(
-	request: AuthentificatedRequest,
-	response: Response,
-	next: NextFunction
-) {
+export const authenticateToken = async (request: Request, response: Response, next: NextFunction) => {
 	// Chercher le token dans les cookies ou le header
 	const token = request.cookies?.access_token;
 	console.log("Inside authenticateToken: token:", token);
@@ -30,6 +26,26 @@ export async function authenticateToken(
 	}
 
 	// ajouter l'ID de l'utilisateur a la requete
-	request.userId = decoded.userId;
+	try {
+		const user = await prisma.user.findFirst({
+			where : { id: decoded.userId }
+		})
+		console.log("user:", user);
+
+		if (!user) {
+			return response.status(401).json({
+				success: false,
+				message: "User not found"
+			});
+		}
+		
+		request.user = user;
+	} catch (error) {
+		console.error("Login error:", error);
+		return response.status(500).json({
+			success: false,
+			message: "Server error during authentification"
+		});	
+	}
 	next();
-}
+};

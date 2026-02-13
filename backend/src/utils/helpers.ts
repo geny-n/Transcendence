@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
+import prisma from "../lib/prisma.js";
 
 const saltRounds = 10;
 const JWT_ACCESS_SECRET = process.env.ACCESS_TOKEN_SECRET || "D@O3)mqj?gj8]kbUE=pRPB#hK(SadE]^:]ebg^/O3m_";
@@ -38,4 +39,18 @@ export const verifyToken = (token: string, isRefresh = false) : any => {
 	} catch (error) {
 		return null;
 	}
+}
+
+export const getAllFriendIds = async ( userId: string ): Promise<string[]> => {
+	const friend = await prisma.friend.findMany({
+		where: {
+			OR: [{ user1Id: userId }, { user2Id: userId }]
+		},
+		select: { user1Id: true, user2Id: true }
+	})
+	console.log("Inside getAllFriendIds:", friend);
+
+	return friend.map(f => 
+		f.user1Id === userId ? f.user2Id : f.user1Id
+	);
 }

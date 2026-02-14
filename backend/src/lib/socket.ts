@@ -3,7 +3,7 @@ import { Server, Socket } from "socket.io";
 import { socketAuth } from "../middleware/socketAuth.js";
 import cookieParser from "cookie-parser";
 import prisma from "./prisma.js";
-import { getAllFriendIds } from "../src/utils/helpers.js";
+import { getAllFriendIds } from "../utils/helpers.js";
 import { disconnectUser } from "../socket/disconnect.js";
 
 

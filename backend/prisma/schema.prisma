@@ -29,9 +29,6 @@ model User {
 	sentFriendRequests		Friendship[]	@relation("sender")
 	receivedFriendRequests	Friendship[]	@relation("receiver")
 
-	messageSent     Message[] @relation("SentMessages")
-  	messageReceive  Message[] @relation("ReceivedMessages")
-
 	// Pour recuperer facilement tous les amis
 	friendshipAsUser1	Friend[]	@relation("user1")
 	friendshipAsUser2	Friend[]	@relation("user2")
@@ -73,14 +70,4 @@ enum FriendRequestStatus {
 	ACCEPTED
 	REJECTED
 	BLOCKED
-}
-
-model Message {
-  id          Int       @id @default(autoincrement())
-  text        String
-  senderId    String
-  receiverId  String
-  createdAt   DateTime  @default(now())
-  sender      User      @relation("SentMessages", fields: [senderId], references: [id])
-  receiver    User      @relation("ReceivedMessages", fields: [receiverId], references: [id])
 }

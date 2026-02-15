@@ -126,14 +126,14 @@ export const loginUser = asyncHandler(async (request: Request, response: Respons
 	// Configurer les cookies
 	response.cookie("access_token", accessToken, {
 		httpOnly: true,
-		secure: process.env.NODE_ENV === "production",
+		secure: true,
 		sameSite: "lax",
 		maxAge: 15 * 60 * 1000
 	})
 
 	response.cookie("refresh_token", refreshToken, {
 		httpOnly: true,
-		secure: process.env.NODE_ENV === "production",
+		secure: true,
 		sameSite: "lax",
 		maxAge: 7 * 24 * 60 * 60 * 1000
 	});
@@ -218,14 +218,14 @@ export const authHandler = asyncHandler(async (request: Request, response: Respo
 	// Set cookies et rediriger
 	response.cookie("access_token", accessToken, {
 		httpOnly: true,
-		secure: process.env.NODE_ENV === "production",
+		secure: true,
 		sameSite: "lax",
 		maxAge: 15 * 60 * 1000
 	})
 
 	response.cookie("refresh_token", refreshToken, {
 		httpOnly: true,
-		secure: process.env.NODE_ENV === "production",
+		secure: true,
 		sameSite: "lax",
 		maxAge: 7 * 24 * 60 * 60 * 1000
 	});

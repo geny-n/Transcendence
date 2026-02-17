@@ -5,7 +5,7 @@ const options = {
     timeout: 2000,
     host: "localhost",
     port: process.env.PORT || 3100,
-    path: "/api/health",
+    path: "/health",
     key: fs.readFileSync('/etc/ssl/private/backend-selfsigned.key'),
     cert: fs.readFileSync('/etc/ssl/certs/backend-selfsigned.crt')
 };

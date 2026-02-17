@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import prisma from "./prisma.js";
 import { getAllFriendIds } from "../utils/helpers.js";
 import { disconnectUser } from "../socket/disconnect.js";
+import { PongSocketHandlers } from "../socket/pongHandlers.js";
 
 
 let io: Server;
@@ -50,12 +51,18 @@ export const initSocket = (HttpServer: HttpServer) => {
 		}
 	});
 
-	// Middleware
+	// Middleware pour les connexions principales (authentifiées)
 	io.engine.use(cookieParser());
 	io.use(socketAuth);
 
 	// Gestion de connexion principale
 	io.on("connection", onConnection);
+
+	// Namespace séparé pour le Pong (sans authentification)
+	const pongNamespace = io.of('/pong');
+	const pongHandlers = new PongSocketHandlers();
+	pongHandlers.setupHandlers(pongNamespace);
+	console.log('Pong Multijoueur handlers initialized on /pong namespace');
 
 	return io;
 }

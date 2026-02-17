@@ -40,7 +40,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use('/avatars', express.static(path.join(__dirname, 'public/avatars')));
 app.use(passport.initialize());
-app.use('/api', routes);
+app.use(routes);
 app.use(errorHandler);
 
 try {

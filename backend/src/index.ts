@@ -7,7 +7,8 @@ import passport from 'passport';
 import './strategies/42-strategy.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { createServer } from 'node:https';
+import { createServer as createHttpsServer } from 'node:https';
+import { createServer as createHttpServer } from 'node:http';
 import fs from 'fs';
 import { initSocket } from './lib/socket.js';
 import { apiLimiter } from './middleware/rateLimit.js';
@@ -18,14 +19,30 @@ dotenv.config();
 
 // Initialiser Express
 const app = express();
-const options = {
-  key: fs.readFileSync('/etc/ssl/private/backend-selfsigned.key'),
-  cert: fs.readFileSync('/etc/ssl/certs/backend-selfsigned.crt'),
-};
-const httpsServer = createServer(options, app);
+
+// Utiliser HTTP en développement si les certificats SSL n'existent pas
+let server;
+const sslKeyPath = '/etc/ssl/private/backend-selfsigned.key';
+const sslCertPath = '/etc/ssl/certs/backend-selfsigned.crt';
+
+try {
+  if (fs.existsSync(sslKeyPath) && fs.existsSync(sslCertPath)) {
+    const options = {
+      key: fs.readFileSync(sslKeyPath),
+      cert: fs.readFileSync(sslCertPath),
+    };
+    server = createHttpsServer(options, app);
+    console.log('🔒 HTTPS mode enabled');
+  } else {
+    throw new Error('SSL certificates not found');
+  }
+} catch (error) {
+  server = createHttpServer(app);
+  console.log('🔓 HTTP mode enabled (development)');
+}
 
 // Initialise Socket.io
-initSocket(httpsServer);
+initSocket(server);
 
 const PORT = process.env.PORT || 3100;
 const __filename = fileURLToPath(import.meta.url);
@@ -47,8 +64,9 @@ try {
 	prisma.$connect();
 	console.log('Database connected');
 
-	httpsServer.listen(PORT, () => {
+	server.listen(PORT, () => {
 		console.log(`Server is running on http://localhost:${PORT}`);
+		console.log('Pong Multijoueur ready! 🎮');
 	});
 } catch (error) {
 	console.log('Failed to start server:', error);

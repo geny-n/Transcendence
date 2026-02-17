@@ -7,7 +7,8 @@ import passport from 'passport';
 import './strategies/42-strategy.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { createServer } from 'http';
+import { createServer } from 'node:https';
+import fs from 'fs';
 import { initSocket } from './lib/socket.js';
 import { apiLimiter } from './middleware/rateLimit.js';
 import { errorHandler } from './middleware/errorHandlers.js';
@@ -17,10 +18,14 @@ dotenv.config();
 
 // Initialiser Express
 const app = express();
-const httpServer = createServer(app);
+const options = {
+  key: fs.readFileSync('/etc/ssl/private/backend-selfsigned.key'),
+  cert: fs.readFileSync('/etc/ssl/certs/backend-selfsigned.crt'),
+};
+const httpsServer = createServer(options, app);
 
 // Initialise Socket.io
-initSocket(httpServer);
+initSocket(httpsServer);
 
 const PORT = process.env.PORT || 3100;
 const __filename = fileURLToPath(import.meta.url);
@@ -35,14 +40,14 @@ app.use(express.json());
 app.use(cookieParser());
 app.use('/avatars', express.static(path.join(__dirname, 'public/avatars')));
 app.use(passport.initialize());
-app.use(routes);
+app.use('/api', routes);
 app.use(errorHandler);
 
 try {
 	prisma.$connect();
 	console.log('Database connected');
 
-	httpServer.listen(PORT, () => {
+	httpsServer.listen(PORT, () => {
 		console.log(`Server is running on http://localhost:${PORT}`);
 	});
 } catch (error) {

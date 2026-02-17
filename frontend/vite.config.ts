@@ -8,4 +8,14 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  //for axios, does not connect because not the same domain (3100 != 1443)
+  server: {
+    proxy: {
+      '/api/register': {
+        target: 'https://localhost:1443',
+        changeOrigin: true,
+        // secure: false,
+      }
+    }
+  }
 })

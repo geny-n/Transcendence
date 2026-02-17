@@ -1,17 +1,18 @@
-import { useState } from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
-import { useForm } from 'react-hook-form'
-import type { FieldValues } from 'react-hook-form'
+import { useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import type { FieldValues } from 'react-hook-form';
 import { CgProfile } from "react-icons/cg";
 import { CiMail, CiLock } from "react-icons/ci"; // mail && lock icon
 import { LuEye,LuEyeClosed } from "react-icons/lu"; //eyes icon
 import { Si42 } from "react-icons/si"; //42 icon
 import { FaGithub } from "react-icons/fa"; // github icon
 import { FcGoogle } from "react-icons/fc"; //google icon
-import logo from '../assets/logo.png'
-import { zodResolver } from '@hookform/resolvers/zod'
+import logo from '../assets/logo.png';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { type T_inscriptionForm, inscriptionForm } from '../lib/types';
-import "./style/login.css"
+import axios  from '../api/axios';
+import "./style/login.css";
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -21,6 +22,8 @@ const Register = () => {
   const ConfirmPassVisibility = () => setShowConfirmPass(!showConfirmPass);
 
   const navigate = useNavigate();
+  const register_url = '/api/register';
+  // const register_url = 'http://localhost:3100/register';
 
   const {
     register,
@@ -31,9 +34,30 @@ const Register = () => {
   });
 
   const onSubmit = async (data: FieldValues) => {
-    console.log("Form data :", data);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    navigate("/login")
+    console.log("Form data2 :", data);
+    const username = data.username;
+    const email = data.email;
+    const password = data.password;
+    try{
+      // const response = await axios.post(register_url,
+      //   JSON.stringify({username, email, password}),
+      //   {
+      //     headers: { 'Content-Type': 'application/json'},
+      //     withCredentials : true
+      //   });
+      const response = await axios.post(
+        register_url,
+        { username, email, password },
+        { withCredentials: true }
+      );
+        console.log(response.data);
+        // console.log(response.accessToken)
+        console.log(JSON.stringify(response))
+        //setSuccess(true));
+        navigate("/login")
+    }catch(err){
+      console.log("erreur connexion", err);
+      }
   }
   
   return (

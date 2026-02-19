@@ -13,8 +13,6 @@ import { type T_connexionForm, connexionForm } from '../lib/types';
 import axios from "axios";
 import "./style/login.css";
 
-//voir a ajouter zod pour le formulaire
-
 const Login = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const passwordVisibility = () => setShowPassword(!showPassword);
@@ -22,7 +20,7 @@ const Login = () => {
   const [errMsg, setErrMsg] = useState<string>('')
 
   const navigate = useNavigate();
-  const register_url = '/api/login';
+  const login_url = '/api/login';
 
   const {
     register,
@@ -38,7 +36,7 @@ const Login = () => {
     const password = data.password;
     try{
       const response = await axios.post(
-        register_url,
+        login_url,
         { email, password },
         { withCredentials: true }
       );
@@ -53,7 +51,10 @@ const Login = () => {
         {
           console.log("Backend error: ", err.response.data);
           console.log("Status: ", err.response.status);
-          setErrMsg(err.response.data.message);
+          if (err.response.status == 401)
+            setErrMsg("Incorrect email ou mot de passe");
+          else 
+            setErrMsg("Serveur Indisponible");
         }
       }
     }

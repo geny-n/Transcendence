@@ -5,7 +5,6 @@ import { loginSchema, registerUsersSchema } from "../utils/validationSchema.js";
 import { authenticateToken } from "../middleware/auth.js";
 import passport from "passport";
 import { authLimiter } from "../middleware/rateLimit.js";
-import { asyncHandler } from "../utils/asyncHandlers.js";
 
 const router = Router();
 

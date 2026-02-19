@@ -3,8 +3,8 @@ import jwt from 'jsonwebtoken';
 import prisma from "../lib/prisma.js";
 
 const saltRounds = 10;
-const JWT_ACCESS_SECRET = process.env.ACCESS_TOKEN_SECRET || "D@O3)mqj?gj8]kbUE=pRPB#hK(SadE]^:]ebg^/O3m_";
-const JWT_REFRESH_SECRET = process.env.REFRESH_TOKEN_SECRET || "[/}%uC:5U!dCJu.67/{Q}Q9V@.V/_tu>3mL$0%5P32A";
+const JWT_ACCESS_SECRET = process.env.ACCESS_TOKEN_SECRET!;
+const JWT_REFRESH_SECRET = process.env.REFRESH_TOKEN_SECRET!;
 
 export const hashPassword = (password: string) : string => {
 	const salt = bcrypt.genSaltSync(saltRounds)
@@ -50,7 +50,7 @@ export const getAllFriendIds = async ( userId: string ): Promise<string[]> => {
 	})
 	console.log("Inside getAllFriendIds:", friend);
 
-	return friend.map(f => 
+	return friend.map((f: { user1Id: string; user2Id: string; }) => 
 		f.user1Id === userId ? f.user2Id : f.user1Id
 	);
 }

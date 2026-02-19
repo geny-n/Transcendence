@@ -1,35 +1,65 @@
-import { useState } from 'react'
-import { NavLink } from 'react-router-dom'
-import { useForm } from 'react-hook-form'
+import { useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import type { FieldValues } from 'react-hook-form';
 import { CiMail, CiLock } from "react-icons/ci"; // mail && lock icon
 import { LuEye,LuEyeClosed } from "react-icons/lu"; //eyes icon
 import { Si42 } from "react-icons/si"; //42 icon
 import { FaGithub } from "react-icons/fa"; // github icon
 import { FcGoogle } from "react-icons/fc"; //google icon
-import logo from '../assets/logo.png'
-import "./style/login.css"
+import logo from '../assets/logo.png';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { type T_connexionForm, connexionForm } from '../lib/types';
+import axios from "axios";
+import "./style/login.css";
 
 //voir a ajouter zod pour le formulaire
 
-const login = () => {
-  const [showPassword, setShowPassword] = useState<boolean>(false); //creates getter/setter and sets to them to bool false
-  const passwordVisibility = () => setShowPassword(!showPassword); //ft to set showPassword to true or false
+const Login = () => {
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const passwordVisibility = () => setShowPassword(!showPassword);
+
+  const [errMsg, setErrMsg] = useState<string>('')
+
+  const navigate = useNavigate();
+  const register_url = '/api/login';
 
   const {
     register,
     handleSubmit,
-    formState : { errors }
-  } = useForm({
-    defaultValues : {
-      email : "",
-      password : ""
-    }
+    formState : { errors, isSubmitting }
+  } = useForm<T_connexionForm>({
+    resolver: zodResolver(connexionForm),
   });
 
+  const onSubmit = async (data: FieldValues) => {
+    console.log("Connexion data: ", data);
+    const email = data.email;
+    const password = data.password;
+    try{
+      const response = await axios.post(
+        register_url,
+        { email, password },
+        { withCredentials: true }
+      );
+      console.log(response.data);
+      console.log(response.data.status);
+      setErrMsg("");
+      navigate("/");
+    }catch(err){
+      if (axios.isAxiosError(err))
+      {
+        if (err.response)
+        {
+          console.log("Backend error: ", err.response.data);
+          console.log("Status: ", err.response.status);
+          setErrMsg(err.response.data.message);
+        }
+      }
+    }
+  }
   return (
-    <form onSubmit={handleSubmit((data) => {
-      alert(JSON.stringify(data));
-    })}
+    <form onSubmit={handleSubmit(onSubmit)}
       className="w-full h-screen flex items-center justify-center">
       <div className="form-box">
 
@@ -43,16 +73,16 @@ const login = () => {
         <div className="w-full flex flex-col gap-3">
           <div className="icon-field">
             <CiMail />
-            <input {...(register("email", {required: true}))}
+            <input {...(register("email"))}
             type="email"
             placeholder="Adresse mail"
             className="input-field w-full"/>
           </div>
-          {errors.email && <p className="text-left text-red-500 text-xs">Ce champ est requis</p>}
+          {errors.email && <p className="text-left text-red-500 text-xs"> {`${errors.email.message}`}</p>}
 
           <div className="icon-field">
             <CiLock />
-            <input {...register("password", {required: true})} 
+            <input {...register("password")} 
             type={showPassword ? "text" : "password"}
             placeholder="Mot de passe"
             className="input-field w-5/6"/>
@@ -65,10 +95,12 @@ const login = () => {
               onClick={passwordVisibility}/>
             )}
           </div>
-          {errors.password && <p className="text-left text-red-500 text-xs">Ce champ est requis</p>}
+          {errors.password && <p className="text-left text-red-500 text-xs">{`${errors.password.message}`}</p>}
         </div>
+        
+        {errMsg && <p className="text-center text-red-500 text-xs"> {`${errMsg}`} </p>}
 
-        <button type="submit" className="btn-sign">Connexion</button>
+        <button disabled={isSubmitting} type="submit" className="btn-sign">Connexion</button>
 
         <div className="relative w-full flex items-center justify-between py-3">
           <div className="icon-btn">
@@ -81,10 +113,9 @@ const login = () => {
             <FcGoogle className="text-lg md:text-xl"/>
           </div>
         </div>
-
       </div>
     </form>
   );
 }
 
-export default login
+export default Login

@@ -156,35 +156,43 @@ export const loginUser = asyncHandler(async (request: Request, response: Respons
 
 export const logoutUser = asyncHandler(async (request: Request, response: Response) => {
 	const io = getIO();
-	const cookie = request.cookies?.access_token;
-	console.log("Inside logoutUser: cookie:", cookie);
+	const user = request.user!;
+	console.log("Inside logoutUser: user:", user);
 
-	if (!cookie) {
-		return response.status(401).json({
-			success: false,
-			message: "Access denied. Token missing."
+	const friendsIds = await getAllFriendIds(user.id);
+	console.log("friendsIds:", friendsIds);
+
+	await prisma.user.update({
+		where : { id: user.id },
+		data: {
+			refreshToken: null,
+			isOnline: false,
+		},
+	});
+
+	friendsIds.forEach(friendsId => {
+		io.to(`user:${friendsId}`).emit('friend:status_changed', {
+			userId: user.id,
+			isOnline: false,
 		});
-	}
+	});
 
-	else if (request.user) {
-		const friends = await getAllFriendIds(request.user.id);
+	response.clearCookie('access_token', {
+		httpOnly: true,
+		secure: process.env.NODE_ENV === "production",
+		sameSite: "lax",		
+	});
 
-		await prisma.user.update({
-			where: { id: request.user.id },
-			data: { refreshToken: null, isOnline: false }
-		});
+	response.clearCookie('refresh_token', {
+		httpOnly: true,
+		secure: process.env.NODE_ENV === "production",
+		sameSite: "lax",
+	});
 
-		friends.forEach(friendId => {
-			io.to(`user:${friendId}`).emit('friend:status_changed', {
-				userId: request.user?.id,
-				isOnline: false
-			});
-		});		
-	}
-
-	response.clearCookie('access_token');
-	response.clearCookie('refresh_token');
-	return response.redirect('/');
+	return response.status(200).json({
+		success: true,
+		message: 'Logged out successfully',
+	});
 });
 
 export const authHandler = asyncHandler(async (request: Request, response: Response) => {

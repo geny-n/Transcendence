@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { generateAccessToken, verifyToken } from "../utils/helpers.js";
+import { generateAccessToken, generateRefreshToken, verifyToken } from "../utils/helpers.js";
 import prisma from "../lib/prisma.js";
 import { asyncHandler } from "../utils/asyncHandlers.js";
 
@@ -42,9 +42,17 @@ export const refreshTokens = asyncHandler(async (request: Request, response: Res
 		});
 	}
 
-	// Generer un NOUVEL access token
+	// Generer un NOUVEL access token et refresh token
 	const newAccessToken = generateAccessToken(user.id);
 	console.log("newAccessToken:", newAccessToken);
+
+	const newRefreshToken = generateRefreshToken(user.id);
+	console.log("newAccessToken:", newAccessToken);
+
+	await prisma.user.update({
+		where : { id: user.id },
+		data: { refreshToken: newRefreshToken }
+	})
 
 	// Renvoyer le nouveau token
 	response.cookie("access_token", newAccessToken, {
@@ -54,8 +62,16 @@ export const refreshTokens = asyncHandler(async (request: Request, response: Res
 		maxAge: 15 * 60 * 1000
 	});
 
+	response.cookie("refresh_token",newRefreshToken, {
+		httpOnly: true,
+		secure: process.env.NODE_ENV === "production",
+		sameSite: "lax",
+		maxAge: 15 * 60 * 1000
+	});
+
 	return response.status(200).json({
 		success: true,
-		accessToken: newAccessToken
+		accessToken: newAccessToken,
+		refreshToken: newRefreshToken
 	});
 });

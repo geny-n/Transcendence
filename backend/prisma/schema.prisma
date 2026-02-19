@@ -11,6 +11,7 @@ generator client {
 
 datasource db {
 	provider = "mysql"
+	// url      = "mysql://root:root@localhost:3306/mydb"
 }
 
 // schema.prisma
@@ -20,7 +21,7 @@ model User {
 	password		String?		// Nullable pour OAuth users rajouter ? a la fin pour ca
 	username		String		@unique
 	fortyTwoId		String?		@unique
-	avatarUrl		String?		@default("default_avatar.png")
+	avatarUrl		String?		@default("/avatars/default_avatar.png")
 	createdAt		DateTime	@default(now())
 	isOnline		Boolean		@default(false)
 	refreshToken	String?		@db.Text

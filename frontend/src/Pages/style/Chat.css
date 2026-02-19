@@ -2,7 +2,7 @@
 
 @layer components
 {
-    .all_screan {
+    .all_chat_screen {
         @apply h-screen pt-25 pb-5;
     }
     .chat_screen {/* plus besoin de la couleur */

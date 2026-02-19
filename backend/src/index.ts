@@ -14,7 +14,6 @@ import { errorHandler } from './middleware/errorHandlers.js';
 
 // Charger les variables d'environnement
 dotenv.config();
-
 // Initialiser Express
 const app = express();
 const httpServer = createServer(app);

@@ -102,3 +102,39 @@ SELECT
 FROM Friend f
 JOIN User u1 ON f.user1Id = u1.id
 JOIN User u2 ON f.user2Id = u2.id;
+
+
+
+
+-------------------------------------------------------------------------
+
+
+
+-- 1. Supprimer les anciennes données (optionnel)
+DELETE FROM Friend WHERE user1Id IN (SELECT id FROM User WHERE username IN ('alice', 'bea', 'tom'));
+DELETE FROM User WHERE username IN ('alice', 'bea', 'tom');
+
+-- 2. Créer les utilisateurs (avec hash bcrypt réel pour le mot de passe "Alice123!")
+INSERT INTO User (id, username, email, password, avatarUrl, isOnline, createdAt) VALUES
+  (UUID(), 'alice', 'alice@test.com', '$2b$10$tMs7oWy14aeuRIjKiT8m0O8A1yBNFjNqxhh9Q.EU8EYzfDYjQvLYW', 'default_avatar.png', 1, NOW()),
+  (UUID(), 'bea', 'bea@test.com', '$2b$10$tMs7oWy14aeuRIjKiT8m0O8A1yBNFjNqxhh9Q.EU8EYzfDYjQvLYW', 'default_avatar.png', 1, NOW()),
+  (UUID(), 'tom', 'tom@test.com', '$2b$10$tMs7oWy14aeuRIjKiT8m0O8A1yBNFjNqxhh9Q.EU8EYzfDYjQvLYW', 'default_avatar.png', 1, NOW());
+
+-- 3. Récupérer les IDs
+SET @alice_id = (SELECT id FROM User WHERE username='alice' LIMIT 1);
+SET @bea_id = (SELECT id FROM User WHERE username='bea' LIMIT 1);
+SET @tom_id = (SELECT id FROM User WHERE username='tom' LIMIT 1);
+
+-- 4. Vérifier que les IDs existent
+SELECT 
+  @alice_id AS alice_id, 
+  @bea_id AS bea_c
+-- 8. Voir les amis d'Alice (format lisible)
+SELECT 
+  u1.username AS utilisateur,
+  u2.username AS ami,
+  u2.isOnline AS en_ligne
+FROM Friend f
+JOIN User u1 ON f.user1Id = u1.id
+JOIN User u2 ON f.user2Id = u2.id
+WHERE u1.username = 'alice';

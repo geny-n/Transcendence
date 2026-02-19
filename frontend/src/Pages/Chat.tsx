@@ -1,4 +1,4 @@
-import { useState,  } from 'react';
+import { useState  } from 'react';
 import './style/Chat.css'
 import defaultpp from '/pp/default.jpg'
 
@@ -29,7 +29,7 @@ export default function Chat ()
   const [selectFriend, setSelectFriend] = useState(mockFriends[0]);
 
     return (
-      <div className="all_screan"> {/* toute la zone*/}
+      <div className="all_chat_screen"> {/* toute la zone*/}
         <div className="chat_screen">
           <div className="flex flex-col w-1/3"> {/* partie gauche */}
 

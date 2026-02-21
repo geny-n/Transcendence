@@ -8,7 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 console.log("Inside upload.ts __filename:", __filename);
 
 const __dirname = path.dirname(__filename);
-console.log("__dirname:", __filename);
+console.log("__dirname:", __dirname);
 
 const storage = multer.memoryStorage();
 
@@ -45,17 +45,17 @@ export const resizeAvatar = async (request:Request, response:Response, next: Nex
 	}
 
 	try {
-		const outputPath = path.join(__dirname, '../public/avatars', request.file.filename);
+		request.file.filenameForMemoryStorage = request.file.fieldname + '-' + Date.now() + '-' + Math.round(Math.random() * 1E9) + path.extname(request.file.originalname);
+		const outputPath = path.join(__dirname, '../public/avatars', request.file.filenameForMemoryStorage);
 		console.log("Inside resizeAvatar outputPath:", outputPath);
 
-		await sharp(request.file.buffer)
+		await sharp(request.file.buffer, { animated: true })
 			.resize({
 				width: 512,
 				height: 512,
 				fit: 'fill',
 				withoutEnlargement: true
 			})
-			.jpeg({ quality: 85 })
 			.toFile(outputPath);
 
 		next();

@@ -33,19 +33,19 @@ export const authenticateToken = async (request: Request, response: Response, ne
 		console.log("user:", user);
 
 		if (!user) {
-			return response.status(401).json({
+			return response.status(404).json({
 				success: false,
 				message: "User not found"
 			});
 		}
-		
+
 		request.user = user;
 	} catch (error) {
 		console.error("Login error:", error);
 		return response.status(500).json({
 			success: false,
 			message: "Server error during authentification"
-		});	
+		});
 	}
 	next();
 };

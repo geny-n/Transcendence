@@ -35,7 +35,18 @@ export const refreshTokens = asyncHandler(async (request: Request, response: Res
 	});
 	console.log("user:", user);
 
-	if (!user || user.refreshToken !== refreshToken) {
+	if (!user) {
+		return response.status(404).json({
+			success: false,
+			message: "User not found"
+		});
+	}
+
+	if (user.refreshToken !== refreshToken) {
+		await prisma.user.update({
+			where : { id: user.id },
+			data : { isOnline: false }
+		});
 		return response.status(403).json({
 			success: false,
 			message: "Refresh token revoked"
@@ -66,7 +77,7 @@ export const refreshTokens = asyncHandler(async (request: Request, response: Res
 		httpOnly: true,
 		secure: process.env.NODE_ENV === "production",
 		sameSite: "lax",
-		maxAge: 15 * 60 * 1000
+		maxAge: 7 * 24 * 60 * 60 * 1000
 	});
 
 	return response.status(200).json({

@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { type NextFunction, type Request, type Response } from 'express';
 import routes from './routes/index.js';
 import prisma from './lib/prisma.js';
 import dotenv from 'dotenv';
@@ -43,7 +43,7 @@ const __filename = fileURLToPath(import.meta.url);
 console.log("Inside ../src/index.ts __filename:", __filename);
 
 const __dirname = path.dirname(__filename);
-console.log("__dirname:", __filename);
+console.log("__dirname:", __dirname);
 
 // Middlewares
 app.use(helmet());

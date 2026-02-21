@@ -94,6 +94,13 @@ export const friendRequestAction = asyncHandler(async (request:Request, response
 	const result = validationResult(request);
 	console.log("Result:", result);
 
+	if (!result.isEmpty()) {
+		return response.status(400).json({
+			success: false,
+			errors: result.array()
+		});
+	}
+
 	const requestId = request.params.id;
 	console.log("requestId:", requestId);
 
@@ -276,7 +283,7 @@ export const getFriendList = asyncHandler(async (request:Request, response:Respo
 			message: "No user found after authentication"
 		});
 	}
-	
+
 	const userId = request.user.id;
 	console.log("Inside getFriendList: userId:", userId);
 

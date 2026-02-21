@@ -18,7 +18,7 @@ export const comparePassword = (plain: string, hashed: string) : boolean => {
 export const generateAccessToken = (userId: string) : string  => {
 	return jwt.sign(
 		{ userId, type: "access" },
-		JWT_ACCESS_SECRET, 
+		JWT_ACCESS_SECRET,
 		{ expiresIn: "15m", }
 	);
 }
@@ -50,7 +50,7 @@ export const getAllFriendIds = async ( userId: string ): Promise<string[]> => {
 	})
 	console.log("Inside getAllFriendIds:", friend);
 
-	return friend.map((f: { user1Id: string; user2Id: string; }) => 
+	return friend.map((f: { user1Id: string; user2Id: string; }) =>
 		f.user1Id === userId ? f.user2Id : f.user1Id
 	);
 }

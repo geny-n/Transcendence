@@ -1,39 +1,24 @@
-# Backend ft_transcendence - Documentation
+FORMAT: 1A
+HOST: http://localhost:1443/api
 
 ## Aperçu
 Serveur Express.js + Prisma (MySQL/MariaDB) suivant le pattern **routes → handlers → Prisma**.
 
-**Endpoints principaux** :
-- `POST /register`
-- `POST /login`
-- `GET /logout` (protégé)
-- `POST /refresh`
-- `GET /health`
-
-## Installation & Démarrage
-1. Copier `.env` → `.env`
-2. `docker compose -f 'docker-compose.yml' up -d --build`
-
 ## Concepts clés & Explications
 
 ### Qu’est-ce que fait le backend ?
-Le backend reçoit des requêtes HTTP, traite la requêtes, interagit avec la base de données et renvoie des réponses JSON.  
-Contrairement au frontend (qui affiche des pages), le backend rend l’application **dynamique** : gestion des utilisateurs, authentification, stockage des données, etc.
-
-### Comment les requêtes arrivent-elles ?
-- Le serveur écoute sur un port (`app.listen(PORT)`)
-- `app.use(express.json())` permet de recevoir des bodies au format JSON
-- Les routes définissent les chemins (`/register`, `/login`, etc.)
+Le backend reçoit des requêtes HTTP, traite les requêtes, interagit avec la base de données et renvoie des réponses JSON.
+Le backend rend l’application **dynamique** : gestion des utilisateurs, authentification, stockage des données, etc.
 
 ### Pourquoi utiliser des tokens JWT ?
-Pour savoir si un utilisateur est connecté sans stocker de session côté serveur.  
+Pour savoir si un utilisateur est connecté sans stocker de session côté serveur.
 Quand l’utilisateur se connecte :
 - On génère **deux tokens** :
   - **access_token** → durée courte (15 minutes) → utilisé pour toutes les requêtes authentifiées
   - **refresh_token** → durée longue (7 jours) → stocké en base (`User.refreshToken`) et dans un cookie httpOnly
 
-**Pourquoi deux tokens ?**  
-Un token unique long serait dangereux : s’il est volé, l’attaquant garde l’accès indéfiniment.  
+**Pourquoi deux tokens ?**
+Un token unique long serait dangereux : s’il est volé, l’attaquant garde l’accès indéfiniment.
 Avec un access token court, même en cas de vol, l’accès expire rapidement. Le refresh token permet de renouveler l’access token sans forcer une nouvelle connexion.
 
 ### Flux de rafraîchissement
@@ -43,60 +28,79 @@ Avec un access token court, même en cas de vol, l’accès expire rapidement. L
 4. Si valide → nouveau access_token renvoyé (cookie + body)
 5. Si les deux tokens expirent → l’utilisateur doit se reconnecter
 
-### Sécurité
-- Cookies : `httpOnly: true`, `secure: true` (en production), `sameSite: lax`
-- Mots de passe : hashés avec bcrypt (10 rounds)
-- Validation des entrées : express-validator + schémas dédiés (`src/utils/validationSchema.ts`)
-- Middleware d’authentification : `authenticateToken` vérifie le cookie `access_token`
+## Register [/register]
 
-## Endpoints & Exemples
+### Inscription de l'utilisateur [POST]
 
-### POST /register
-Body :
-```json
-{
-  "email": "test@example.com",
-  "username": "testuser",
-  "password": "StrongPass123!"
-}
-```
-Réponse 201 :
-```json
-{
-  "success": true,
-  "user": {
-    "id": "uuid",
-    "email": "...",
-    "username": "...",
-    "createdAt": "2026-01-26T..."
-  }
-}
-```
+Pour créer un compte utilisateur il faut fournir dans un objet JSON un nom d'utilisateur ainsi que son email et un mot de passe
 
-### POST /login
-Body : email + password  
-Réponse 200 + cookies (access_token 15 min + refresh_token 7 jours) + body contenant le user et l’access_token.
++ Request (application/json)
 
-### POST /refresh
-Utilise le cookie refresh_token → renvoie un nouveau access_token.
+        {
+            "username": "user's username",
+            "email": "user's email",
+            "password": "user's password"
+        }
 
-### GET /logout (authentifié)
-Vide les cookies et met `isOnline: false`.
++ Response 200 (application/json)
 
-### GET /health
-```json
-{ "status": "OK" }
-```
+        {
+            "success": true,
+            "user": {
+                "id": "user's id",
+                "username": "user's username",
+                "email": "user's email",
+                "createdAt": "the date of creation of the user account"
+            }
+        }
 
-## Architecture
-- Routes : `src/routes/`
-- Handlers (traitement des requêtes) : `src/handlers/`
-- DTOs : `src/dtos/`
-- Prisma : `lib/prisma.ts`, schema dans `src/prisma/schema.prisma`
+## Login [/login]
 
-## Erreurs courantes
-- 400 → données invalides
-- 401 → token manquant
-- 403 → token invalide/expiré
-- 409 → email ou username déjà pris
-- 500 → erreur serveur
+### Connexion de l'utilisateur [POST]
+
+Pour se connecter il faut fournir dans un objet JSON un email et un mot de passe.
+ATTENTION cette procédure génère un access token
+
++ Request (application/json)
+
+        {
+            "email": "user's email",
+            "password": "user's password"
+        }
+
++ Response 200 (application/json)
+
+        {
+            "success": true,
+            "user": {
+                "id": "user's id",
+                "username": "user's username",
+                "email": "user's email",
+                "createdAt": "the date of creation of the user account"
+            },
+            "accessToken": "user's unique access token"
+        }
+
+## Logout [/logout]
+
+### Déconnexion de l'utilisateur [GET]
+
+Pour se déconnecter.
+ATTENTION cette procédure supprimera l'access token et le refresh token
+
++ Response 200 (application/json)
+
+        {
+            "success": true,
+            "message": "Logged out successfully"
+        }
+
+
+## OAuth 2.0 [/auth/42]
+
+### Connexion de l'utilisateur avec son compte 42 [GET]
+
+Cette procédure redirigera l'utilisateur vers une page d'autorisation pour la connexion ; une fois acceptée, il sera redirigé vers la page d'accueil.
+ATTENTION cette procédure générera l'access token et le refresh token
+
++ Response 302 (application/json)

@@ -23,6 +23,40 @@ export const getMyProfile = asyncHandler(async (request:Request, response:Respon
 	});
 });
 
+export const getUserProfile = asyncHandler(async (request:Request, response:Response) => {
+	const userId = request.params.id;
+	console.log('inside getUserProfile: UserId:', userId);
+
+	if (!userId || Array.isArray(userId)) {
+		return response.status(401).json({
+			success: false,
+			message: "Multiple ID or empty ID not allowed"
+		});
+	}
+
+	const user = await prisma.user.findFirst({
+		where: { id: userId },
+		omit: {
+			password: true,
+			refreshToken: true,
+			fortyTwoId: true
+		}
+	});
+	console.log('user:', user);
+
+	if (!user) {
+		return response.status(404).json({
+			success: false,
+			message: "User not found"
+		});
+	}
+
+	return response.status(200).json({
+		success: true,
+		user: user,
+	});
+});
+
 export const updateMyProfile = asyncHandler(async (request:Request, response:Response) => {
 	const result = validationResult(request);
 	console.log("Inside updateMyProfile: Result:", result);
@@ -49,7 +83,7 @@ export const updateMyProfile = asyncHandler(async (request:Request, response:Res
 		},
 	});
 	console.log("updateUser:", updateUser);
-	
+
 	const userWithoutPassword = {
 		id : updateUser.id,
 		username: updateUser.username,
@@ -76,8 +110,8 @@ export const changePassword = asyncHandler(async (request:Request, response:Resp
 	}
 
 	let { currentPassword, newPassword } = matchedData(request) as { currentPassword: string, newPassword: string };
-	console.log(`Change Password fields: currentPassword(${currentPassword}), newPassword(${newPassword})`);	
-	
+	console.log(`Change Password fields: currentPassword(${currentPassword}), newPassword(${newPassword})`);
+
 	if (!request.user || !request.user.password) {
 		throw new Error("No user found after authentication");
 	}
@@ -103,7 +137,7 @@ export const changePassword = asyncHandler(async (request:Request, response:Resp
 	return response.status(200).json({
 		success: true,
 		message: "Password updated successfully",
-	});		
+	});
 });
 
 export const changeAvatar = asyncHandler(async (request:Request, response:Response) => {
@@ -114,7 +148,7 @@ export const changeAvatar = asyncHandler(async (request:Request, response:Respon
 		});
 	}
 
-	const avatarUrl = `/avatars/${request.file.filename}`;
+	const avatarUrl = `/avatars/${request.file.filenameForMemoryStorage}`;
 	console.log('Inside changeAvatar avatarUrl:', avatarUrl);
 
 	const updateUser = await prisma.user.update({
@@ -160,12 +194,12 @@ export const searchUser = asyncHandler(async (request:Request, response:Response
 	console.log("findUser:", findUser);
 
 	if (!findUser) {
-		return response.status(401).json({
+		return response.status(404).json({
 			success: false,
 			message: "User not found."
 		})
 	}
-	
+
 	response.status(200).json({
 		success: true,
 		users: findUser,

@@ -1,9 +1,11 @@
-import type { Location } from "express-validator";
+import type { Location, Meta } from "express-validator";
+import prisma from "../lib/prisma.js";
 
 export const registerUsersSchema = {
 	email: {
 		trim: true,
 		escape: true,
+		normalizeEmail: true,
 		notEmpty: {
 			errorMessage: "A email is required."
 		},
@@ -47,6 +49,7 @@ export const loginSchema = {
 	email: {
 		trim: true,
 		escape: true,
+		normalizeEmail: true,
 		notEmpty: {
 			errorMessage: "A email is required."
 		},
@@ -77,12 +80,23 @@ export const updateProfileSchema = {
 		optional: true,
 		trim: true,
 		escape: true,
+		normalizeEmail: true,
 		isEmail: {
 			errorMessage : "Please enter a valid email."
+		},
+		custom: {
+			options: async (value:string, { req }: Meta) => {
+				if (!value) return true;
+				const existing = await prisma.user.findFirst({
+					where: { email: value, id: { not: req.user.id } }
+				});
+				if (existing) throw new Error("Email already in use");
+				return true;
+			}
 		}
 	},
 	username : {
-		optional: true,	
+		optional: true,
 		trim: true,
 		escape: true,
 		isLength: {
@@ -91,6 +105,16 @@ export const updateProfileSchema = {
 				max: 20,
 			},
 			errorMessage: "Between 3 and 20 characters"
+		},
+		custom: {
+			options: async (value:string, { req }: Meta) => {
+				if (!value) return true;
+				const existing = await prisma.user.findFirst({
+					where: { username: value, id: { not: req.user.id } }
+				});
+				if (existing) throw new Error("username already in use");
+				return true;
+			}
 		}
 	},
 };

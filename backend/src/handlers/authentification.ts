@@ -180,7 +180,7 @@ export const logoutUser = asyncHandler(async (request: Request, response: Respon
 	response.clearCookie('access_token', {
 		httpOnly: true,
 		secure: process.env.NODE_ENV === "production",
-		sameSite: "lax",		
+		sameSite: "lax",
 	});
 
 	response.clearCookie('refresh_token', {
@@ -212,8 +212,8 @@ export const authHandler = asyncHandler(async (request: Request, response: Respo
 	const accessToken = generateAccessToken(id);
 	console.log('accessToken:', accessToken);
 	const refreshToken = generateRefreshToken(id);
-	console.log('refreshToken:', refreshToken);	
-	
+	console.log('refreshToken:', refreshToken);
+
 	// Mettre a jour le refresh token en BDD
 	await prisma.user.update({
 		where : { id: id },
@@ -239,5 +239,5 @@ export const authHandler = asyncHandler(async (request: Request, response: Respo
 	});
 
 	// redirection frontend
-	return response.redirect("http://localhost:3100/health");
+	return response.redirect("http://localhost:3100/");
 });

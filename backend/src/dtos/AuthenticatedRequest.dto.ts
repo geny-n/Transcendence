@@ -9,9 +9,19 @@ declare module 'socket.io' {
 declare global {
 	namespace Express {
 		interface User extends PrismaUser {}
-		
+
 		interface request {
 			user?: User;
+		}
+	}
+}
+
+declare global {
+	namespace Express {
+		namespace Multer {
+			interface File {
+				filenameForMemoryStorage: string;
+			}
 		}
 	}
 }

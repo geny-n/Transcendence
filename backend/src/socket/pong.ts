@@ -123,6 +123,8 @@ function endGame(room: Room, winner: 1 | 2, io: Server): void {
 	room.state.winner = winner;
 	if (room.interval) { clearInterval(room.interval); room.interval = null; }
 	io.to(room.id).emit("pong:game_end", { winner, score: room.state.score });
+	// Nettoyer immédiatement pour que les joueurs puissent re-rejoindre la file
+	cleanupRoom(room);
 }
 
 // ─── Game Loop ──────────────────────────────────────────────────────────────────────────────
@@ -330,9 +332,14 @@ function handlePlayerLeave(socket: Socket, io: Server): void {
 		cancelDisconnectTimer(room, 2);
 		const loser: 1 | 2  = socket.id === room.player1SocketId ? 1 : 2;
 		const winner: 1 | 2 = loser === 1 ? 2 : 1;
+		// Notifier l'adversaire qu'il remporte par forfait
+		const opponentSocketId = loser === 1 ? room.player2SocketId : room.player1SocketId;
+		io.to(opponentSocketId).emit("pong:opponent_left");
 		endGame(room, winner, io);
+	} else {
+		// Partie déjà terminée : juste nettoyer si ce n'est pas encore fait
+		cleanupRoom(room);
 	}
-	cleanupRoom(room);
 }
 
 // Déconnexion réseau → timer d'attente

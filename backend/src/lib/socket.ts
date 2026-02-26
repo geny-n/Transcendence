@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser";
 import prisma from "./prisma.js";
 import { getAllFriendIds } from "../utils/helpers.js";
 import { disconnectUser } from "../socket/disconnect.js";
-import { PongSocketHandlers } from "../socket/pongHandlers.js";
+import { initPong } from "../socket/pong.js";
 
 
 let io: Server;
@@ -19,28 +19,33 @@ const onConnection = async (socket:Socket) => {
 		socket.disconnect();
 		return;
 	}
-	console.log(`User ${user.username} is connected.`);
+	console.log(`User ${user.username} connecté${socket.isGuest ? " (invité)" : ""}.`);
 
-	// Marquer comme en ligne
-	await prisma.user.update({
-		where: { id: user.id },
-		data: { isOnline: true },
-	});
-
-	// Rejoindre la room personalle pour les notifications
-	socket.join(`user:${user.id}`);
-
-	// Notifier les amis
-	const friends = await getAllFriendIds(user.id);
-	friends.forEach(friendId => {
-		io.to(`user:${friendId}`).emit('friend:status_changed', {
-			userId: user.id,
-			isOnline: true
+	if (!socket.isGuest) {
+		// Marquer comme en ligne
+		await prisma.user.update({
+			where: { id: user.id },
+			data: { isOnline: true },
 		});
-	})
 
-	// Gerer la deconnexion
-	disconnectUser(socket, io, friends);
+		// Rejoindre la room personnelle pour les notifications
+		socket.join(`user:${user.id}`);
+
+		// Notifier les amis
+		const friends = await getAllFriendIds(user.id);
+		friends.forEach(friendId => {
+			io.to(`user:${friendId}`).emit('friend:status_changed', {
+				userId: user.id,
+				isOnline: true
+			});
+		});
+
+		// Gérer la déconnexion (met à jour la DB)
+		disconnectUser(socket, io, friends);
+	}
+
+	// Initialiser les événements Pong (invités inclus)
+	initPong(io, socket);
 }
 
 export const initSocket = (HttpServer: HttpServer) => {
@@ -51,18 +56,12 @@ export const initSocket = (HttpServer: HttpServer) => {
 		}
 	});
 
-	// Middleware pour les connexions principales (authentifiées)
+	// Middleware
 	io.engine.use(cookieParser());
 	io.use(socketAuth);
 
 	// Gestion de connexion principale
 	io.on("connection", onConnection);
-
-	// Namespace séparé pour le Pong (sans authentification)
-	const pongNamespace = io.of('/pong');
-	const pongHandlers = new PongSocketHandlers();
-	pongHandlers.setupHandlers(pongNamespace);
-	console.log('Pong Multijoueur handlers initialized on /pong namespace');
 
 	return io;
 }

@@ -17,5 +17,7 @@ RUN npm run build
 # Ne pas utiliser nginx ici, juste exposer les fichiers
 FROM alpine:latest
 WORKDIR /app
-COPY --from=builder /app/dist /app/dist
-CMD ["tail", "-f", "/dev/null"]
+# Les fichiers sont stockés dans /app/dist-src (hors du volume)
+# Au démarrage, on les copie dans /app/dist (monté en volume par docker-compose)
+COPY --from=builder /app/dist /app/dist-src
+CMD ["sh", "-c", "cp -rf /app/dist-src/. /app/dist/ && tail -f /dev/null"]

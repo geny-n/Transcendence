@@ -10,6 +10,27 @@ export const socketAuth = async function socketAuthentification(socket:Socket,
 	console.log("Inside socketAuth: token:", token);
 
 	if (!token) {
+		// Tentative de connexion en tant qu'invité
+		const guestId   = socket.handshake.auth?.guestId   as string | undefined;
+		const guestName = socket.handshake.auth?.guestName  as string | undefined;
+
+		if (guestId && guestName && /^guest_[a-z0-9]+$/.test(guestId)) {
+			socket.user = {
+				id:           guestId,
+				email:        null,
+				password:     null,
+				username:     guestName.slice(0, 24),
+				fortyTwoId:   null,
+				avatarUrl:    null,
+				createdAt:    new Date(),
+				isOnline:     false,
+				refreshToken: null,
+			};
+			socket.isGuest = true;
+			console.log(`Invité ${guestName} connecté (id: ${guestId}).`);
+			return next();
+		}
+
 		return next(new Error("Access denied. Token missing."));
 	}
 

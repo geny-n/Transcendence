@@ -3,13 +3,20 @@ services:
     container_name: frontend
     build: ./frontend
     volumes:
-      - frontend-build:/app/dist 
-    depends_on:
-      - backend
+      - frontend-build:/app/dist
     networks:
       - app-network
-  
+    # Les fichiers dist sont générés pendant le build Docker (étape builder)
+    # Ce healthcheck passe dès que le container démarre
+    healthcheck:
+      test: ["CMD", "test", "-f", "/app/dist/index.html"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
   backend:
+    container_name: backend
     build: ./backend
     env_file: .env
     ports:
@@ -23,6 +30,13 @@ services:
     depends_on:
       bd:
         condition: service_healthy
+    # Override du HEALTHCHECK Dockerfile avec des intervalles plus adaptés
+    healthcheck:
+      test: ["CMD", "node", "--use-system-ca", "healthcheck.js"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 45s
 
   nginx:
     container_name: nginx
@@ -35,8 +49,10 @@ services:
       - ./nginx/certs:/etc/nginx/certs:ro
       - frontend-build:/usr/share/nginx/html:ro
     depends_on:
-      - backend
-      - frontend
+      backend:
+        condition: service_healthy
+      frontend:
+        condition: service_healthy
     networks:
       - app-network
 

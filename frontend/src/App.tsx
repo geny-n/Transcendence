@@ -11,6 +11,7 @@ import Teams from './Pages/Teams'
 import Chat from './Pages/Chat'
 import Login from './Pages/Login'
 import Register from './Pages/Register'
+import Matchmaking from './Pages/Matchmaking'
 import {Routes, Route} from "react-router-dom"
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
         <Route path="/chat" element={<Chat />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/matchmaking" element={<Matchmaking />} />
       </Routes>
     </>
   )

@@ -22,6 +22,7 @@ model User {
 	username		String		@unique
 	fortyTwoId		String?		@unique
 	avatarUrl		String?		@default("/avatars/default_avatar.png")
+	role			UserRoles	@default(USER)
 	createdAt		DateTime	@default(now())
 	isOnline		Boolean		@default(false)
 	refreshToken	String?		@db.Text
@@ -71,4 +72,12 @@ enum FriendRequestStatus {
 	ACCEPTED
 	REJECTED
 	BLOCKED
+	UNFRIENDED
+}
+
+enum UserRoles {
+	USER
+	ADMIN
+	MODERATOR
+	GUEST
 }

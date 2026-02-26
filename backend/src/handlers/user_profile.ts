@@ -35,11 +35,12 @@ export const getUserProfile = asyncHandler(async (request:Request, response:Resp
 	}
 
 	const user = await prisma.user.findFirst({
-		where: { id: userId },
+		where: { id: userId, role: 'USER' },
 		omit: {
 			password: true,
 			refreshToken: true,
-			fortyTwoId: true
+			fortyTwoId: true,
+			role: true
 		}
 	});
 	console.log('user:', user);
@@ -69,7 +70,7 @@ export const updateMyProfile = asyncHandler(async (request:Request, response:Res
 	}
 
 	const { email, username } = matchedData(request) as { email: string | undefined, username: string | undefined };
-	console.log(`Update fields: Email(${username}), Username(${username})`);
+	console.log(`Update fields: Email(${email}), Username(${username})`);
 
 	if (!request.user) {
 		throw new Error("No user found after authentication");
@@ -165,7 +166,7 @@ export const changeAvatar = asyncHandler(async (request:Request, response:Respon
 });
 
 export const searchUser = asyncHandler(async (request:Request, response:Response) => {
-	const q = request.query.q as string | undefined;
+	const q = request.query.q;
 	console.log("Inside searchUser q:", q);
 
 	if (!q || typeof q !== 'string' || q.trim().length < 2) {

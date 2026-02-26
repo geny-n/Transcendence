@@ -37,7 +37,7 @@ export const sendFriendRequest = asyncHandler(async (request:Request, response:R
 		});
 	}
 
-	// Verifier si demade existe deja
+	// Verifier si demande existe deja
 	const existing = await prisma.friendship.findFirst({
 		where : {
 			OR: [
@@ -49,15 +49,55 @@ export const sendFriendRequest = asyncHandler(async (request:Request, response:R
 	console.log("existing:", existing);
 
 	if (existing) {
-		return response.status(400).json({
-			success: false,
-			message: "Friend request already exists",
-			status: existing.status
-		});
+		switch (existing.status) {
+			case 'ACCEPTED':
+				return response.status(400).json({ success: false, message: 'You are already friends.' });
+
+			case 'PENDING':
+				return response.status(400).json({ success: false, message: 'A friend request is already pending' });
+
+			case 'REJECTED': case 'UNFRIENDED':
+				if (existing.senderId === receiverId && existing.receiverId === senderId) {
+					const updated = await prisma.friendship.update({
+						where: { id: existing.id },
+						data : {
+							senderId: senderId,
+							receiverId: receiverId,
+							status: 'PENDING'
+						},
+						include: { receiver : { select: { id: true, username: true } } },
+					});
+					io.to(`user:${receiverId}`).emit("friend:request_received", {
+						requestId: updated.id,
+						sender: senderId
+					});
+					return response.status(200).json({success: true, updated});
+				} else {
+					const updated = await prisma.friendship.update({
+						where: { id: existing.id },
+						data : { status: 'PENDING' },
+						include: { receiver : { select: { id: true, username: true } } },
+					});
+					io.to(`user:${receiverId}`).emit("friend:request_received", {
+						requestId: updated.id,
+						sender: senderId
+					});
+					return response.status(200).json({success: true, updated});
+				}
+
+			case 'BLOCKED':
+				if (existing.senderId === senderId) {
+					return response.status(403).json({ success: false, message: 'You have blocked this user.' });
+				} else {
+					return response.status(403).json({ success: false, message: 'You are blocked by this user.' });
+				}
+			default:
+				return response.status(400).json({ success: false, message: 'Unable to send request.' });
+		}
 	}
 
 	// Creer la demande
-	const req = await prisma.friendship.create({
+	const newRequest = await prisma.friendship.create({
 		data: {
 			senderId,
 			receiverId,
@@ -67,15 +107,15 @@ export const sendFriendRequest = asyncHandler(async (request:Request, response:R
 			receiver: { select : { id: true, username: true } }
 		}
 	});
-	console.log("req:", req);
+	console.log("req:", newRequest);
 
 	// Evenement Websocket pour notifier le receveur
 	io.to(`user:${receiverId}`).emit("friend:request_received", {
-		requestId: req.id,
+		requestId: newRequest.id,
 		sender: senderId
 	})
 
-	response.status(200).json({success: true, req});
+	response.status(200).json({success: true, newRequest});
 });
 
 export const friendRequestAction = asyncHandler(async (request:Request, response:Response) => {
@@ -242,12 +282,7 @@ export const friendRequestAction = asyncHandler(async (request:Request, response
 
 		case "block":
 			await prisma.friendship.upsert({
-				where: {
-					senderId_receiverId: {
-						senderId: userId,
-						receiverId: isSender ? friendship.receiverId : friendship.senderId,
-					},
-				},
+				where: { id: requestId },
 				update: { status: "BLOCKED" },
 				create: {
 					senderId: userId,
@@ -256,14 +291,18 @@ export const friendRequestAction = asyncHandler(async (request:Request, response
 				}
 			})
 
-			await prisma.friend.delete({
+			const friendRecord = await prisma.friend.findUnique({
 				where: {
 					user1Id_user2Id: {
 						user1Id: minId,
 						user2Id: maxId
 					}
 				}
-			});
+			})
+
+			if (friendRecord) {
+				await prisma.friend.delete({ where: { id: friendRecord.id } });
+			}
 
 			io.to(`user:${isSender ? friendship.receiverId : friendship.senderId}`).emit("friend:block", {
 				blockId: userId,
@@ -314,7 +353,10 @@ export const getPendingRequests = asyncHandler(async (request:Request, response:
 
 	const pending = await prisma.friendship.findMany({
 		where: {
-			receiverId: userId,
+			OR: [
+				{ receiverId: userId },
+				{ senderId: userId },
+			],
 			status: "PENDING"
 		},
 		include: {
@@ -334,6 +376,7 @@ export const unfriend = asyncHandler(async (request:Request, response:Response) 
 		});
 	}
 
+	const io = getIO();
 	const userId = request.user.id;
 	console.log("Inside unfriend: userId:", userId);
 
@@ -356,14 +399,40 @@ export const unfriend = asyncHandler(async (request:Request, response:Response) 
 		});
 	}
 
-	await prisma.friend.delete({
+	const friendRecord = await prisma.friend.findUnique({
 		where: {
 			user1Id_user2Id: {
 				user1Id: minId,
 				user2Id: maxId
 			}
-		},
+		}
 	})
 
-	response.status(200).json({ success: true, unfriendUserId });
+	if (!friendRecord) {
+		return response.status(404).json({ success: false, message: 'Not friends.' });
+	}
+
+	await prisma.friend.delete({ where: { id: friendRecord.id } });
+
+	const friendship = await prisma.friendship.findFirst({
+		where: {
+			OR: [
+				{ senderId: minId, receiverId: maxId },
+				{ senderId: maxId, receiverId: minId }
+			],
+			status: 'ACCEPTED'
+		}
+	});
+
+	if (friendship) {
+		await prisma.friendship.update({
+			where: { id: friendship.id },
+			data: { status: 'UNFRIENDED' }
+		});
+	}
+
+	io.to(`user:${userId}`).emit('friend:unfriended', { unfriendedUserId: unfriendUserId });
+	io.to(`user:${unfriendUserId}`).emit('friend:unfriended', { unfriendBy: userId, });
+
+	response.status(200).json({ success: true, message: 'Unfriended' });
 });

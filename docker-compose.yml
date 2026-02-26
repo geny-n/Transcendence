@@ -28,8 +28,7 @@ services:
     networks:
       - app-network
     depends_on:
-      bd:
-        condition: service_healthy
+      - bd
     # Override du HEALTHCHECK Dockerfile avec des intervalles plus adaptés
     healthcheck:
       test: ["CMD", "node", "--use-system-ca", "healthcheck.js"]
@@ -49,10 +48,8 @@ services:
       - ./nginx/certs:/etc/nginx/certs:ro
       - frontend-build:/usr/share/nginx/html:ro
     depends_on:
-      backend:
-        condition: service_healthy
-      frontend:
-        condition: service_healthy
+      - backend
+      - frontend
     networks:
       - app-network
 

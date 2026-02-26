@@ -120,8 +120,8 @@ export const PongMulti: React.FC = () => {
                 <h2 className="game-over-title">Partie terminée !</h2>
                 <p className="game-over-result">
                   {gameState.winner === playerSide 
-                    ? '🎉 Vous avez gagné !' 
-                    : '😔 Vous avez perdu'}
+                    ? 'Vous avez gagné !' 
+                    : 'Vous avez perdu'}
                 </p>
                 <div className="final-score">
                   Score final : {gameState.scores.left} - {gameState.scores.right}

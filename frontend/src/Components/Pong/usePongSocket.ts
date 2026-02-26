@@ -42,27 +42,37 @@ const INITIAL_STATE: PongSocketState = {
  * Creates ONE socket connection per mount (or when guestName changes).
  * Pass `guestName` to connect as a guest (no auth cookie required).
  */
+// Nombre d'échecs consécutifs avant d'afficher l'erreur à l'utilisateur.
+// Cela laisse le temps au backend de démarrer après un `make re`.
+const ERROR_THRESHOLD = 5;
+
 export function usePongSocket(guestName?: string) {
-	const socketRef = useRef<Socket | null>(null);
+	const socketRef    = useRef<Socket | null>(null);
+	const errorCount   = useRef(0);
 	const [state, setState] = useState<PongSocketState>(INITIAL_STATE);
 
 	useEffect(() => {
 		// Reset state for each new connection attempt
 		setState(INITIAL_STATE);
+		errorCount.current = 0;
 
 		const guestId = guestName
 			? `guest_${Math.random().toString(36).slice(2, 10)}`
 			: undefined;
 
 		const socket = io(SOCKET_URL, {
-			withCredentials: !guestName,
-			transports:      ["websocket"],
-			path:            "/socket.io/",
+			withCredentials:      !guestName,
+			transports:           ["websocket"],
+			path:                 "/socket.io/",
+			reconnectionDelay:    2000,   // attendre 2 s entre deux tentatives
+			reconnectionDelayMax: 6000,   // plafonner à 6 s
 			...(guestName ? { auth: { guestId, guestName } } : {}),
 		});
 		socketRef.current = socket;
 
 		socket.on("connect", () => {
+			// Réinitialiser le compteur d'erreurs à chaque connexion réussie
+			errorCount.current = 0;
 			// Si on avait une partie en cours (reconnexion), signaler au serveur
 			setState(s => {
 				if (s.gameInfo && s.phase !== "ended") {
@@ -73,8 +83,14 @@ export function usePongSocket(guestName?: string) {
 			});
 		});
 
-		socket.on("connect_error", (err: Error) => {
-			setState(s => ({ ...s, error: `Connexion impossible : ${err.message}` }));
+		socket.on("connect_error", () => {
+			errorCount.current += 1;
+			// Afficher l'erreur seulement après ERROR_THRESHOLD échecs consécutifs.
+			// Avant ça, on reste sur l'écran "Connexion…" pendant que Socket.io
+			// réessaie silencieusement (backend encore en train de démarrer).
+			if (errorCount.current >= ERROR_THRESHOLD) {
+				setState(s => ({ ...s, error: "Connexion impossible : le serveur ne répond pas." }));
+			}
 		});
 
 		socket.on("pong:queue_joined", ({ position }: { position: number }) => {

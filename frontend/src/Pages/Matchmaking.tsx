@@ -21,7 +21,6 @@ export default function Matchmaking() {
 		leaveQueue,
 		sendInput,
 		leaveGame,
-		resetState,
 	} = usePongSocket(guestName);
 
 	const handlePlayAsGuest = useCallback(() => {
@@ -45,9 +44,8 @@ export default function Matchmaking() {
 
 	const handleLeaveGame = useCallback(() => {
 		leaveGame();
-		resetState();
 		navigate("/pong");
-	}, [leaveGame, resetState, navigate]);
+	}, [leaveGame, navigate]);
 
 	// ── Error ────────────────────────────────────────────────────────────────
 	if (error) {
@@ -60,7 +58,7 @@ export default function Matchmaking() {
 					</p>
 
 					<button className="btn-play" onClick={handlePlayAsGuest}>
-						🎮 Jouer en tant qu'invité
+						Jouer en tant qu'invité
 					</button>
 
 					<button className="btn-play btn-play-secondary" onClick={() => navigate("/pong")}>

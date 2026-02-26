@@ -1,4 +1,3 @@
-FORMAT: 1A
 HOST: http://localhost:1443/api
 
 ## Aperçu
@@ -104,3 +103,166 @@ Cette procédure redirigera l'utilisateur vers une page d'autorisation pour la c
 ATTENTION cette procédure générera l'access token et le refresh token
 
 + Response 302 (application/json)
+
+## Friends System [/friends]
+
+### Envoyer une demande d'ami [POST /friends/requests]
+
+Pour envoyer une demande d'ami à un utilisateur.
+Require: authentification + token JWT valide
+
++ Request (application/json)
+
+        {
+            "receiverId": "user's id to send friend request to"
+        }
+
++ Response 200 (application/json)
+
+        {
+            "success": true,
+            "newRequest": {
+                "id": "friendship request id",
+                "senderId": "sender's id",
+                "receiverId": "receiver's id",
+                "status": "PENDING",
+                "createdAt": "creation date",
+                "updateAt": "update date",
+                "receiver": {
+                    "id": "receiver's id",
+                    "username": "receiver's username"
+                }
+            }
+        }
+
+
+### Obtenir la liste des amis [GET /friends]
+
+Pour récupérer la liste de tous les amis de l'utilisateur connecté.
+Require: authentification + token JWT valide
+
++ Response 200 (application/json)
+
+        {
+            "success": true,
+            "friends": [
+                {
+                    "id": "friendship id",
+                    "user1Id": "user1's id",
+                    "user2Id": "user2's id",
+                    "createdAt": "date when friendship was accepted",
+                    "user1": {
+                        "id": "user1's id",
+                        "username": "user1's username",
+                        "isOnline": true,
+                        "avatarUrl": "/avatars/user1.png"
+                    },
+                    "user2": {
+                        "id": "user2's id",
+                        "username": "user2's username",
+                        "isOnline": false,
+                        "avatarUrl": "/avatars/user2.png"
+                    }
+                }
+            ]
+        }
+
+### Obtenir les demandes d'ami en attente [GET /friends/pending]
+
+Pour récupérer les demandes d'ami en attente (reçues et envoyées).
+Require: authentification + token JWT valide
+
++ Response 200 (application/json)
+
+        {
+            "success": true,
+            "requests": [
+                {
+                    "id": "friendship request id",
+                    "senderId": "sender's id",
+                    "receiverId": "receiver's id (you)",
+                    "status": "PENDING",
+                    "createdAt": "request creation date",
+                    "sender": {
+                        "id": "sender's id",
+                        "username": "sender's username"
+                    }
+                }
+            ]
+        }
+
+### Gérer une demande d'ami [PATCH /friends/requests/{id}]
+
+Pour accepter, rejeter, annuler ou bloquer une demande d'ami.
+Require: authentification + token JWT valide
+
+Actions possibles: `accept` | `reject` | `cancel` | `block`
+
++ Parameters
+    + id (number) - ID de la requete d'ami
+
++ Request (application/json)
+
+        {
+            "action": "accept"
+        }
+
++ Response 200 (application/json) - Accepter
+
+        {
+            "success": true,
+            "action": "accept",
+            "requestId": "friendship request id"
+        }
+
++ Response 200 (application/json) - Rejeter
+
+        {
+            "success": true,
+            "action": "reject",
+            "requestId": "friendship request id"
+        }
+
++ Response 200 (application/json) - Annuler (sender seulement)
+
+        {
+            "success": true,
+            "action": "cancel",
+            "requestId": "friendship request id"
+        }
+
++ Response 200 (application/json) - Bloquer
+
+        {
+            "success": true,
+            "action": "block",
+            "requestId": "friendship request id"
+        }
+
+
+### Supprimer un ami [DELETE /friends/{id}]
+
+Pour supprimer un ami (unfriend).
+Require: authentification + token JWT valide
+
++ Parameters
+    + id (number) - ID de l'utilisateur a retirer de la liste d'ami
+
++ Response 200 (application/json)
+
+        {
+            "success": true,
+            "message": "Unfriended"
+        }
+
+
+### WebSocket Events
+
+Événements émis en temps réel via WebSocket:
+
+- `friend:request_received` → Notifie l'utilisateur qu'il a reçu une nouvelle demande d'ami
+- `friend:request_accepted` → Notifie que une demande d'ami a été acceptée
+- `friend:request_rejected` → Notifie que une demande d'ami a été rejetée
+- `friend:request_cancel` → Notifie que une demande d'ami a been annulée
+- `friend:block` → Notifie que l'utilisateur a été bloqué
+- `friend:unfriended` → Notifie que l'utilisateur a été supprimé de la liste d'amis

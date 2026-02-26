@@ -164,3 +164,61 @@ export const friendActionSchema = {
 		},
 	},
 };
+
+export const updateUserAdminSchema = {
+	email: {
+		optional: true,
+		trim: true,
+		escape: true,
+		normalizeEmail: true,
+		isEmail: {
+			errorMessage : "Please enter a valid email."
+		},
+		custom: {
+			options: async (value:string, { req }: Meta) => {
+				if (!value) return true;
+				const existing = await prisma.user.findFirst({
+					where: { email: value, id: { not: req.user.id } }
+				});
+				if (existing) throw new Error("Email already in use");
+				return true;
+			}
+		}
+	},
+	newPassword : {
+		optional: true,
+		isStrongPassword: {
+			options : {
+				minLength: 8,
+				minLowercase: 1,
+				minUppercase: 1,
+				minNumbers: 1,
+				minSymbols: 1,
+			},
+			errorMessage: "The password must contain at least 8 characters, including one uppercase letter, one \
+			lowercase letter, one number, and one symbol."
+		}
+	},
+	username : {
+		optional: true,
+		trim: true,
+		escape: true,
+		isLength: {
+			options: {
+				min: 3,
+				max: 20,
+			},
+			errorMessage: "Between 3 and 20 characters"
+		},
+		custom: {
+			options: async (value:string, { req }: Meta) => {
+				if (!value) return true;
+				const existing = await prisma.user.findFirst({
+					where: { username: value, id: { not: req.user.id } }
+				});
+				if (existing) throw new Error("username already in use");
+				return true;
+			}
+		}
+	}
+}

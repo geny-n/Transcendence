@@ -27,8 +27,10 @@ services:
       - ./backend/package-lock.json:/code/package-lock.json
     networks:
       - app-network
+    restart: on-failure
     depends_on:
-      - bd
+      bd:
+        condition: service_healthy
     # Override du HEALTHCHECK Dockerfile avec des intervalles plus adaptés
     healthcheck:
       test: ["CMD", "node", "--use-system-ca", "healthcheck.js"]
@@ -48,8 +50,10 @@ services:
       - ./nginx/certs:/etc/nginx/certs:ro
       - frontend-build:/usr/share/nginx/html:ro
     depends_on:
-      - backend
-      - frontend
+      backend:
+        condition: service_healthy
+      frontend:
+        condition: service_healthy
     networks:
       - app-network
 

@@ -28,7 +28,7 @@ export default function PongOverlay({
 			<div className="pong-overlay">
 				<div className="pong-overlay-box">
 					<p className="pong-overlay-title">
-						{countdownResuming ? "🔄 Reprise !" : "Prêt ?"}
+						{countdownResuming ? "Reprise !" : "Prêt ?"}
 					</p>
 					<p className="pong-overlay-countdown">{countdown}</p>
 				</div>
@@ -61,7 +61,7 @@ export default function PongOverlay({
 					<p className="pong-overlay-sub">
 						{won
 							? "Bien joué !"
-							: "Meilleure chance la prochaine fois."}
+							: "On l'aura la prochaine fois."}
 					</p>
 					<button className="btn-play" onClick={onLeave}>
 						Retour au menu

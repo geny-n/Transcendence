@@ -70,9 +70,22 @@ export function usePongSocket(guestName?: string) {
 		});
 		socketRef.current = socket;
 
+		// Timeout de sécurité : si aucune connexion réussie au bout de 12 s,
+		// afficher l'erreur quoi qu'il arrive (backend trop long à démarrer ou
+		// Socket.io a arrêté de réessayer après un refus d'auth).
+		const connectionTimeout = setTimeout(() => {
+			if (!socket.connected) {
+				setState(s => ({
+					...s,
+					error: "Connexion impossible : le serveur ne répond pas.",
+				}));
+			}
+		}, 12_000);
+
 		socket.on("connect", () => {
 			// Réinitialiser le compteur d'erreurs à chaque connexion réussie
 			errorCount.current = 0;
+			clearTimeout(connectionTimeout);
 			// Si on avait une partie en cours (reconnexion), signaler au serveur
 			setState(s => {
 				if (s.gameInfo && s.phase !== "ended") {
@@ -83,13 +96,17 @@ export function usePongSocket(guestName?: string) {
 			});
 		});
 
-		socket.on("connect_error", () => {
+		socket.on("connect_error", (err: Error) => {
 			errorCount.current += 1;
-			// Afficher l'erreur seulement après ERROR_THRESHOLD échecs consécutifs.
-			// Avant ça, on reste sur l'écran "Connexion…" pendant que Socket.io
-			// réessaie silencieusement (backend encore en train de démarrer).
-			if (errorCount.current >= ERROR_THRESHOLD) {
-				setState(s => ({ ...s, error: "Connexion impossible : le serveur ne répond pas." }));
+
+			// Erreurs d'authentification (le backend est UP mais l'utilisateur
+			// n'est pas connecté ou son token est invalide) → afficher tout de suite.
+			const isAuthError = /token|user not found|access denied/i.test(err.message);
+			if (isAuthError || errorCount.current >= ERROR_THRESHOLD) {
+				setState(s => ({
+					...s,
+					error: "Connexion impossible : vous n'êtes pas connecté(e) ou votre session a expiré.",
+				}));
 			}
 		});
 
@@ -132,7 +149,7 @@ export function usePongSocket(guestName?: string) {
 			setState(s => ({ ...s, opponentReconnecting: { player, remaining } }));
 		});
 
-		return () => { socket.disconnect(); };
+		return () => { clearTimeout(connectionTimeout); socket.disconnect(); };
 	}, [guestName]);
 
 	// ── Actions ──────────────────────────────────────────────────────────────

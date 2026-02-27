@@ -5,7 +5,22 @@ DOC_COMP = docker compose
 GREEN = \033[0;32m
 RESET = \033[0m
 
-all: build up
+all: certs build up
+
+#generate self-signed SSL certificates for nginx if not already present
+certs:
+	@mkdir -p nginx/certs
+	@if [ ! -f nginx/certs/cert.pem ] || [ ! -f nginx/certs/key.pem ]; then \
+		echo "Génération des certificats SSL auto-signés..."; \
+		openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+			-keyout nginx/certs/key.pem \
+			-out nginx/certs/cert.pem \
+			-subj "/C=FR/ST=Paris/L=Paris/O=42School/CN=localhost" \
+			2>/dev/null; \
+		echo "$(GREEN)Certificats générés dans nginx/certs/$(RESET)"; \
+	else \
+		echo "Certificats SSL déjà présents, on passe."; \
+	fi
 
 #build images
 build:
@@ -36,4 +51,4 @@ fclean:
 
 re: fclean all
 
-.PHONY: all build up down bd logs fclean re
+.PHONY: all certs build up down bd logs fclean re

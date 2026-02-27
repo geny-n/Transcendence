@@ -8,7 +8,9 @@ import type {
 } from "./pongTypes";
 
 // Connects through Nginx which proxies /socket.io/ → backend:3100
-const SOCKET_URL = "https://localhost:1443";
+// window.location.origin = protocole + hôte + port du serveur qui a servi la page
+// → fonctionne que ce soit localhost, une IP locale, ou un domaine distant.
+const SOCKET_URL = window.location.origin;
 
 // ─── State shape ─────────────────────────────────────────────────────────────
 export interface PongSocketState {

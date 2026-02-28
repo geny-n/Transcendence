@@ -38,6 +38,19 @@ const onConnection = async (socket:Socket) => {
 		});
 	})
 
+	////////////////////////////////////////////////////////////
+
+	socket.on("privMessage", ({user, text, time, receivedId}) => {
+		console.log(`message envoy de ${user} a ${receivedId}`);
+		socket.to(`user:${receivedId}`).emit("privMessage", {
+			user,
+			text,
+			time,
+		});
+	});
+	////////////////////////////////////////////////////////////
+
+
 	// Gerer la deconnexion
 	disconnectUser(socket, io, friends);
 }

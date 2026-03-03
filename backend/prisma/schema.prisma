@@ -86,4 +86,4 @@ model ChatMessage {
 
 	sender		User	@relation("sender", fields: [senderId], references: [id])
 	receiver	User	@relation("receiver", fields: [receiverId], references: [id])
-} 
+}

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import './style/Chat.css'
-import defaultpp from '/pp/default.jpg'
+// import defaultpp from '/pp/default.jpg'
 import axios from "axios";
 import { TheSocket } from "../socket"
 
@@ -77,27 +77,76 @@ export default function Chat ()
     return "bg-gray-300";
   }
 
-
   const socket = TheSocket();
   
   const [NewMsg, setNewMsg] = useState('');
-  const [prevMsg, setPrevMsg] = useState<{msg: string, time: string, sender: string}[]>([]);
+  const [prevMsg, setPrevMsg] = useState<{msg: string, time: string, sender: string, avatarUrl:string}[]>([]);
   //permet de garder en memoire touts les messages (le 1er message n es pas ecraser par le 2eme)
 
-  useEffect (() => {
-    if (!socket)
+  // useEffect (() => {
+  //   if (!socket)
+  //     return;
+  //   socket.on('privMessage', (incoming: { user: string; text: string; time: string; senderId: string }) => {
+  //     console.log('socket recu:', incoming, 'selectFriend:', selectFriend?.username);
+  //     if (incoming.senderId !== selectFriend?.id) return;
+  //     setPrevMsg(prevMsg => [
+  //       ...prevMsg,
+  //       {
+  //         msg: incoming.text,
+  //         time: incoming.time,
+  //         sender: incoming.user
+  //       }
+  //     ])
+  //   });
+  //   return () => { socket.off(`privMessage`);};
+  // }, [socket]);
+
+  useEffect(() => {
+    if (!socket || !selectFriend)
+        return;
+    const handler = (incoming: {
+      user:string;
+      text: string;
+      time: string;
+      senderId: string;
+    }) => {
+      console.log('socket recu:', incoming, 'selectFriend:', selectFriend.username);
+      if (incoming.senderId !== selectFriend.id)
+          return;
+      setPrevMsg(prev => [...prev, {
+        msg: incoming.text,
+        time: incoming.time,
+        sender: incoming.user,
+        avatarUrl: selectFriend.avatarUrl
+      }
+      ]);
+    }
+    socket.on("privMessage", handler);
+    return () => {
+      socket.off("privMessage", handler);
+    };
+  },[socket, selectFriend]);
+
+  //pour selectionner uniquement les messages concernant l ami selectionne
+  useEffect(() => {
+    setPrevMsg([]);
+    if (!myself || !selectFriend)
       return;
-    socket.on('privMessage', (incoming: { user: string; text: string; time: string }) =>
-      setPrevMsg(prevMsg => [
-        ...prevMsg,
-        {
-          msg: incoming.text,
-          time: incoming.time,
-          sender: incoming.user
-        }
-      ])
-    )
-  }, [socket]);
+    axios.get(`/api/users/chat/${selectFriend.id}`, {withCredentials:true})
+      .then(res => {
+        console.log('messages recu:', res.data);
+        const loaded = res.data.messages.map((m:any) =>({
+          msg:m.message,
+          time: new Date(m.time).toLocaleTimeString("fr-FR", { hour: '2-digit', minute: '2-digit' }),
+
+          // Si senderId = mon id → c'est moi qui ai envoyé → affiche mon username
+          // Sinon → c'est mon ami qui a envoyé → affiche son username
+          sender: m.senderId === myself.id ? myself.username : selectFriend.username,
+          avatarUrl: m.senderId === myself.id ? myself.avatarUrl : selectFriend.avatarUrl, 
+        }));
+        setPrevMsg(loaded);
+      })
+  }, [selectFriend]);
 
   const sendMsg = () => {
     if (!NewMsg.trim() || !myself || !selectFriend || !socket) //verifier les messages vides ou espace avant et fin du message
@@ -110,13 +159,9 @@ export default function Chat ()
       receivedId: selectFriend.id,
     });
 
-    setPrevMsg([...prevMsg, {msg:NewMsg, time:theTime, sender: myself.username}]);
+    setPrevMsg([...prevMsg, {msg:NewMsg, time:theTime, sender: myself.username, avatarUrl:myself.avatarUrl}]);
     setNewMsg('');
   }
-
-  useEffect (() => {
-    setPrevMsg([]);
-  }, [selectFriend]);
 
     return (
       <div className="all_chat_screen"> {/*toute la zone*/}
@@ -151,13 +196,22 @@ export default function Chat ()
 
         <div className="bottom">{/*(box bottom)*/}
           <div className="box_list">
+            {/* <div className="display_lst">theFriend.username</div> */}
             {lstFriends.map((theFriend, idx) =>
-              <div className="display_lst" key={idx} onClick={()=>setSelectFriend(theFriend)}>
-                <img className="rounded-full w-10 h-10" src={theFriend.avatarUrl}></img>
-                <span className={`display_status ${status(theFriend.isOnline)}`}></span>
-                <div className="truncate">{theFriend.username}</div>
-              </div>
-            )}
+            {
+              let isSelected;
+              if (selectFriend?.id === theFriend.id)
+                  isSelected = 'bg-gray-300';
+              return (
+                <div className={`display_lst ${isSelected}`} 
+                  key={idx} onClick={()=>setSelectFriend(theFriend)}
+                >
+                  <img className="rounded-full w-10 h-10" src={theFriend.avatarUrl}></img>
+                  <span className={`display_status ${status(theFriend.isOnline)}`}></span>
+                  <div className="truncate">{theFriend.username}</div>
+                </div>
+              );
+            })}
             {myself && <p>Connecte en tant que : {myself.username}</p>}
           </div>
           
@@ -169,7 +223,7 @@ export default function Chat ()
               {prevMsg.map((theMsg, idx) =>
               <div className="display_Msg" key={idx}>
                 <div className="flex gap-3">
-                  <img className="rounded-full w-12 h-12" src={defaultpp}></img>
+                  <img className="rounded-full w-12 h-12" src={theMsg.avatarUrl}></img>
                   <span className="text-sm font-semibold">{theMsg.sender}</span>
                   <span className="text-sm text-body">{theMsg.time}</span>
                 </div>

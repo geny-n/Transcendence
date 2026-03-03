@@ -109,13 +109,16 @@ JOIN User u2 ON f.user2Id = u2.id;
 -------------------------------------------------------------------------
 SELECT @nnn_id := id FROM User WHERE username = 'nnn';
 SELECT @qqq_id := id FROM User WHERE username = 'qqq';
+SELECT @www_id := id FROM User WHERE username = 'www';
 
 INSERT INTO Friend (id, user1Id, user2Id, createdAt)
 VALUES (UUID(), @nnn_id, @qqq_id, NOW());
 
-SELECT @www_id := id FROM User WHERE username = 'www';
 INSERT INTO Friend (id, user1Id, user2Id, createdAt)
 VALUES (UUID(), @nnn_id, @www_id, NOW());
+
+INSERT INTO Friend (id, user1Id, user2Id, createdAt)
+VALUES (UUID(), @qqq_id, @www_id, NOW());
 
 SELECT 
   u1.username AS user1,

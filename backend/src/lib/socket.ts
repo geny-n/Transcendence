@@ -39,14 +39,21 @@ const onConnection = async (socket:Socket) => {
 	})
 
 	////////////////////////////////////////////////////////////
-
-	socket.on("privMessage", ({user, text, time, receivedId}) => {
+	
+	//ecoute l event (privMessage) envoye par le front
+	socket.on("privMessage", async({user, text, time, receivedId}) => {
 		console.log(`message envoy de ${user} a ${receivedId}`);
-		socket.to(`user:${receivedId}`).emit("privMessage", {
-			user,
-			text,
-			time,
+		//envoie du message dans la bdd
+		const message = await prisma.chatMessage.create ({
+			data: {
+				message: text,
+				time: new Date(),
+				senderId: socket.user.id,
+				receiverId: receivedId,
+			}
 		});
+		
+		socket.to(`user:${receivedId}`).emit("privMessage", {user, text, time, senderId: socket.user.id});
 	});
 	////////////////////////////////////////////////////////////
 

@@ -3,6 +3,13 @@ import { verifyToken } from "../utils/helpers.js";
 import prisma from "../lib/prisma.js";
 import type { Request } from "express";
 
+// ─── Compteur d'invités (1-999, cycling) ─────────────────────────────────────
+let guestCounter = 0;
+function nextGuestLabel(): string {
+	guestCounter = (guestCounter % 999) + 1;
+	return `Invite${String(guestCounter).padStart(3, "0")}`;
+}
+
 export const socketAuth = async function socketAuthentification(socket:Socket,
 	next:(err?: ExtendedError | undefined) => void) {
 	const req = socket.request as Request;
@@ -15,11 +22,12 @@ export const socketAuth = async function socketAuthentification(socket:Socket,
 		const guestName = socket.handshake.auth?.guestName  as string | undefined;
 
 		if (guestId && guestName && /^guest_[a-z0-9]+$/.test(guestId)) {
+			const assignedLabel = nextGuestLabel();
 			socket.user = {
 				id:           guestId,
 				email:        null,
 				password:     null,
-				username:     guestName.slice(0, 24),
+				username:     assignedLabel, // "Invite001" etc., assigné côté serveur
 				fortyTwoId:   null,
 				avatarUrl:    null,
 				createdAt:    new Date(),
@@ -27,7 +35,7 @@ export const socketAuth = async function socketAuthentification(socket:Socket,
 				refreshToken: null,
 			};
 			socket.isGuest = true;
-			console.log(`Invité ${guestName} connecté (id: ${guestId}).`);
+			console.log(`Invité connecté → ${assignedLabel} (id: ${guestId}).`);
 			return next();
 		}
 

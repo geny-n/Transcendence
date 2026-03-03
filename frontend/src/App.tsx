@@ -8,6 +8,7 @@ import Pong from './Pages/Pong'
 import ScoreB from './Pages/ScoreBoard'
 import Teams from './Pages/Teams'
 import Chat from './Pages/Chat'
+import Profile from './Pages/Profile'
 import Login from './Pages/Login'
 import Register from './Pages/Register'
 import {Routes, Route} from "react-router-dom"
@@ -22,6 +23,7 @@ function App() {
         <Route path="/scoreBoard" element={<ScoreB />} />
         <Route path="/teams" element={<Teams />} />
         <Route path="/chat" element={<Chat />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
       </Routes>

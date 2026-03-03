@@ -36,11 +36,12 @@ export interface PongGameState {
 
 export type PaddleDirection = "up" | "down" | "stop";
 
-/** Sent by the server when a match is found (or when reconnecting) */
+/** Sent by the server when a match is found (or when reconnecting / rematch) */
 export interface GameFoundPayload {
 	roomId:        string;
 	playerNumber:  1 | 2;
 	reconnected?:  boolean;
+	rematch?:      boolean;
 }
 
 /** Phase of the matchmaking / game flow */

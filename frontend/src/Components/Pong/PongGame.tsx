@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import type { GameFoundPayload, PaddleDirection, PongGameState } from "./pongTypes";
+import type { RematchStatus } from "./usePongSocket";
 import PongCanvas    from "./PongCanvas";
 import PongScoreDisplay from "./PongScore";
 import PongOverlay   from "./PongOverlay";
@@ -13,8 +14,14 @@ interface Props {
 	winner:               1 | 2          | null;
 	opponentLeft:         boolean;
 	opponentReconnecting: { player: 1 | 2; remaining: number } | null;
+	timerRemaining:       number | null;
+	overtimeMessage:      string | null;
+	rematchStatus:        RematchStatus;
+	rematchFromLabel:     string | null;
 	sendInput:            (dir: PaddleDirection) => void;
 	onLeave:              () => void;
+	onRematch:            () => void;
+	onRematchRespond:     (accept: boolean) => void;
 }
 
 /**
@@ -30,8 +37,14 @@ export default function PongGame({
 	winner,
 	opponentLeft,
 	opponentReconnecting,
+	timerRemaining,
+	overtimeMessage,
+	rematchStatus,
+	rematchFromLabel,
 	sendInput,
 	onLeave,
+	onRematch,
+	onRematchRespond,
 }: Props) {
 	const { playerNumber } = gameInfo;
 
@@ -76,7 +89,8 @@ export default function PongGame({
 	const showOverlay =
 		(countdown !== null && countdown > 0) ||
 		winner !== null ||
-		opponentLeft;
+		opponentLeft ||
+		overtimeMessage !== null;
 
 	return (
 		<div className="pong-game-wrapper">
@@ -88,7 +102,16 @@ export default function PongGame({
 					<strong>{opponentReconnecting.remaining}s</strong>
 				</div>
 			)}
-
+			{/* ── Timer de partie ──────────────────────────────────────── */}
+			{timerRemaining !== null && winner === null && !opponentLeft && (
+				<div className={`pong-timer-banner${
+					timerRemaining <= 30 ? " pong-timer-urgent" : ""
+				}`}>
+					⏱&nbsp;
+					{String(Math.floor(timerRemaining / 60)).padStart(2, "0")}
+					:{String(timerRemaining % 60).padStart(2, "0")}
+				</div>
+			)}
 			{/* ── Canvas + overlays ──────────────────────────────────────── */}
 			<div className="pong-canvas-container">
 				{gameState ? (
@@ -108,7 +131,12 @@ export default function PongGame({
 						winner={winner}
 						playerNumber={playerNumber}
 						opponentLeft={opponentLeft}
+						overtimeMessage={overtimeMessage}
+						rematchStatus={rematchStatus}
+						rematchFromLabel={rematchFromLabel}
 						onLeave={onLeave}
+						onRematch={onRematch}
+						onRematchRespond={onRematchRespond}
 					/>
 				)}
 			</div>

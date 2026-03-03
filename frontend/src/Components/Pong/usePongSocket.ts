@@ -13,6 +13,8 @@ import type {
 const SOCKET_URL = window.location.origin;
 
 // ─── State shape ─────────────────────────────────────────────────────────────
+export type RematchStatus = 'idle' | 'pending' | 'incoming' | 'declined';
+
 export interface PongSocketState {
 	phase:                 PongPhase;
 	queuePosition:         number;
@@ -24,6 +26,12 @@ export interface PongSocketState {
 	opponentLeft:          boolean;
 	opponentReconnecting:  { player: 1 | 2; remaining: number } | null;
 	error:                 string          | null;
+	// Timer de partie
+	timerRemaining:        number | null;
+	overtimeMessage:       string | null;
+	// Revanche
+	rematchStatus:         RematchStatus;
+	rematchFromLabel:      string | null;
 }
 
 const INITIAL_STATE: PongSocketState = {
@@ -37,6 +45,10 @@ const INITIAL_STATE: PongSocketState = {
 	opponentLeft:         false,
 	opponentReconnecting: null,
 	error:                null,
+	timerRemaining:       null,
+	overtimeMessage:      null,
+	rematchStatus:        'idle',
+	rematchFromLabel:     null,
 };
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
@@ -119,11 +131,18 @@ export function usePongSocket(guestName?: string) {
 		socket.on("pong:game_found", (data: GameFoundPayload) => {
 			setState(s => ({
 				...s,
-				phase:     "countdown",
-				gameInfo:  data,
-				countdown: 3,
+				phase:            "countdown",
+				gameInfo:         data,
+				countdown:        3,
 				countdownResuming: !!data.reconnected,
 				opponentReconnecting: null,
+				// Réinitialiser les états de fin de partie / revanche
+				winner:           null,
+				opponentLeft:     false,
+				timerRemaining:   null,
+				overtimeMessage:  null,
+				rematchStatus:    'idle',
+				rematchFromLabel: null,
 			}));
 		});
 
@@ -149,6 +168,45 @@ export function usePongSocket(guestName?: string) {
 
 		socket.on("pong:opponent_reconnecting", ({ player, remaining }: { player: 1 | 2; remaining: number }) => {
 			setState(s => ({ ...s, opponentReconnecting: { player, remaining } }));
+		});
+
+		// Timer de partie (tick chaque seconde envoyé par le serveur)
+		socket.on("pong:timer_tick", ({ remaining }: { remaining: number }) => {
+			setState(s => ({ ...s, timerRemaining: remaining }));
+		});
+
+		// Message d'overtime (pause 3s avant reprise)
+		socket.on("pong:overtime", ({ message }: { message: string }) => {
+			setState(s => ({ ...s, overtimeMessage: message }));
+			// Effacer le message après 3s (durée de la pause overtime)
+			setTimeout(() => setState(s => ({ ...s, overtimeMessage: null })), 3000);
+		});
+
+		// ── Revanche ─────────────────────────────────────────────────────────
+		// Demande envoyée avec succès → passer en état "pending"
+		socket.on("pong:rematch_sent", () => {
+			setState(s => ({ ...s, rematchStatus: 'pending' }));
+		});
+
+		// L'adversaire veut une revanche → afficher la notification
+		socket.on("pong:rematch_incoming", ({ fromLabel }: { fromLabel: string }) => {
+			setState(s => ({ ...s, rematchStatus: 'incoming', rematchFromLabel: fromLabel }));
+		});
+
+		// L'adversaire a refusé → afficher brièvement "Revanche refusée" puis reset
+		socket.on("pong:rematch_declined", () => {
+			setState(s => ({ ...s, rematchStatus: 'declined' }));
+			setTimeout(() => setState(s => ({ ...s, rematchStatus: 'idle' })), 3000);
+		});
+
+		// La demande a été annulée par l'adversaire (il a quitté, etc.)
+		socket.on("pong:rematch_cancelled", () => {
+			setState(s => ({ ...s, rematchStatus: 'idle', rematchFromLabel: null }));
+		});
+
+		// L'adversaire n'est plus disponible (déconnecté)
+		socket.on("pong:rematch_unavailable", () => {
+			setState(s => ({ ...s, rematchStatus: 'idle', rematchFromLabel: null }));
 		});
 
 		return () => { clearTimeout(connectionTimeout); socket.disconnect(); };
@@ -183,8 +241,22 @@ export function usePongSocket(guestName?: string) {
 			winner:               null,
 			opponentLeft:         false,
 			opponentReconnecting: null,
+			timerRemaining:       null,
+			overtimeMessage:      null,
+			rematchStatus:        'idle',
+			rematchFromLabel:     null,
 		}));
 	}, []);
 
-	return { state, joinQueue, leaveQueue, sendInput, leaveGame, resetState };
+	const requestRematch = useCallback(() => {
+		setState(s => ({ ...s, rematchStatus: 'pending' }));
+		socketRef.current?.emit("pong:rematch_request");
+	}, []);
+
+	const respondRematch = useCallback((accept: boolean) => {
+		socketRef.current?.emit("pong:rematch_response", { accept });
+		if (!accept) setState(s => ({ ...s, rematchStatus: 'idle', rematchFromLabel: null }));
+	}, []);
+
+	return { state, joinQueue, leaveQueue, sendInput, leaveGame, resetState, requestRematch, respondRematch };
 }

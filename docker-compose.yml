@@ -23,6 +23,7 @@ services:
       - 3100:3100
     volumes:
       - ./backend/src:/code/src:ro
+      - ./backend/prisma:/code/prisma
       - ./backend/package.json:/code/package.json
       - ./backend/package-lock.json:/code/package-lock.json
     networks:

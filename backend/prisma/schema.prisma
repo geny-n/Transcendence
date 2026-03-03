@@ -32,6 +32,35 @@ model User {
 	// Pour recuperer facilement tous les amis
 	friendshipAsUser1	Friend[]	@relation("user1")
 	friendshipAsUser2	Friend[]	@relation("user2")
+
+	// Historique des parties
+	matchWins	Match[]	@relation("matchWins")
+	matchLosses	Match[]	@relation("matchLosses")
+}
+
+// Historique des parties jouees
+model Match {
+	id          String   @id @default(uuid())
+	startedAt   DateTime @default(now())
+	endedAt     DateTime
+	durationSec Int
+
+	// true si la partie s'est prolongee en overtime
+	isOvertime  Boolean  @default(false)
+
+	// null si le joueur est un invite (pas de compte)
+	winnerId    String?
+	loserId     String?
+
+	// Pseudos affiches (username ou "InviteXXX")
+	winnerLabel String
+	loserLabel  String
+
+	scoreWinner Int
+	scoreLoser  Int
+
+	winner  User?  @relation("matchWins",   fields: [winnerId],  references: [id])
+	loser   User?  @relation("matchLosses", fields: [loserId],   references: [id])
 }
 
 // Table pour les demandes d'amitie EN ATTENTE

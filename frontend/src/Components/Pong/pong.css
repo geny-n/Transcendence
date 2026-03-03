@@ -307,3 +307,154 @@
 .pong-btn-quit:hover {
 	background: rgba(239, 68, 68, 0.28);
 }
+
+/* ── Timer de partie ────────────────────────────────────────────── */
+.pong-timer-banner {
+	background: rgba(99, 102, 241, 0.12);
+	border: 1px solid rgba(99, 102, 241, 0.35);
+	color: #a5b4fc;
+	padding: 0.35rem 1.4rem;
+	border-radius: 9999px;
+	font-size: 1rem;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0.05em;
+	font-weight: 600;
+	text-align: center;
+}
+
+/* Moins de 30 s → passe en rouge clignotant */
+.pong-timer-urgent {
+	background: rgba(239, 68, 68, 0.14);
+	border-color: rgba(239, 68, 68, 0.45);
+	color: #f87171;
+	animation: pong-pulse-soft 0.7s ease-in-out infinite alternate;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   REMATCH
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Base rematch button — sits below "Retour au menu" */
+.btn-rematch {
+	background: rgba(99, 102, 241, 0.15);
+	border: 1px solid rgba(99, 102, 241, 0.45);
+	color: #a5b4fc;
+	padding: 0.6rem 2.25rem;
+	border-radius: 9999px;
+	font-size: 0.95rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background 0.15s, border-color 0.15s, color 0.15s;
+	letter-spacing: 0.03em;
+}
+
+.btn-rematch:hover:not(:disabled) {
+	background: rgba(99, 102, 241, 0.3);
+	border-color: rgba(99, 102, 241, 0.7);
+	color: #c7d2fe;
+}
+
+/* Pending — request sent, waiting for answer */
+.btn-rematch--pending,
+.btn-rematch--pending:hover {
+	background: rgba(99, 102, 241, 0.07);
+	border-color: rgba(99, 102, 241, 0.25);
+	color: rgba(165, 180, 252, 0.55);
+	cursor: default;
+}
+
+/* Declined — opponent said no */
+.btn-rematch--declined,
+.btn-rematch--declined:hover {
+	background: rgba(239, 68, 68, 0.1);
+	border-color: rgba(239, 68, 68, 0.3);
+	color: rgba(248, 113, 113, 0.65);
+	cursor: default;
+}
+
+/* Cooldown — user must wait before sending again */
+.btn-rematch--cooldown,
+.btn-rematch--cooldown:hover {
+	background: rgba(255, 255, 255, 0.04);
+	border-color: rgba(255, 255, 255, 0.12);
+	color: rgba(255, 255, 255, 0.3);
+	cursor: default;
+}
+
+/* Inline spinner inside the button */
+.rematch-spinner {
+	display: inline-block;
+	width: 0.9rem;
+	height: 0.9rem;
+	border: 2px solid rgba(165, 180, 252, 0.3);
+	border-top-color: #a5b4fc;
+	border-radius: 50%;
+	animation: pong-spin 0.7s linear infinite;
+	vertical-align: middle;
+	margin-right: 0.4rem;
+}
+
+/* ── Incoming rematch notification panel ─────────────────────────── */
+.rematch-incoming {
+	margin-top: 0.75rem;
+	background: rgba(16, 16, 42, 0.9);
+	border: 1px solid rgba(99, 102, 241, 0.5);
+	border-radius: 12px;
+	padding: 0.9rem 1.4rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.75rem;
+	width: 100%;
+	max-width: 320px;
+	animation: rematch-appear 0.25s ease;
+}
+
+@keyframes rematch-appear {
+	from { opacity: 0; transform: translateY(8px); }
+	to   { opacity: 1; transform: translateY(0);   }
+}
+
+.rematch-incoming__text {
+	font-size: 0.92rem;
+	color: #e0e7ff;
+	text-align: center;
+	line-height: 1.45;
+}
+
+.rematch-incoming__actions {
+	display: flex;
+	gap: 0.75rem;
+}
+
+.rematch-incoming__btn--accept {
+	background: rgba(34, 197, 94, 0.15);
+	border: 1px solid rgba(34, 197, 94, 0.45);
+	color: #86efac;
+	padding: 0.45rem 1.3rem;
+	border-radius: 9999px;
+	font-size: 0.88rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background 0.15s;
+}
+
+.rematch-incoming__btn--accept:hover {
+	background: rgba(34, 197, 94, 0.3);
+}
+
+.rematch-incoming__btn--decline {
+	background: rgba(239, 68, 68, 0.12);
+	border: 1px solid rgba(239, 68, 68, 0.35);
+	color: #fca5a5;
+	padding: 0.45rem 1.3rem;
+	border-radius: 9999px;
+	font-size: 0.88rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background 0.15s;
+}
+
+.rematch-incoming__btn--decline:hover {
+	background: rgba(239, 68, 68, 0.28);
+}

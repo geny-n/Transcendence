@@ -63,6 +63,16 @@ export const initSocket = (HttpServer: HttpServer) => {
 	// Gestion de connexion principale
 	io.on("connection", onConnection);
 
+	// ── Namespace public /scoreboard (sans authentification) ─────────────────
+	// Permet aux visiteurs non connectés de recevoir les événements en temps réel
+	const scoreboardNs = io.of("/scoreboard");
+	scoreboardNs.on("connection", (socket) => {
+		console.log(`[Scoreboard] Viewer connecté: ${socket.id}`);
+		socket.on("disconnect", () => {
+			console.log(`[Scoreboard] Viewer déconnecté: ${socket.id}`);
+		});
+	});
+
 	return io;
 }
 

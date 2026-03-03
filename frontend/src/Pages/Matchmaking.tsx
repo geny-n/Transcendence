@@ -21,6 +21,8 @@ export default function Matchmaking() {
 		leaveQueue,
 		sendInput,
 		leaveGame,
+		requestRematch,
+		respondRematch,
 	} = usePongSocket(guestName);
 
 	const handlePlayAsGuest = useCallback(() => {
@@ -28,7 +30,7 @@ export default function Matchmaking() {
 		setGuestName(`Invité_${suffix}`);
 	}, []);
 
-	const { phase, queuePosition, gameInfo, gameState, countdown, countdownResuming, winner, opponentLeft, opponentReconnecting, error } = state;
+	const { phase, queuePosition, gameInfo, gameState, countdown, countdownResuming, winner, opponentLeft, opponentReconnecting, timerRemaining, overtimeMessage, rematchStatus, rematchFromLabel, error } = state;
 
 	// Auto-join the queue as soon as the socket connects
 	useEffect(() => {
@@ -126,8 +128,14 @@ export default function Matchmaking() {
 				winner={winner}
 				opponentLeft={opponentLeft}
 				opponentReconnecting={opponentReconnecting}
+				timerRemaining={timerRemaining}
+				overtimeMessage={overtimeMessage}
+				rematchStatus={rematchStatus}
+				rematchFromLabel={rematchFromLabel}
 				sendInput={sendInput}
 				onLeave={handleLeaveGame}
+				onRematch={requestRematch}
+				onRematchRespond={respondRematch}
 			/>
 		);
 	}

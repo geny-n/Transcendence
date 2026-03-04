@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pong Multijoueur - Mockup Visuel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .game-screen {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Score */
+        .score-container {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .score-display {
+            font-size: 48px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .score-left,
+        .score-right {
+            display: inline-block;
+            min-width: 60px;
+        }
+
+        .score-separator {
+            margin: 0 20px;
+            opacity: 0.5;
+        }
+
+        .score-info {
+            font-size: 14px;
+            margin-top: 10px;
+            opacity: 0.7;
+        }
+
+        /* Canvas */
+        .game-canvas-container {
+            position: relative;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .game-canvas {
+            display: block;
+            background: #000;
+        }
+
+        /* Éléments du jeu */
+        .ball {
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
+        }
+
+        .paddle {
+            filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.5));
+        }
+
+        .paddle-player {
+            fill: #00FF00;
+        }
+
+        /* Indicateur joueur */
+        .player-indicator {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            padding: 8px 16px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #00FF00;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 4px;
+            border: 2px solid #00FF00;
+        }
+
+        /* Contrôles */
+        .controls {
+            margin-top: 30px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .controls h3 {
+            margin-bottom: 15px;
+            color: #4CAF50;
+        }
+
+        .key-hint {
+            display: inline-block;
+            margin: 5px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        .btn-back {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-back:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-screen">
+        <!-- Score -->
+        <div class="score-container">
+            <div class="score-display">
+                <span class="score-left" id="scoreLeft">3</span>
+                <span class="score-separator">-</span>
+                <span class="score-right" id="scoreRight">2</span>
+            </div>
+            <div class="score-info">
+                Premier à 5 points
+            </div>
+        </div>
+
+        <!-- Game Canvas -->
+        <div class="game-canvas-container">
+            <svg width="800" height="600" class="game-canvas" id="gameCanvas">
+                <!-- Fond -->
+                <rect width="800" height="600" fill="#000000" />
+
+                <!-- Ligne centrale -->
+                <line x1="400" y1="0" x2="400" y2="600" 
+                      stroke="#FFFFFF" stroke-width="2" 
+                      stroke-dasharray="10,10" opacity="0.3" />
+
+                <!-- Cercle central -->
+                <circle cx="400" cy="300" r="50" 
+                        stroke="#FFFFFF" stroke-width="2" 
+                        fill="none" opacity="0.3" />
+
+                <!-- Raquette gauche (joueur) -->
+                <rect id="paddleLeft" x="20" y="250" width="10" height="100" 
+                      fill="#00FF00" rx="2" class="paddle paddle-player" />
+
+                <!-- Raquette droite (adversaire) -->
+                <rect id="paddleRight" x="770" y="250" width="10" height="100" 
+                      fill="#FFFFFF" rx="2" class="paddle" />
+
+                <!-- Balle -->
+                <circle id="ball" cx="400" cy="300" r="8" 
+                        fill="#FFFFFF" class="ball" />
+            </svg>
+
+            <div class="player-indicator">
+                Vous êtes à gauche
+            </div>
+        </div>
+
+        <!-- Contrôles -->
+        <div class="controls">
+            <h3>Contrôles</h3>
+            <div>
+                <span class="key-hint">↑ Haut</span>
+                <span class="key-hint">↓ Bas</span>
+                <span style="margin: 0 10px;">ou</span>
+                <span class="key-hint">W Haut</span>
+                <span class="key-hint">S Bas</span>
+            </div>
+            <div style="margin-top: 15px; opacity: 0.7; font-size: 14px;">
+                Appuyez sur les touches pour déplacer votre raquette (gauche)
+            </div>
+            <a href="index.html" class="btn-back">← Retour</a>
+        </div>
+    </div>
+
+    <script>
+        // Éléments du jeu
+        const paddleLeft = document.getElementById('paddleLeft');
+        const paddleRight = document.getElementById('paddleRight');
+        const ball = document.getElementById('ball');
+        const scoreLeftEl = document.getElementById('scoreLeft');
+        const scoreRightEl = document.getElementById('scoreRight');
+
+        // État du jeu
+        let gameState = {
+            ball: { x: 400, y: 300, vx: 3, vy: 2, radius: 8 },
+            paddleLeft: { y: 250, height: 100, width: 10, speed: 0 },
+            paddleRight: { y: 250, height: 100, width: 10 },
+            scores: { left: 3, right: 2 },
+            keys: { up: false, down: false }
+        };
+
+        const CANVAS_HEIGHT = 600;
+        const PADDLE_SPEED = 5;
+
+        // Gestion des touches
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+                e.preventDefault();
+                gameState.keys.up = true;
+            }
+            if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+                e.preventDefault();
+                gameState.keys.down = true;
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+                gameState.keys.up = false;
+            }
+            if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+                gameState.keys.down = false;
+            }
+        });
+
+        // Boucle de jeu
+        function gameLoop() {
+            // Déplacer la raquette du joueur
+            if (gameState.keys.up && gameState.paddleLeft.y > 0) {
+                gameState.paddleLeft.y -= PADDLE_SPEED;
+            }
+            if (gameState.keys.down && gameState.paddleLeft.y < CANVAS_HEIGHT - gameState.paddleLeft.height) {
+                gameState.paddleLeft.y += PADDLE_SPEED;
+            }
+
+            // IA simple pour la raquette droite
+            const paddleCenter = gameState.paddleRight.y + gameState.paddleRight.height / 2;
+            if (gameState.ball.y > paddleCenter + 10) {
+                gameState.paddleRight.y = Math.min(
+                    gameState.paddleRight.y + PADDLE_SPEED * 0.6,
+                    CANVAS_HEIGHT - gameState.paddleRight.height
+                );
+            } else if (gameState.ball.y < paddleCenter - 10) {
+                gameState.paddleRight.y = Math.max(
+                    gameState.paddleRight.y - PADDLE_SPEED * 0.6,
+                    0
+                );
+            }
+
+            // Déplacer la balle
+            gameState.ball.x += gameState.ball.vx;
+            gameState.ball.y += gameState.ball.vy;
+
+            // Collisions haut/bas
+            if (gameState.ball.y - gameState.ball.radius <= 0 || 
+                gameState.ball.y + gameState.ball.radius >= CANVAS_HEIGHT) {
+                gameState.ball.vy = -gameState.ball.vy;
+            }
+
+            // Collision raquette gauche
+            if (gameState.ball.x - gameState.ball.radius <= 30 &&
+                gameState.ball.y >= gameState.paddleLeft.y &&
+                gameState.ball.y <= gameState.paddleLeft.y + gameState.paddleLeft.height) {
+                gameState.ball.vx = Math.abs(gameState.ball.vx);
+            }
+
+            // Collision raquette droite
+            if (gameState.ball.x + gameState.ball.radius >= 770 &&
+                gameState.ball.y >= gameState.paddleRight.y &&
+                gameState.ball.y <= gameState.paddleRight.y + gameState.paddleRight.height) {
+                gameState.ball.vx = -Math.abs(gameState.ball.vx);
+            }
+
+            // Points marqués
+            if (gameState.ball.x < 0) {
+                gameState.scores.right++;
+                resetBall();
+            } else if (gameState.ball.x > 800) {
+                gameState.scores.left++;
+                resetBall();
+            }
+
+            // Mise à jour de l'affichage
+            paddleLeft.setAttribute('y', gameState.paddleLeft.y);
+            paddleRight.setAttribute('y', gameState.paddleRight.y);
+            ball.setAttribute('cx', gameState.ball.x);
+            ball.setAttribute('cy', gameState.ball.y);
+            scoreLeftEl.textContent = gameState.scores.left;
+            scoreRightEl.textContent = gameState.scores.right;
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function resetBall() {
+            gameState.ball.x = 400;
+            gameState.ball.y = 300;
+            gameState.ball.vx = (Math.random() > 0.5 ? 1 : -1) * 3;
+            gameState.ball.vy = (Math.random() - 0.5) * 4;
+        }
+
+        // Démarrer le jeu
+        gameLoop();
+    </script>
+</body>
+</html>

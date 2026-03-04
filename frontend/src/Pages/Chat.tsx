@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './style/Chat.css'
 // import defaultpp from '/pp/default.jpg'
 import axios from "axios";
@@ -6,6 +7,7 @@ import { TheSocket } from "../socket"
 
 export default function Chat ()
 {
+  const navigate = useNavigate();
   const [lstFriends, setLstFriends] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean}[]>([]);
   const [myself, setMyself] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean} | null>(null);
 
@@ -30,11 +32,12 @@ export default function Chat ()
         setMyself(response.data.user);
       }
       catch(error) {
-        console.error(error);
+        console.error('User not authenticated, redirecting to login...', error);
+        navigate('/login');
       }
     }
     fetchMe()
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     if (!myself) return;

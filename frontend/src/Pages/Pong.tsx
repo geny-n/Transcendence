@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './style/Pong.css'
 
 export default function Pong()
 {
   const [showPong, setShowPong] = useState(false);
+  const navigate = useNavigate();
   // Bloque le scroll du body uniquement quand le jeu est affiché
   useEffect(() => {
     if (showPong) {
@@ -28,6 +30,10 @@ export default function Pong()
         <button className="btn-play"
         onClick={() => setShowPong(true)}>
         Jouer</button>
+
+        <button className="btn-play"
+        onClick={() => navigate('/matchmaking')}>
+        Jouer en ligne 🌐</button>
 
         <button className="btn-play">
         Parametres</button>

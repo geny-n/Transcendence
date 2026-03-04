@@ -16,6 +16,7 @@ services:
       - 3100:3100
     volumes:
       - ./backend/src:/code/src:ro
+      - ./backend/prisma:/code/prisma
       - ./backend/package.json:/code/package.json
       - ./backend/package-lock.json:/code/package-lock.json
     networks:
@@ -35,8 +36,10 @@ services:
       - ./nginx/certs:/etc/nginx/certs:ro
       - frontend-build:/usr/share/nginx/html:ro
     depends_on:
-      - backend
-      - frontend
+      backend:
+        condition: service_healthy
+      #frontend:
+        #condition: service_healthy
     networks:
       - app-network
 

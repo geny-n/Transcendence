@@ -5,12 +5,14 @@ import './App.css'
 import Navbar from './Components/Navbar/Navbar'
 import HomeP from './Pages/HomePage'
 import Pong from './Pages/Pong'
+import PongMulti from './Pages/PongMulti'
 import ScoreB from './Pages/ScoreBoard'
 import Teams from './Pages/Teams'
 import Chat from './Pages/Chat'
 import Profile from './Pages/Profile'
 import Login from './Pages/Login'
 import Register from './Pages/Register'
+import Matchmaking from './Pages/Matchmaking'
 import {Routes, Route} from "react-router-dom"
 
 function App() {
@@ -20,12 +22,14 @@ function App() {
       <Routes>
         <Route path="/" element={<HomeP />} />
         <Route path="/pong" element={<Pong />} />
+        <Route path="/pong-multi" element={<PongMulti />} />
         <Route path="/scoreBoard" element={<ScoreB />} />
         <Route path="/teams" element={<Teams />} />
         <Route path="/chat" element={<Chat />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/matchmaking" element={<Matchmaking />} />
       </Routes>
     </>
   )

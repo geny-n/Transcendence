@@ -239,5 +239,5 @@ export const authHandler = asyncHandler(async (request: Request, response: Respo
 	});
 
 	// redirection frontend
-	return response.redirect("http://localhost:3100/");
+	return response.redirect("http://localhost:3100/health");
 });

@@ -84,7 +84,6 @@ export const updateMyProfile = asyncHandler(async (request:Request, response:Res
 		},
 	});
 	console.log("updateUser:", updateUser);
-
 	const userWithoutPassword = {
 		id : updateUser.id,
 		username: updateUser.username,
@@ -200,7 +199,6 @@ export const searchUser = asyncHandler(async (request:Request, response:Response
 			message: "User not found."
 		})
 	}
-
 	response.status(200).json({
 		success: true,
 		users: findUser,

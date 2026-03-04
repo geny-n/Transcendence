@@ -38,7 +38,6 @@ export const authenticateToken = async (request: Request, response: Response, ne
 				message: "User not found"
 			});
 		}
-
 		request.user = user;
 	} catch (error) {
 		console.error("Login error:", error);

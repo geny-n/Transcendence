@@ -5,6 +5,7 @@ import serverRouter from './server.js';
 import friendRouter from './friends.js'
 import adminRouter from './admin.js'
 import chatRouter from './chat.js'
+import scoreboardRouter from './scoreboard.js'
 
 const router = Router();
 
@@ -14,5 +15,6 @@ router.use(userProfile);
 router.use(friendRouter);
 router.use(adminRouter);
 router.use(chatRouter);
+router.use(scoreboardRouter);
 
 export default router;

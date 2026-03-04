@@ -18,7 +18,6 @@ import fs from 'fs';
 
 // Charger les variables d'environnement
 dotenv.config();
-
 // Initialiser Express
 const app = express();
 app.set('trust proxy', 1);

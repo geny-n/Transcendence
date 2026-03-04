@@ -14,6 +14,7 @@ datasource db {
 	// url      = "mysql://root:root@localhost:3306/mydb"
 }
 
+
 // schema.prisma
 model User {
 	id				String		@id @default(uuid())
@@ -34,6 +35,9 @@ model User {
 	// Pour recuperer facilement tous les amis
 	friendshipAsUser1	Friend[]	@relation("user1")
 	friendshipAsUser2	Friend[]	@relation("user2")
+
+	msgSent ChatMessage[] @relation("sender")
+	MsgReceived ChatMessage[] @relation("receiver")
 }
 
 // Table pour les demandes d'amitie EN ATTENTE
@@ -49,7 +53,7 @@ model Friendship {
 	sender		User	@relation("sender", fields: [senderId], references: [id])
 	receiver	User	@relation("receiver", fields: [receiverId], references: [id])
 
-	// Empeche les doublons
+	// Empeche les doublons 
 	@@unique([senderId, receiverId])
 	@@unique([receiverId, senderId])
 }
@@ -80,4 +84,15 @@ enum UserRoles {
 	ADMIN
 	MODERATOR
 	GUEST
+}
+
+model ChatMessage {
+	id			String @id @default(uuid())
+	message		String
+	time 		DateTime
+	senderId	String
+	receiverId	String
+
+	sender		User	@relation("sender", fields: [senderId], references: [id])
+	receiver	User	@relation("receiver", fields: [receiverId], references: [id])
 }

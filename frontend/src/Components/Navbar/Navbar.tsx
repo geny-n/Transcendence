@@ -1,16 +1,23 @@
 import React from 'react'
 import './Navbar.css'
 import { NavLink } from 'react-router-dom'
-
-const listItems = [
-  {label: "Home", path: "/"},
-  {label: "Pong", path: "/pong"},
-  {label: "ScoreBoard", path: "/scoreBoard"},
-  {label: "Teams", path: "/teams"},
-  {label: "Chat", path: "/chat"}
-]
+import { useTranslation } from 'react-i18next'
 
 const Navbar: React.FC = () => {
+  const { t, i18n } = useTranslation()
+
+  const listItems = [
+    {label: t('navbar.home'), path: "/"},
+    {label: t('navbar.pong'), path: "/pong"},
+    {label: t('navbar.scoreboard'), path: "/scoreBoard"},
+    // {label: t('navbar.teams'), path: "/teams"},
+    {label: t('navbar.chat'), path: "/chat"},
+    {label: t('navbar.profile'), path: "/profile"}
+  ]
+  
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng)
+  }
   return (
     <div className="nav-style">
 
@@ -24,7 +31,14 @@ const Navbar: React.FC = () => {
         ))}
   </ul>
 
-  <NavLink to="/login" className="btn-login">Connexion</NavLink>
+  <NavLink to="/login" className="btn-login">{t('navbar.login')}</NavLink>
+  <select onChange={(e) => changeLanguage(e.target.value)}
+          value={i18n.language}
+  >
+    <option value="fr">FR</option>
+    <option value="en">EN</option>
+    <option value="es">ES</option>
+  </select>
 </div>
   )
 }

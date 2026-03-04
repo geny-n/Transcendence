@@ -102,3 +102,41 @@ SELECT
 FROM Friend f
 JOIN User u1 ON f.user1Id = u1.id
 JOIN User u2 ON f.user2Id = u2.id;
+
+
+
+
+-------------------------------------------------------------------------
+SELECT @nnn_id := id FROM User WHERE username = 'nnn';
+SELECT @qqq_id := id FROM User WHERE username = 'qqq';
+SELECT @www_id := id FROM User WHERE username = 'www';
+
+INSERT INTO Friend (id, user1Id, user2Id, createdAt)
+VALUES (UUID(), @nnn_id, @qqq_id, NOW());
+
+INSERT INTO Friend (id, user1Id, user2Id, createdAt)
+VALUES (UUID(), @nnn_id, @www_id, NOW());
+
+INSERT INTO Friend (id, user1Id, user2Id, createdAt)
+VALUES (UUID(), @qqq_id, @www_id, NOW());
+
+SELECT 
+  u1.username AS user1,
+  u2.username AS user2
+FROM Friend f
+JOIN User u1 ON f.user1Id = u1.id
+JOIN User u2 ON f.user2Id = u2.id;
+
+
+-- Récupérer tous les IDs
+docker exec -it trans-backend-1 sh
+
+ls -la /code/dist/public/avatars/
+# Arrêter le frontend
+docker compose stop frontend
+
+# Rebuild uniquement le frontend
+docker compose build --no-cache frontend
+
+# Redémarrer le frontend
+docker compose up -d frontend

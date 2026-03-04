@@ -38,6 +38,26 @@ const onConnection = async (socket:Socket) => {
 		});
 	})
 
+	////////////////////////////////////////////////////////////
+	
+	//ecoute l event (privMessage) envoye par le front
+	socket.on("privMessage", async({user, text, time, receivedId}) => {
+		console.log(`message envoy de ${user} a ${receivedId}`);
+		//envoie du message dans la bdd
+		const message = await prisma.chatMessage.create ({
+			data: {
+				message: text,
+				time: new Date(),
+				senderId: socket.user.id,
+				receiverId: receivedId,
+			}
+		});
+		
+		socket.to(`user:${receivedId}`).emit("privMessage", {user, text, time, senderId: socket.user.id});
+	});
+	////////////////////////////////////////////////////////////
+
+
 	// Gerer la deconnexion
 	disconnectUser(socket, io, friends);
 }

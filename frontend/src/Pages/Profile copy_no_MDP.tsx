@@ -3,101 +3,71 @@ import axios from "axios";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type T_updateForm, updateForm } from '../lib/types';
-import { CiMail, CiLock } from "react-icons/ci"; // mail && lock icon
-import { LuEye, LuEyeClosed } from "react-icons/lu"; //eyes icon
-import { CgProfile } from "react-icons/cg";//profile icon
-import { FaPencil } from 'react-icons/fa6'; //pencil icon
+
 import './style/Profile.css';
 
 export default function Profile ()
 {
     // const [User, setUser] = useState<{id: string, username:string, avatarUrl:string, isOnline:boolean, email:string, password: string, createAt: string} | null>(null);
     const [lstFriends, setLstFriends] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, createdAt: string}[]>([]);
-    const [Myself, setMyself] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, password: string, createdAt: string} | null>(null);
-    const [selectUser, setSelectUser] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, password?: string, createdAt: string} | null>(null);
+    const [Myself, setMyself] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, createdAt: string} | null>(null);
+    const [selectUser, setSelectUser] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, createdAt: string} | null>(null);
     const [ActiveUpdate, setActiveUpdate] = useState(0);
-    const [showPassword, setShowPassword] = useState<boolean>(false);
-    const passwordVisibility = () => setShowPassword(!showPassword);
     const [errMsg, setErrMsg] = useState<string>('');
 
-    // useEffect(() => {//recuperer mes informations
-    //     const fetchMe = async () => {
-    //         try {
-    //             const response = await axios.get('/api/users/me', {
-    //                 withCredentials:true
-    //             });
-    //             if (!response.data.success) {
-    //                 throw Error(`Error API Me: ${response.status} ${response.statusText}`);
-    //             }
-    //             setMyself(response.data.user);
-    //             setSelectUser(response.data.user);
-    //         }
-    //         catch(error) {
-    //             console.error('User not authenticated, redirecting to login...', error);
-    //             // navigate('/login');
-    //         }
-    //     }
-    //     fetchMe()
-    // }, []);
+    useEffect(() => {
+        const fetchMe = async () => {
+            try {
+                const response = await axios.get('/api/users/me', {
+                withCredentials:true
+                });
+                if (!response.data.success) {
+                throw Error(`Error API Me: ${response.status} ${response.statusText}`);
+                }
+                setMyself(response.data.user);
+                setSelectUser(response.data.user);
+            }
+            catch(error) {
+                console.error('User not authenticated, redirecting to login...', error);
+                // navigate('/login');
+            }
+        }
+        fetchMe()
+    }, []);
 
 
-
-
-    // useEffect(() => {//recuperer la liste des amis depuis le back 
-    //     if (!Myself)
-    //         return;
-    //     const fetchFriends = async () => {
-    //         try {
-    //             const result = await axios.get('/api/friends', {
-    //                 withCredentials: true,
-    //             });
-    //             if (!result.data.success || !Array.isArray(result.data.friends)) {
-    //                 throw Error(`Error API Friends: ${result.status} ${result.statusText}`);
-    //             }
-    //             const friends = result.data.friends.map((f: any) => {
-    //                 // [
-    //                 //     { "user1": { "id": "moi", ... }, "user2": { "id": "ami1", ... } },
-    //                 //     { "user1": { "id": "ami2", ... }, "user2": { "id": "moi", ... } }
-    //                 // ]
-    //                 if (f.user1.id === Myself.id)
-    //                     return f.user2;
-    //                 else
-    //                     return f.user1;
+    useEffect(() => {
+        if (!Myself)
+            return;
+        const fetchFriends = async () => {
+            try {
+                const result = await axios.get('/api/friends', {
+                    withCredentials: true,
+                });
+                if (!result.data.success || !Array.isArray(result.data.friends)) {
+                    throw Error(`Error API Friends: ${result.status} ${result.statusText}`);
+                }
+                const friends = result.data.friends.map((f: any) => {
+                    // [
+                    //     { "user1": { "id": "moi", ... }, "user2": { "id": "ami1", ... } },
+                    //     { "user1": { "id": "ami2", ... }, "user2": { "id": "moi", ... } }
+                    // ]
+                    if (f.user1.id === Myself.id)
+                        return f.user2;
+                    else
+                        return f.user1;
                     
-    //             });
-    //             setLstFriends(friends);
-    //         }
-    //         catch(error) {
-    //             console.error('Error fetch : ', error);
-    //         }
-    //     }
-    //     fetchFriends();
-    // }, [Myself]);
+                });
+                setLstFriends(friends);
+            }
+            catch(error) {
+                console.error('Error fetch : ', error);
+            }
+        }
+        fetchFriends();
+    }, [Myself]);
 
-    // useEffect fetchMe — remplacer par :
-useEffect(() => {
-    const fakeMe = {
-        id: '1',
-        username: 'ngeny',
-        avatarUrl: 'https://i.pravatar.cc/150?u=ngeny',
-        isOnline: true,
-        email: 'ngeny@g.com',
-        password: '',
-        createdAt: '2024-01-01'
-    };
-    setMyself(fakeMe);
-    setSelectUser(fakeMe);
-}, []);
-
-// useEffect fetchFriends — remplacer par :
-useEffect(() => {
-    if (!Myself) return;
-    setLstFriends([
-        { id: '2', username: 'Alice',   avatarUrl: 'https://i.pravatar.cc/150?u=alice',   isOnline: true,  email: 'alice@g.com',   createdAt: '2024-01-02' },
-        { id: '3', username: 'Bob',     avatarUrl: 'https://i.pravatar.cc/150?u=bob',     isOnline: false, email: 'bob@g.com',     createdAt: '2024-01-03' },
-        { id: '4', username: 'Charlie', avatarUrl: 'https://i.pravatar.cc/150?u=charlie', isOnline: true,  email: 'charlie@g.com', createdAt: '2024-01-04' },
-    ]);
-}, [Myself]);
+    
 
     // const searchUser = async () => {
     //     try {
@@ -107,32 +77,32 @@ useEffect(() => {
     //         console.error('Erreur recherche :', error);
     //     }
     // }
-    const { // retourne des outils pour gerer le formulaire
-        register, //faire le lien avec le input du form
-        handleSubmit, // valide les champs avec zod si error envoie le message d erreur 
+    const {
+        register,
+        handleSubmit,
         reset,
-        formState: {errors}
-      } = useForm<T_updateForm>({//dit a react-hook-form d utiliser le schema zod pour valider les champs
-        resolver: zodResolver(updateForm), 
+        formState: { errors}
+      } = useForm<T_updateForm>({
+        resolver: zodResolver(updateForm),
     });
 
     const onShow = () => {
-        reset({username: selectUser?.username, email:selectUser?.email, password:''});//pre remplir les champs par les avaleurs actuelles 
+        reset({username: selectUser?.username, email:selectUser?.email});
         setActiveUpdate(1);
     }
 
-    const handleUpdate = async (data:T_updateForm) => { // modification des donnes et maj dans la bd
+    const handleUpdate = async (data:T_updateForm) => {
         if (!selectUser || !Myself)
             return;
         //envoie une requete PUT au back avec les nouvelles valeurs et met a jour la BD 
         try {
-            const datas:any = {
-                username: data.username || selectUser.username,
-                email: data.email || selectUser.email,
-            };
-            if (data.password)
-                datas.password = data.password;
-            await axios.put('/api/users/me', datas, {withCredentials: true});
+            await axios.put('/api/users/me', 
+                {
+                    username: data.username || selectUser.username,
+                    email: data.email || selectUser.email
+                }, 
+                {withCredentials: true}
+            );
             setErrMsg("");
             //permet de voir la modification dans le front
             setSelectUser({
@@ -155,66 +125,40 @@ useEffect(() => {
         }
     }
 
-   
-
     const WhichProfile = () => {
         if (!selectUser || !Myself)
             return null;
         
         /////////////////////////////////////////////////////////////////
-        if (selectUser.id === Myself.id) // afficher mon profile
+        if (selectUser.id === Myself.id)
             return (
               <div>
                 <div className="profile">
-
-                    {/* modifier avatar*/}
-                    {/* <input
-                        type="file"
-                        accept="iamge/*"
-                        onChange={handleAvatar}
-                    /> */}
-                    <div className="relative">
-                        <img className="rounded-full w-30 h-30 mx-14" src={selectUser?.avatarUrl}></img>
-                        <button className="bg-blue-300 absolute  rounded-full w-10 h-10 left-37 top-20 flex items-center justify-center"><FaPencil size={20}/></button>
-                    </div>
-                        {/* https://medium.com/@denis.mutunga/uploading-images-to-the-backend-in-react-with-formdata-c8035ae64a0c*/}                    
-                    {ActiveUpdate === 0 && ( // si il est pas en mode modifier
+                    <img className="rounded-full w-30 h-30 mx-14" src={selectUser?.avatarUrl}></img>
+                    {ActiveUpdate === 0 && (
                         <div  className="bg-green-400">
                             <div className="text-3xl text-left truncate flex flex-col mt-2">
                                 {selectUser?.username}
                                 <br/>
-                                {selectUser?.email}f
+                                {selectUser?.email}
                             </div>
                             <div className="bg-blue-600"><button onClick={onShow}>modifier</button></div>
                             
                         </div>
                     )}
-                    {ActiveUpdate === 1 && ( // si il est en mode modifier
+                    {ActiveUpdate === 1 && (
                         <div className="bg-green-400">
-                            <form onSubmit={handleSubmit(handleUpdate)}>
+                            <form onSubmit={handleSubmit(handleUpdate, (errors) => console.log("erreurs zod:", errors))}>
+
+                                
                                 <div className="flex flex-col gap-3">
-                                    <CgProfile />
                                     <input {...(register("username", {onChange: () => {setErrMsg('')}}))} className="rounded-lg bg-gray-900"  type="text" placeholder={selectUser?.username}/>
                                         {errors.username && <p className="text-left text-red-500 text-xs">{`${errors.username.message}`}</p>}
                                     
-                                    <CiMail />
                                     <input {...(register("email", {onChange: () => {setErrMsg('')}}))} className="rounded-lg bg-gray-900"  type="text" placeholder={selectUser?.email}/>
                                         {errors.email && <p className="text-left text-red-500 text-xs">{`${errors.email.message}`}</p>}
-                                    <CiLock />
-                                    <div className="relative">
-
                                     
-                                        <input {...(register("password", {onChange: () => {setErrMsg('')}}))} className="rounded-lg bg-gray-900"  type={showPassword ? "text" : "password"} placeholder="Nouveau mot de pass"/>
-                                            {/* {errors.password && <p className="text-left text-red-500 text-xs">{`${errors.password.message}`}</p>} */}
-                                        {showPassword ? (
-                                            <LuEye className="absolute right-5 cursor-pointer"
-                                                onClick={passwordVisibility} />
-                                            ) : (
-                                            <LuEyeClosed className="absolute right-5 cursor-pointer"
-                                                onClick={passwordVisibility} />
-                                            )}
-                                            {errors.password && <p className="text-left text-red-500 text-xs">{`${errors.password.message}`}</p>}
-                                    </div>
+                                    <input className="rounded-lg bg-gray-900" type="text" placeholder="Pass"/>
                                     {errMsg && <p className="text-red-500 text-xs">{errMsg}</p>}
                                 </div>
                                 <div className="mt-5 flex gap-13">
@@ -228,7 +172,7 @@ useEffect(() => {
               </div> 
             );
         /////////////////////////////////////////////////////////////////
-        else //afficher profile des autres users
+        else
             return (
                 <div className="profile">
                     <img className="rounded-full w-30 h-30 mx-14" src={selectUser?.avatarUrl}></img>
@@ -239,13 +183,13 @@ useEffect(() => {
                     </div>
                 </div>
             );
-        }
+    }
 
     const status = (isOnline: boolean) => {
-        if (isOnline)
-            return "bg-emerald-500";
-        return "bg-gray-300";
-    }
+    if (isOnline)
+        return "bg-emerald-500";
+    return "bg-gray-300";
+  }
 
   type Match = {
     id: string;
@@ -297,7 +241,9 @@ useEffect(() => {
                     ))}
                 </div>       */}
 
-                    {/* //////////////////////////avatar + mon nom//////////////////////////////////// */}
+
+
+                {/* <div className="friend"> */}
                     <div className="box_me" onClick={()=>setSelectUser(Myself)}>
                         <div className="display_me">
                             <img className="rounded-full w-10 h-10" src={Myself?.avatarUrl}></img>
@@ -305,13 +251,11 @@ useEffect(() => {
                         </div>
                     </div>
 
-                     {/* //////////////////////////notifications//////////////////////////////////// */}
                     <div className="box_notif">
                         <div className="notif_msg">friend sent you a message</div>
                         <div className="notif_request">friend request</div>
                     </div>
 
-                     {/* //////////////////////////liste des amis//////////////////////////////////// */}
                     <div className="box_lst_friend">
                         {lstFriends.map((theFriend, idx) => (
                             <div className="display_friends" key={idx} onClick={()=>setSelectUser(theFriend)}>
@@ -322,11 +266,10 @@ useEffect(() => {
                         ))}
                     </div>
             </div>
-            {/* /////////////////////////profile(moi ou user)/////////////////////////////////////// */}
+            {/* //////////////////////////////////////////////////////////////// */}
             <div className="box_profile">
                 {WhichProfile()}
 
-             {/* //////////////////////////tableau des scores//////////////////////////////////// */}
                 <div className="scoreboad_frame">
                     <div className="flex py-5 border-b">
                         <div className="w-1/3">adversaire</div>

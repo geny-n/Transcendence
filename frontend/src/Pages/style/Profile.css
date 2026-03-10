@@ -4,21 +4,37 @@
 {
     .all_screen {
         /* @apply bg-red-200 h-screen pt-25 pb-20 flex; */
-        @apply h-screen pt-25 pb-20 px-4 ;
-        @apply flex h-screen gap-4;
+        @apply h-screen pt-30 pb-8 px-5;
+        @apply flex h-screen gap-25;
     }
 
     .left {
-        @apply w-64;
+        @apply w-50;
         @apply flex flex-col;
         @apply overflow-hidden;
-        @apply bg-gray-500;
+        @apply bg-gray-900;
     }
     
-    .me {
+    /* ── Notification ──────────────────────────────────────────────── */
+
+    .box_notif {
+        @apply p-3;
+        @apply flex flex-col gap-3;
+        @apply overflow-auto;
+        @apply border-y-1;
+    }
+
+    .notif_msg {
+        @apply rounded-lg;
+        @apply bg-blue-400;
+    }
+
+    /* ── Myself ──────────────────────────────────────────────── */
+
+    .box_me {
         /* @apply flex gap-8; */
-        @apply pb-5 pt-5 px-3;
-        @apply bg-gray-400;
+        @apply px-3;
+        @apply bg-gray-900;
         @apply items-center;
     }
 
@@ -29,15 +45,14 @@
         @apply px-2 py-2 mb-1;
         @apply flex gap-2;
         @apply items-center;
-        @apply bg-gray-300;
         @apply hover:bg-orange-600 transition;
     }
 
 
+    /* ── Friend list ──────────────────────────────────────────────── */
     .box_lst_friend {
         @apply flex flex-col;
         @apply gap-1 p-2;
-        @apply bg-gray-500;
         /* @apply px-1 py-1; */
         @apply overflow-auto;
     }
@@ -50,7 +65,6 @@
         @apply px-2 py-2 mb-1;
         @apply flex gap-2;
         @apply items-center;
-        @apply bg-gray-400;
         @apply hover:bg-orange-600 transition;
     }
 
@@ -61,20 +75,38 @@
         @apply border-1 border-white rounded-full;
     }
 
+    /* ── Profile ──────────────────────────────────────────────── */
     .box_profile {
-        @apply flex-1 flex flex-col gap-3;
         @apply overflow-auto;
-        @apply flex-1 flex flex-col gap-3 overflow-y-auto;
-        @apply bg-red-600;
+        @apply flex-1 flex flex-col gap-15 ;
+        /* @apply bg-green-300; */
     }
 
     .profile {
-        @apply bg-green-400;
-        @apply p-4;
+        /* @apply overflow-auto; */
+        @apply bg-gray-400;
+        @apply flex p-5 gap-20 ;
+        /* @apply bg-green-400 */
     }
 
-    .scoreboard {
-        @apply bg-blue-400;
-        @apply p-5;
+    /* ── scoreboard ──────────────────────────────────────────────── */
+    /* .scoreboad_frame {
+        @apply bg-gray-900;
+            
+        @apply flex-1;
+        @apply overflow-hidden;
+
+        @apply border border-indigo-500;
+        
+    } */
+    .scoreboad_frame {
+        @apply bg-gray-900;
+           
+        @apply flex flex-col flex-1 p-5;
+        @apply overflow-auto;
+
+        @apply border border-indigo-500;
+        
     }
+    
 }

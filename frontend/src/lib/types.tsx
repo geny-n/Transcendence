@@ -35,3 +35,26 @@ export const inscriptionForm = z.object({
   })
 
 export type T_inscriptionForm = z.infer<typeof inscriptionForm>;
+
+
+export const updateForm = z.object({
+  username : z
+  .string()
+  .min(3, "Ne peux contenir moins de 3 caracteres")
+  .max(24, "Ne peux contenir plus de 24 caracteres")
+  .regex(UserNameRegex, "Caracteres autorises: lettres, chiffres, - et _")
+  .optional().or(z.literal('')),
+  email: z
+  .string()
+  .email({message: "Email valide requis"})
+  .optional().or(z.literal('')),
+  password: z
+  .string()
+  .min(10, "Ne peux contenir moins de 10 caracteres")
+  .max(24, "Ne peux contenir plus de 24 caracteres")
+  .regex(PasswordRegex, "Doit contenir minuscule, majuscule, chiffre et caractere special")
+  .regex(ForbidenRegex, "Caracteres speciaux autorises: !@#$%&*()_-+=")
+  .optional().or(z.literal('')),
+});
+
+export type T_updateForm = z.infer<typeof updateForm>;

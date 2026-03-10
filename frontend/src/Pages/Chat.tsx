@@ -9,7 +9,7 @@ export default function Chat ()
 {
   const navigate = useNavigate();
   const [lstFriends, setLstFriends] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean}[]>([]);
-  const [myself, setMyself] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean} | null>(null);
+  const [Myself, setMyself] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean} | null>(null);
 
   // To send authorization credentials using the Fetch API in JavaScript, 
   // you need to allow the credentials to be sent to the server by adding the «credential: 'include'» parameter when calling the fetch() method. 
@@ -20,6 +20,8 @@ export default function Chat ()
   // In this JavaScript Fetch API with Credentials example, we send a request with «credential: 'include'» 
   // parameter to the ReqBin echo URL using the fetch() method. 
   // Click Execute to run the JavaScript Fetch API with Credentials example online and see the result.
+ 
+ 
   useEffect(() => {
     const fetchMe = async () => {
       try {
@@ -40,7 +42,7 @@ export default function Chat ()
   }, [navigate]);
 
   useEffect(() => {
-    if (!myself) return;
+    if (!Myself) return;
 
     const fetchFriends = async () => {
       // setLoading(true);
@@ -53,7 +55,7 @@ export default function Chat ()
           throw Error(`Error API Friends: ${result.status} ${result.statusText}`);
         }
         const friends = result.data.friends.map((f: any) => {
-          if (f.user1.id === myself.id)
+          if (f.user1.id === Myself.id)
             return f.user2;
           else
             return f.user1;
@@ -69,7 +71,7 @@ export default function Chat ()
 
     }
       fetchFriends();
-  }, [myself]);
+  }, [Myself]);
 
   const[selectFriend, setSelectFriend] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean} | null>(null);
 
@@ -133,7 +135,7 @@ export default function Chat ()
   //pour selectionner uniquement les messages concernant l ami selectionne
   useEffect(() => {
     setPrevMsg([]);
-    if (!myself || !selectFriend)
+    if (!Myself || !selectFriend)
       return;
     axios.get(`/api/users/chat/${selectFriend.id}`, {withCredentials:true})
       .then(res => {
@@ -144,44 +146,44 @@ export default function Chat ()
 
           // Si senderId = mon id → c'est moi qui ai envoyé → affiche mon username
           // Sinon → c'est mon ami qui a envoyé → affiche son username
-          sender: m.senderId === myself.id ? myself.username : selectFriend.username,
-          avatarUrl: m.senderId === myself.id ? myself.avatarUrl : selectFriend.avatarUrl, 
+          sender: m.senderId === Myself.id ? Myself.username : selectFriend.username,
+          avatarUrl: m.senderId === Myself.id ? Myself.avatarUrl : selectFriend.avatarUrl, 
         }));
         setPrevMsg(loaded);
       })
   }, [selectFriend]);
 
   const sendMsg = () => {
-    if (!NewMsg.trim() || !myself || !selectFriend || !socket) //verifier les messages vides ou espace avant et fin du message
+    if (!NewMsg.trim() || !Myself || !selectFriend || !socket) //verifier les messages vides ou espace avant et fin du message
       return; 
     const theTime = new Date().toLocaleTimeString("fr-FR", { hour: '2-digit', minute: '2-digit' });
     socket.emit("privMessage", {
-      user: myself.username,
+      user: Myself.username,
       text: NewMsg,
       time: theTime,
       receivedId: selectFriend.id,
     });
 
-    setPrevMsg([...prevMsg, {msg:NewMsg, time:theTime, sender: myself.username, avatarUrl:myself.avatarUrl}]);
+    setPrevMsg([...prevMsg, {msg:NewMsg, time:theTime, sender: Myself.username, avatarUrl:Myself.avatarUrl}]);
     setNewMsg('');
   }
 
     return (
-      <div className="all_chat_screen"> {/*toute la zone*/}
-        {/* <div className="chat_screen"> */}
-        
-        <div className="top">{/*(box top)*/}
+      <div className="all_chat_screen">        
+        <div className="top">
           {/* ***************************************************************** */}
-          <div className="box_search"> {/* recherche (box1)*/}
-            <input
-              type="text"
-              placeholder="recherche"
-              className="search"/>
+          <div className="myPP">
+            {Myself && (
+              <>
+              <img className="rounded-full w-9 h-9" src={Myself.avatarUrl}></img>
+              <p>{Myself.username}</p>
+              </>
+            )}
           </div>
             
           {/* ***************************************************************** */}
 
-          <div className="box_friend">{/* box_firend */}
+          <div className="box_friend">
             {selectFriend && (
             <>
               <div className="relative">
@@ -197,9 +199,8 @@ export default function Chat ()
 
           {/* ***************************************************************** */}
 
-        <div className="bottom">{/*(box bottom)*/}
+        <div className="bottom">
           <div className="box_list">
-            {/* <div className="display_lst">theFriend.username</div> */}
             {lstFriends.map((theFriend, idx) =>
             {
               let isSelected;
@@ -215,7 +216,6 @@ export default function Chat ()
                 </div>
               );
             })}
-            {myself && <p>Connecte en tant que : {myself.username}</p>}
           </div>
           
           {/* ***************************************************************** */}
@@ -252,7 +252,6 @@ export default function Chat ()
             </div>
           </div>
         </div>
-        {/* <div className="bg-green-200 mx-5 h-10">sdfsd</div> */}
       </div>
     )
 

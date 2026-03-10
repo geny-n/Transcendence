@@ -6,8 +6,8 @@ export const getChat = asyncHandler(async (request:Request, response:Response) =
 	if (!request.user) {
 		throw new Error("No user found after authentication");
 	}
-	const userId = request.user.id;//mon id
-    const friendId = request.params.friendId;
+	const userId = request.user.id as string;//mon id
+    const friendId = request.params.friendId as string;
 
     const messages = await prisma.chatMessage.findMany({
 		where: {

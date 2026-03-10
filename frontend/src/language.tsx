@@ -10,13 +10,16 @@ i18n.use(initReactI18next).init({
                 //navbar
                 'navbar.home' : 'Accueil',
                 'navbar.pong' : 'PingPong',
-                'navbar.scoreboard' : 'Tableau des scores',
+                'navbar.scoreboard' : 'Scores',
                 'navbar.chat' : 'Messagerie',
                 'navbar.profile' : 'Profile',
-                'navbar.register' : 'Connexion',
+                'navbar.login' : 'Connexion',
 
                 //HomePage
                 'homepage.home' : 'Bienvenue sur notre transcendence'
+
+                //messagerie
+                
 
             }
         },
@@ -28,7 +31,7 @@ i18n.use(initReactI18next).init({
                 'navbar.scoreboard' : 'Scoreboard',
                 'navbar.chat' : 'Chat',
                 'navbar.profile' : 'Profile',
-                'navbar.register' : 'Register',
+                'navbar.login' : 'Login',
 
                 //HomePage
                 'homepage.home' : 'Welcome to our transcendence'
@@ -42,7 +45,7 @@ i18n.use(initReactI18next).init({
                 'navbar.scoreboard' : 'Tabla de puntuaciones',
                 'navbar.chat' : 'Chat',
                 'navbar.profile' : 'Perfil',
-                'navbar.register' : 'Registarse',
+                'navbar.login' : 'Registarse',
 
                 //HomePage
                 'homepage.home' : 'Bienvenido a nuestra transcendence'

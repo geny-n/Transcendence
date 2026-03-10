@@ -33,6 +33,7 @@ export const socketAuth = async function socketAuthentification(socket:Socket,
 				createdAt:    new Date(),
 				isOnline:     false,
 				refreshToken: null,
+				role:		  "GUEST",
 			};
 			socket.isGuest = true;
 			console.log(`Invité connecté → ${assignedLabel} (id: ${guestId}).`);

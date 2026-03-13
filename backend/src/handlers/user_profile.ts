@@ -14,6 +14,7 @@ export const getMyProfile = asyncHandler(async (request:Request, response:Respon
 		username: request.user.username,
 		email: request.user.email,
 		avatarUrl: request.user.avatarUrl,
+		createdAt: request.user.createdAt,
 	};
 	console.log('inside getMyProfile: userWithoutPassword:', userWithoutPassword);
 

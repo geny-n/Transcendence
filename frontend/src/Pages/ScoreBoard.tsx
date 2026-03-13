@@ -167,8 +167,8 @@ export default function ScoreBoard() {
 
 	return (
 		<div className="scoreboard-page">
-			<h1 className="scoreboard-title">
-				Scoreboard
+			<h1 className="scoreboard-title">{/* ??????????????????????? */}
+				Scoreboard 
 				{liveConnected && <span className="scoreboard-live-dot" title="Mise à jour en temps réel" />}
 			</h1>
 

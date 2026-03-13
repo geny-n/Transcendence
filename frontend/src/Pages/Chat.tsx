@@ -43,14 +43,12 @@ export default function Chat ()
 
   useEffect(() => {
     if (!Myself) return;
-
     const fetchFriends = async () => {
-      // setLoading(true);
       try {
         const result = await axios.get('/api/friends', {
           withCredentials: true,
         });
-        
+          
         if (!result.data.success || !Array.isArray(result.data.friends)) {
           throw Error(`Error API Friends: ${result.status} ${result.statusText}`);
         }
@@ -65,10 +63,6 @@ export default function Chat ()
       catch(error) {
         console.error('Error fetch : ', error);
       }
-      // finally {
-      //   setLoading(false);
-      // }
-
     }
       fetchFriends();
   }, [Myself]);

@@ -3,7 +3,7 @@ import axios from "axios";
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-// import { TheSocket } from '../socket';
+
 import { BiLogOut } from "react-icons/bi"; //logout icon
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type T_updateForm, updateForm } from '../lib/types';
@@ -16,16 +16,12 @@ import './style/Profile.css';
 export default function Profile ()
 {
     const {t} = useTranslation();
-    // const socket = TheSocket();
     const [lstFriends, setLstFriends] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, createdAt: string}[]>([]);
     const [Myself, setMyself] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, password: string, createdAt: string} | null>(null);
     const [selectUser, setSelectUser] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, password?: string, createdAt: string} | null>(null);
     
     const [watingRequest, setWatingRequest] = useState<string[]>([]);
-    const [lstFriendship, setlstFriendship] = useState<{id: string, username: string, avatarUrl:string}[]>([]);
-    const [isShowNotif, setisShowNotif] = useState(0);
-    const [isShowFriendship, setisShowFriendship] = useState(0);
-    const [isShowMessages, setisShowMessages] = useState(0);
+    // const [lstRequest, setlstRequest] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean}[]>([]);
 
     const [ActiveUpdate, setActiveUpdate] = useState(0);
     const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -50,60 +46,60 @@ export default function Profile ()
         }
     };
 
-    useEffect(() => {//recuperer mes informations
-        const fetchMe = async () => {
-            try {
-                const response = await axios.get('/api/users/me', {
-                    withCredentials:true
-                });
-                if (!response.data.success) {
-                    throw Error(`Error API Me: ${response.status} ${response.statusText}`);
-                }
-                setMyself(response.data.user);
-                setSelectUser(response.data.user);
+    // useEffect(() => {//recuperer mes informations
+    //     const fetchMe = async () => {
+    //         try {
+    //             const response = await axios.get('/api/users/me', {
+    //                 withCredentials:true
+    //             });
+    //             if (!response.data.success) {
+    //                 throw Error(`Error API Me: ${response.status} ${response.statusText}`);
+    //             }
+    //             setMyself(response.data.user);
+    //             setSelectUser(response.data.user);
                 
-            }
-            catch(error) {
-                console.error('User not authenticated, redirecting to login...', error);
-                // navigate('/login');
-            }
-        }
-        fetchMe()
-    }, []);
+    //         }
+    //         catch(error) {
+    //             console.error('User not authenticated, redirecting to login...', error);
+    //             // navigate('/login');
+    //         }
+    //     }
+    //     fetchMe()
+    // }, []);
 
 
 
 
-    useEffect(() => {//recuperer la liste des amis depuis le back 
-        if (!Myself)
-            return;
-        const fetchFriends = async () => {
-            try {
-                const result = await axios.get('/api/friends', {
-                    withCredentials: true,
-                });
-                if (!result.data.success || !Array.isArray(result.data.friends)) {
-                    throw Error(`Error API Friends: ${result.status} ${result.statusText}`);
-                }
-                const friends = result.data.friends.map((f: any) => {
-                    // [
-                    //     { "user1": { "id": "moi", ... }, "user2": { "id": "ami1", ... } },
-                    //     { "user1": { "id": "ami2", ... }, "user2": { "id": "moi", ... } }
-                    // ]
-                    if (f.user1.id === Myself.id)
-                        return f.user2;
-                    else
-                        return f.user1;
+    // useEffect(() => {//recuperer la liste des amis depuis le back 
+    //     if (!Myself)
+    //         return;
+    //     const fetchFriends = async () => {
+    //         try {
+    //             const result = await axios.get('/api/friends', {
+    //                 withCredentials: true,
+    //             });
+    //             if (!result.data.success || !Array.isArray(result.data.friends)) {
+    //                 throw Error(`Error API Friends: ${result.status} ${result.statusText}`);
+    //             }
+    //             const friends = result.data.friends.map((f: any) => {
+    //                 // [
+    //                 //     { "user1": { "id": "moi", ... }, "user2": { "id": "ami1", ... } },
+    //                 //     { "user1": { "id": "ami2", ... }, "user2": { "id": "moi", ... } }
+    //                 // ]
+    //                 if (f.user1.id === Myself.id)
+    //                     return f.user2;
+    //                 else
+    //                     return f.user1;
                     
-                });
-                setLstFriends(friends);
-            }
-            catch(error) {
-                console.error('Error fetch : ', error);
-            }
-        }
-        fetchFriends();
-    }, [Myself]);
+    //             });
+    //             setLstFriends(friends);
+    //         }
+    //         catch(error) {
+    //             console.error('Error fetch : ', error);
+    //         }
+    //     }
+    //     fetchFriends();
+    // }, [Myself]);
 
     const IsFriend = (UserId:string) => {
         return lstFriends.some((friend) => friend.id === UserId);
@@ -143,39 +139,29 @@ export default function Profile ()
     
 
     // useEffect fetchMe — remplacer par :
-// useEffect(() => {
-//     const fakeMe = {
-//         id: '1',
-//         username: 'nnn',
-//         avatarUrl: 'https://i.pravatar.cc/150?u=ngeny',
-//         isOnline: true,
-//         email: 'ngeny@g.com',
-//         password: '',
-//         createdAt: '2024-01-01'
-//     };
-//     setMyself(fakeMe);
-//     setSelectUser(fakeMe);
-// }, []);
+useEffect(() => {
+    const fakeMe = {
+        id: '1',
+        username: 'nnn',
+        avatarUrl: 'https://i.pravatar.cc/150?u=ngeny',
+        isOnline: true,
+        email: 'ngeny@g.com',
+        password: '',
+        createdAt: '2024-01-01'
+    };
+    setMyself(fakeMe);
+    setSelectUser(fakeMe);
+}, []);
 
-// // useEffect fetchFriends — remplacer par :
-// useEffect(() => {
-//     if (!Myself) return;
-//     setLstFriends([
-//         { id: '2', username: 'Alice',   avatarUrl: 'https://i.pravatar.cc/150?u=alice',   isOnline: true,  email: 'alice@g.com',   createdAt: '2024-01-02' },
-//         { id: '3', username: 'Bob',     avatarUrl: 'https://i.pravatar.cc/150?u=bob',     isOnline: false, email: 'bob@g.com',     createdAt: '2024-01-03' },
-//         { id: '4', username: 'Charlie', avatarUrl: 'https://i.pravatar.cc/150?u=charlie', isOnline: true,  email: 'charlie@g.com', createdAt: '2024-01-04' },
-//     ]);
-// }, [Myself]);
-
-// useEffect(() => {
-//     if (!Myself) return;
-//     setlstFriendship([
-//         { id: 'r1', username: 'Alice',   avatarUrl: 'https://i.pravatar.cc/150?u=alice' },
-//         { id: 'r2', username: 'Bob',     avatarUrl: 'https://i.pravatar.cc/150?u=bob' },
-//         { id: 'r3', username: 'Charlie', avatarUrl: 'https://i.pravatar.cc/150?u=charlie' },
-//     ]);
-// }, [Myself]);
-
+// useEffect fetchFriends — remplacer par :
+useEffect(() => {
+    if (!Myself) return;
+    setLstFriends([
+        { id: '2', username: 'Alice',   avatarUrl: 'https://i.pravatar.cc/150?u=alice',   isOnline: true,  email: 'alice@g.com',   createdAt: '2024-01-02' },
+        { id: '3', username: 'Bob',     avatarUrl: 'https://i.pravatar.cc/150?u=bob',     isOnline: false, email: 'bob@g.com',     createdAt: '2024-01-03' },
+        { id: '4', username: 'Charlie', avatarUrl: 'https://i.pravatar.cc/150?u=charlie', isOnline: true,  email: 'charlie@g.com', createdAt: '2024-01-04' },
+    ]);
+}, [Myself]);
 
     const searchUser = async () => {
         try {
@@ -212,7 +198,7 @@ export default function Profile ()
                 {withCredentials: true}
             );
             if (data.currentPassword && data.newPassword) {
-                await axios.post('/api/users/me/password', 
+                await axios.put('/api/users/me/password', 
                     {currentPassword: data.currentPassword, newPassword: data.newPassword},
                     {withCredentials: true}
                 );
@@ -272,79 +258,6 @@ export default function Profile ()
         
     };
 
-    
-    useEffect(() => {
-        setActiveUpdate(0);
-        setErrMsgForm('');
-        setisShowNotif(0);
-    }, [selectUser]);
-
-    useEffect(() => {//recuperer la liste des amis depuis le back 
-        if (!Myself)
-            return;
-        const fetchRequestF = async () => {
-            try {
-                const result = await axios.get('/api/friends/pending', {
-                    withCredentials: true,
-                });
-                if (!result.data.success || !Array.isArray(result.data.requests)) {
-                    throw Error(`Error API Friendship: ${result.status} ${result.statusText}`);
-                }
-                const requests = result.data.requests
-                .filter((r:any) => r.receiverId === Myself.id)
-                .map((r: any) => ({
-                    id: r.id,
-                    username: r.sender.username,
-                    senderId: r.senderId,
-                    avatarUrl: r.sender.avatarUrl,
-                }));
-                setlstFriendship(requests);
-            }
-            catch(error) {
-                console.error('Error fetch : ', error);
-            }
-        }
-        fetchRequestF();
-    }, [Myself]);
-
-    const AcceptRequest = async (requestId:string) => {
-        try {
-            await axios.patch(`/api/friends/requests/${requestId}`,
-                { action: 'accept' },
-                { withCredentials: true}
-            );
-            setlstFriendship(lstFriendship.filter(r => r.id !== requestId));
-        }
-        catch {}
-    }
-
-    const DenieRequest = async (requestId:string) => {
-        try {
-            await axios.patch(`/api/friends/requests/${requestId}`,
-                { action: 'reject' },
-                { withCredentials: true}
-            );
-            setlstFriendship(lstFriendship.filter(r => r.id !== requestId));
-        }
-        catch {}
-    }
-
-    const ShowNotif = () => {
-        // reset({username: selectUser?.username, email:selectUser?.email, currentPassword:'', newPassword:''});//pre remplir les champs par les avaleurs actuelles 
-        setisShowNotif(1);
-    }
-
-    const ShowFriendship = () => {
-        setisShowFriendship(1);
-        setisShowMessages(0);
-    }
-
-    const ShowMessages = () => {
-        setisShowMessages(1);
-        setisShowFriendship(0);
-    }
-
-
     const WhichProfile = () => {
         if (!selectUser || !Myself)
             return null;
@@ -389,7 +302,7 @@ export default function Profile ()
                                         </button>
                                     </div>
                                 </div>
-                                <div className="justify-self-end self-end text-right ">{t('profile.datecreate')} <br/> {new Date(selectUser?.createdAt).toLocaleDateString('fr-FR')}</div>
+                                <div className="justify-self-end self-end text-right ">{t('profile.datecreate')} <br/> {selectUser?.createdAt}</div>
                             </>
                         )}
                         {ActiveUpdate === 1 && ( // si il est en mode modifier
@@ -412,7 +325,7 @@ export default function Profile ()
 
                                             <div className="input_form">
                                                 <CiLock />
-                                                <input {...(register("currentPassword", {onChange: () => {setErrMsgForm('')}}))}  type={showPassword ? "text" : "password"} placeholder={t('profile.actuelmdp')} autoComplete="new-password"/>
+                                                <input {...(register("currentPassword", {onChange: () => {setErrMsgForm('')}}))}  type={showPassword ? "text" : "password"} placeholder={t('profile.actuelmdp')}/>
                                                     {/* {errors.password && <p className="error_input">{`${errors.password.message}`}</p>} */}
                                                 {showPassword ? (
                                                     <LuEye className="icon"
@@ -513,6 +426,28 @@ export default function Profile ()
     return (
         <div className="all_screen">
             <div className="left">
+                <div className="box_search">
+                    <input
+                        type="text"
+                        placeholder="Rechercher..."
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && searchUser()}
+                    />
+                    <button onClick={searchUser}>🔍</button>
+
+                    {SearchResults.map((user) => (
+                        <div key={user.id} onClick={() => {
+                            setSelectUser(user);
+                            setSearchResults([]); // ferme les résultats après sélection
+                            setQuery('');
+                        }}>
+                            <img className="rounded-full w-8 h-8" src={user.avatarUrl} />
+                            <span>{user.username}</span>
+                            </div>
+                    ))}
+                </div>      
+
                     {/* //////////////////////////avatar + mon nom//////////////////////////////////// */}
                     <div className="box_me" onClick={()=>setSelectUser(Myself)}>
                         <div className="display_me">
@@ -523,8 +458,7 @@ export default function Profile ()
 
                      {/* //////////////////////////notifications//////////////////////////////////// */}
                     <div className="box_notif">
-                        <button className="notif" onClick={ShowNotif}>{t('profile.notification')}</button>
-                        
+                        <button className="notif">Notifications</button>
                         {/* <div className="notif_request">friend request</div> */}
                     </div>
 
@@ -541,80 +475,27 @@ export default function Profile ()
             </div>
             {/* /////////////////////////profile(moi ou user)/////////////////////////////////////// */}
             <div className="box_profile">
-                {isShowNotif === 1 ? (
-                    <div>
-                        <div className="bg-red-900 overflow-auto flex gap-5">
-                            <div className="bg-green-900">
-                                <button onClick={ShowMessages}>Nouveaux messages</button>
-                            </div>
-                            <div className="bg-green-700">
-                                <button onClick={ShowFriendship}>demande d amis</button>
-                            </div>
-                            <div className="box_search">
-                                <input
-                                    type="text"
-                                    placeholder="Rechercher..."
-                                    value={query}
-                                    onChange={(e) => setQuery(e.target.value)}
-                                    onKeyDown={(e) => e.key === 'Enter' && searchUser()}
-                                />
-                                <button onClick={searchUser}>🔍</button>
+                {WhichProfile()}
 
-                                {SearchResults.map((user) => (
-                                    <div key={user.id} onClick={() => {
-                                        setSelectUser(user);
-                                        setSearchResults([]); // ferme les résultats après sélection
-                                        setQuery('');
-                                    }}>
-                                        <img className="rounded-full w-8 h-8" src={user.avatarUrl} />
-                                        <span>{user.username}</span>
-                                        </div>
-                                ))}
-                            </div>   
-                        </div>
-                        <div className="bg-gray-900">
-                            {isShowFriendship === 1 && (
-                                <div>
-                                    {lstFriendship.map((theRequest) => (
-                                        <div className="flex gap-10" key={theRequest.id}>
-                                            <img className="rounded-full w-9 h-9" src={theRequest.avatarUrl}></img>
-                                            <span className="truncate">{theRequest.username}</span>
-                                            <button onClick = {() => AcceptRequest(theRequest.id)}>accepter</button>
-                                            <button onClick = {() => DenieRequest(theRequest.id)}>refuser</button>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                            {isShowMessages === 1 && (
-                                <div>voici la liste des nouveaux </div>
-                            )}
-                        </div>
+             {/* //////////////////////////tableau des scores//////////////////////////////////// */}
+                <div className="scoreboad_frame">
+                    <div className="flex py-5 border-b">
+                        <div className="w-1/3">{t('profile.opponent')}</div>
+                        <div className="w-1/3">{t('profile.result')}</div>
+                        <div className="w-1/3">{t('profile.score')}</div>
+                        <div className="w-1/3">{t('profile.time')}</div>
+                        <div className="w-1/3">{t('profile.date')}</div>
                     </div>
-                ) : (
-                    <>
-                    {WhichProfile()}
-
-                    {/* //////////////////////////tableau des scores//////////////////////////////////// */}
-                    <div className="scoreboad_frame">
-                        <div className="flex py-5 border-b">
-                            <div className="w-1/3">{t('profile.opponent')}</div>
-                            <div className="w-1/3">{t('profile.result')}</div>
-                            <div className="w-1/3">{t('profile.score')}</div>
-                            <div className="w-1/3">{t('profile.time')}</div>
-                            <div className="w-1/3">{t('profile.date')}</div>
+                    {(Scores[selectUser?.id ?? ''] ?? []).map(match => (
+                        <div className="flex border-t border-gray-700 py-5">
+                            <div className="w-1/3">{match.opponent}</div>
+                            <div className="w-1/3">{match.result}</div>
+                            <div className="w-1/3">{match.scoreLoser} / {match.scoreWinner}</div>
+                            <div className="w-1/3">{match.durationSec}</div>
+                            <div className="w-1/3">{match.date}</div>
                         </div>
-                        {(Scores[selectUser?.id ?? ''] ?? []).map(match => (
-                            <div className="flex border-t border-gray-700 py-5">
-                                <div className="w-1/3">{match.opponent}</div>
-                                <div className="w-1/3">{match.result}</div>
-                                <div className="w-1/3">{match.scoreLoser} / {match.scoreWinner}</div>
-                                <div className="w-1/3">{match.durationSec}</div>
-                                <div className="w-1/3">{match.date}</div>
-                            </div>
-                        ))}
-                    </div>
-                    </>
-                )}
+                    ))}
+                </div>
             </div>
             
         </div>

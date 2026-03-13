@@ -48,7 +48,8 @@ export const updateForm = z.object({
   .string()
   .email({message: "Email valide requis"})
   .optional().or(z.literal('')),
-  password: z
+  currentPassword: z.string().optional().or(z.literal('')),
+  newPassword: z
   .string()
   .min(10, "Ne peux contenir moins de 10 caracteres")
   .max(24, "Ne peux contenir plus de 24 caracteres")

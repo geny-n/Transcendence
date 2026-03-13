@@ -359,7 +359,7 @@ export const getPendingRequests = asyncHandler(async (request:Request, response:
 			status: "PENDING"
 		},
 		include: {
-			sender: { select: { id: true, username: true } }
+			sender: { select: { id: true, username: true , avatarUrl:true } }
 		}
 	});
 	console.log("pending:", pending);

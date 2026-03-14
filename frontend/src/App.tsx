@@ -13,23 +13,27 @@ import Profile from './Pages/Profile'
 import Login from './Pages/Login'
 import Register from './Pages/Register'
 import Matchmaking from './Pages/Matchmaking'
-import {Routes, Route} from "react-router-dom"
+import { SocketProvider } from './socket.tsx'
+import {Routes, Route, Outlet} from "react-router-dom"
+
 
 function App() {
   return (
     <>
       <Navbar />
       <Routes>
-        <Route path="/" element={<HomeP />} />
-        <Route path="/pong" element={<Pong />} />
-        <Route path="/pong-multi" element={<PongMulti />} />
-        <Route path="/scoreBoard" element={<ScoreB />} />
-        <Route path="/teams" element={<Teams />} />
-        <Route path="/chat" element={<Chat />} />
-        <Route path="/profile" element={<Profile />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/matchmaking" element={<Matchmaking />} />
+        <Route element={<SocketProvider><Outlet/></SocketProvider>}>
+          <Route path="/" element={<HomeP />} />
+          <Route path="/pong" element={<Pong />} />
+          <Route path="/pong-multi" element={<PongMulti />} />
+          <Route path="/scoreBoard" element={<ScoreB />} />
+          <Route path="/teams" element={<Teams />} />
+          <Route path="/chat" element={<Chat />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/matchmaking" element={<Matchmaking />} />
+        </Route>
       </Routes>
     </>
   )

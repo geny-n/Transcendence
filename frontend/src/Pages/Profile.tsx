@@ -3,7 +3,7 @@ import axios from "axios";
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-// import { TheSocket } from '../socket';
+import { TheSocket } from '../socket';
 import { BiLogOut } from "react-icons/bi"; //logout icon
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type T_updateForm, updateForm } from '../lib/types';
@@ -16,7 +16,8 @@ import './style/Profile.css';
 export default function Profile ()
 {
     const {t} = useTranslation();
-    // const socket = TheSocket();
+    const { socket } = TheSocket();
+
     const [lstFriends, setLstFriends] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, createdAt: string}[]>([]);
     const [Myself, setMyself] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, password: string, createdAt: string} | null>(null);
     const [selectUser, setSelectUser] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, password?: string, createdAt: string} | null>(null);
@@ -35,8 +36,7 @@ export default function Profile ()
     const logout_url = '/api/logout';
     const navigate = useNavigate();
     
-    const [SearchResults, setSearchResults] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, createdAt: string}[]>([]);
-    const [query, setQuery] = useState<string>('');
+    
 
 
     const handleLogout = async () =>{
@@ -72,41 +72,42 @@ export default function Profile ()
     }, []);
 
 
-
+    const getFriend = async (myself = Myself) => {
+        if (!myself)
+            return;
+        try {
+            const result = await axios.get('/api/friends', {
+                withCredentials: true,
+            });
+            if (!result.data.success || !Array.isArray(result.data.friends)) {
+                throw Error(`Error API Friends: ${result.status} ${result.statusText}`);
+            }
+            const friends = result.data.friends.map((f: any) => {
+                // [
+                //     { "user1": { "id": "moi", ... }, "user2": { "id": "ami1", ... } },
+                //     { "user1": { "id": "ami2", ... }, "user2": { "id": "moi", ... } }
+                // ]
+                if (f.user1.id === myself.id)
+                    return f.user2;
+                else
+                    return f.user1;
+                
+            });
+            setLstFriends(friends);
+        }
+        catch(error) {
+            console.error('Error fetch : ', error);
+        }
+    }
 
     useEffect(() => {//recuperer la liste des amis depuis le back 
         if (!Myself)
             return;
-        const fetchFriends = async () => {
-            try {
-                const result = await axios.get('/api/friends', {
-                    withCredentials: true,
-                });
-                if (!result.data.success || !Array.isArray(result.data.friends)) {
-                    throw Error(`Error API Friends: ${result.status} ${result.statusText}`);
-                }
-                const friends = result.data.friends.map((f: any) => {
-                    // [
-                    //     { "user1": { "id": "moi", ... }, "user2": { "id": "ami1", ... } },
-                    //     { "user1": { "id": "ami2", ... }, "user2": { "id": "moi", ... } }
-                    // ]
-                    if (f.user1.id === Myself.id)
-                        return f.user2;
-                    else
-                        return f.user1;
-                    
-                });
-                setLstFriends(friends);
-            }
-            catch(error) {
-                console.error('Error fetch : ', error);
-            }
-        }
-        fetchFriends();
+        getFriend();
     }, [Myself]);
 
-    const IsFriend = (UserId:string) => {
-        return lstFriends.some((friend) => friend.id === UserId);
+    const IsFriend = (UserId:string) => {// parcour la liste d ami et retourne true si l id du user en question est dans la liste 
+        return lstFriends.some((friend) => friend.id === UserId); 
     }
 
     const DeleteFriend = async () => {
@@ -116,15 +117,15 @@ export default function Profile ()
             await axios.delete(`/api/friends/${selectUser.id}`, {
                 withCredentials: true,
             });
-            setLstFriends(lstFriends.filter(friend => friend.id !== selectUser.id))
-        }
-        catch {
+            setLstFriends(lstFriends.filter(friend => friend.id !== selectUser.id));
+            setWatingRequest(prev => prev.filter(id => id !== selectUser.id));
 
         }
+        catch {}
         
     }
     
-    const AddFriend = async () => {
+    const AddFriend = async () => { //envoie une demande d ami et ajoute dans la bd friendship
         if (!selectUser)
             return;
         try {
@@ -135,9 +136,7 @@ export default function Profile ()
             // setLstFriends([...lstFriends, selectUser]);
             setWatingRequest([...watingRequest, selectUser.id]);
         }
-        catch {
-
-        }
+        catch {}
     }
 
     
@@ -177,14 +176,8 @@ export default function Profile ()
 // }, [Myself]);
 
 
-    const searchUser = async () => {
-        try {
-            const res = await axios.get(`/api/users/search?q=${query}`, { withCredentials: true });
-            setSearchResults(res.data.users);
-        } catch (error) {
-            console.error('Erreur recherche :', error);
-        }
-    }
+    
+
     const { // retourne des outils pour gerer le formulaire
         register, //faire le lien avec le input du form
         handleSubmit, // valide les champs avec zod si error envoie le message d erreur 
@@ -204,6 +197,7 @@ export default function Profile ()
             return;
         //envoie une requete PUT au back favec les nouvelles valeurs et met a jour la BD 
         try {
+            //envoie les nouvelles valeurs au back si ca a change sinon ca envoie les enciennes pour ne pas envoyer de champs vides
             await axios.put('/api/users/me/', 
                 {
                     username: data.username || selectUser.username,
@@ -243,17 +237,13 @@ export default function Profile ()
 
 //    https://blog.stackademic.com/uploading-files-with-react-post-request-dd6c1eebe933
     const handleAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files;
-        const formData = new FormData();
+        const file = e.target.files; //liste des fichiers selectionnes 
+        const formData = new FormData();//creer un conteneur vide 
         if (file)
-        {
-            formData.append('avatar', file[0]);
-            // setUploadAvatar(file[0]);
-            // setPrevAvatar(URL.createObjectURL(file));
-        }
+            formData.append('avatar', file[0]);//met le fichier, si il exite, dans le conteneur pour que axios puisse l envoyer au back
         try {
             const res = await axios.put('/api/users/me/avatar', formData,  {headers: {"content-Type": "multipart/form-data"}, withCredentials: true});
-            // setUploadAvatar(null);
+            
             //permet de voir la modification dans le front
             setSelectUser({
                 ...selectUser!, avatarUrl:res.data.avatarUrl || selectUser?.avatarUrl
@@ -279,7 +269,33 @@ export default function Profile ()
         setisShowNotif(0);
     }, [selectUser]);
 
-    useEffect(() => {//recuperer la liste des amis depuis le back 
+    useEffect(() => {
+        if (!socket || !Myself)
+            return;
+        const handleRequest = () => {
+            axios.get('/api/friends/pending', { withCredentials: true })
+            .then (result => {
+                if (!result.data.success || !Array.isArray(result.data.requests)) {
+                        throw Error(`Error API Friendship: ${result.status} ${result.statusText}`);
+                    }
+                    const requests = result.data.requests//reccupere toutes les demandes en attente envoyer et recu par le back
+                    .filter((r:any) => r.receiverId === Myself.id)//selectionne que les demandes que je recu
+                    .map((r: any) => ({
+                        id: r.id,
+                        username: r.sender.username,
+                        senderId: r.senderId,
+                        avatarUrl: r.sender.avatarUrl,
+                    }));
+                    setlstFriendship(requests);
+            })
+        }
+        socket.on("friend:request_received", handleRequest);
+        return () => {
+            socket.off("friend:request_received", handleRequest);
+        }
+    }, [socket, Myself]);
+
+    useEffect(() => {//recuperer la liste des demandes d amis depuis le back
         if (!Myself)
             return;
         const fetchRequestF = async () => {
@@ -290,8 +306,8 @@ export default function Profile ()
                 if (!result.data.success || !Array.isArray(result.data.requests)) {
                     throw Error(`Error API Friendship: ${result.status} ${result.statusText}`);
                 }
-                const requests = result.data.requests
-                .filter((r:any) => r.receiverId === Myself.id)
+                const requests = result.data.requests//reccupere toutes les demandes en attente envoyer et recu par le back
+                .filter((r:any) => r.receiverId === Myself.id)//selectionne que les demandes que je recu
                 .map((r: any) => ({
                     id: r.id,
                     username: r.sender.username,
@@ -307,18 +323,57 @@ export default function Profile ()
         fetchRequestF();
     }, [Myself]);
 
-    const AcceptRequest = async (requestId:string) => {
+    const AcceptRequest = async (requestId:string) => {//accepter les demandes d ami
         try {
             await axios.patch(`/api/friends/requests/${requestId}`,
                 { action: 'accept' },
                 { withCredentials: true}
             );
             setlstFriendship(lstFriendship.filter(r => r.id !== requestId));
+            getFriend ();
         }
         catch {}
     }
 
-    const DenieRequest = async (requestId:string) => {
+    useEffect (() => {//voir l ami accepter sur ma page
+        if (!socket || !Myself)
+            return;
+        const handleAccepted = () => {
+            getFriend(Myself);
+        }
+        socket.on("friend:request_accepted", handleAccepted);
+        return () => {
+            socket.off("friend:request_accepted", handleAccepted);
+        }
+    }, [socket, Myself]);
+
+    useEffect (() => {//quand je supprime quelau un je disparait de sa page
+        if (!socket || !Myself)
+            return;
+        const handleDelete = () => {
+            getFriend(Myself);
+        }
+        socket.on("friend:unfriended", handleDelete);
+        return () => {
+            socket.off("friend:unfriended", handleDelete);
+        }
+    }, [socket, Myself]);
+
+    useEffect (() => {
+        if (!socket)
+            return;
+        const handleDenied = (data : {requestId:string; userId:string}) => {
+            setWatingRequest(prev => prev.filter(id => id !== data.userId));
+        }
+
+        // socket.on("friend:request_rejected", (data {requestId:string; userId:string});
+        socket.on("friend:request_rejected", handleDenied);
+        return () => {
+            socket.off("friend:request_rejected", handleDenied);
+        }
+    }, [socket]);
+
+    const DenieRequest = async (requestId:string) => {//refuser les demandes d ami
         try {
             await axios.patch(`/api/friends/requests/${requestId}`,
                 { action: 'reject' },
@@ -551,25 +606,8 @@ export default function Profile ()
                                 <button onClick={ShowFriendship}>demande d amis</button>
                             </div>
                             <div className="box_search">
-                                <input
-                                    type="text"
-                                    placeholder="Rechercher..."
-                                    value={query}
-                                    onChange={(e) => setQuery(e.target.value)}
-                                    onKeyDown={(e) => e.key === 'Enter' && searchUser()}
-                                />
-                                <button onClick={searchUser}>🔍</button>
-
-                                {SearchResults.map((user) => (
-                                    <div key={user.id} onClick={() => {
-                                        setSelectUser(user);
-                                        setSearchResults([]); // ferme les résultats après sélection
-                                        setQuery('');
-                                    }}>
-                                        <img className="rounded-full w-8 h-8" src={user.avatarUrl} />
-                                        <span>{user.username}</span>
-                                        </div>
-                                ))}
+                               
+                                
                             </div>   
                         </div>
                         <div className="bg-gray-900">

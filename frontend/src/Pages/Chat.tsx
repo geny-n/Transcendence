@@ -76,29 +76,11 @@ export default function Chat ()
     return "bg-gray-300";
   }
 
-  const socket = TheSocket();
-  
+  const { socket } = TheSocket();
+  console.log("socket id:", socket?.id);
   const [NewMsg, setNewMsg] = useState('');
   const [prevMsg, setPrevMsg] = useState<{msg: string, time: string, sender: string, avatarUrl:string}[]>([]);
   //permet de garder en memoire touts les messages (le 1er message n es pas ecraser par le 2eme)
-
-  // useEffect (() => {
-  //   if (!socket)
-  //     return;
-  //   socket.on('privMessage', (incoming: { user: string; text: string; time: string; senderId: string }) => {
-  //     console.log('socket recu:', incoming, 'selectFriend:', selectFriend?.username);
-  //     if (incoming.senderId !== selectFriend?.id) return;
-  //     setPrevMsg(prevMsg => [
-  //       ...prevMsg,
-  //       {
-  //         msg: incoming.text,
-  //         time: incoming.time,
-  //         sender: incoming.user
-  //       }
-  //     ])
-  //   });
-  //   return () => { socket.off(`privMessage`);};
-  // }, [socket]);
 
   useEffect(() => {
     if (!socket || !selectFriend)
@@ -109,7 +91,7 @@ export default function Chat ()
       time: string;
       senderId: string;
     }) => {
-      console.log('socket recu:', incoming, 'selectFriend:', selectFriend.username);
+      // console.log('socket recu:', incoming, 'selectFriend:', selectFriend.username);
       if (incoming.senderId !== selectFriend.id)
           return;
       setPrevMsg(prev => [...prev, {

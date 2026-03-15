@@ -16,7 +16,7 @@
     
     /* ── Notification ──────────────────────────────────────────────── */
 
-    .box_notif {
+    .box_notif {  /* afficher bouton vers notif */
         @apply p-3
         flex flex-col gap-3
         overflow-auto
@@ -28,6 +28,55 @@
         bg-blue-400
     }
 
+    .box_search {
+        @apply bg-gray-700
+        dark:bg-gray-600
+        px-2
+        flex gap-2
+        rounded-lg
+    }
+
+    .input {
+       @apply w-full
+       /* focus:border focus:rounded-lg focus:border-gray-800 */
+       outline-none
+    }
+
+    .show_notif {
+        @apply grid grid-cols-2 gap-10
+        overflow-auto overflow-x-auto
+        bg-gray-900
+        h-full
+    }
+
+    .title_notif {
+        @apply border-b border-gray-600 p-2
+    }
+
+    .box_icon {
+        @apply flex gap-8 shrink-0
+    }
+    .icon_notif {
+        @apply w-8 h-8 shrink-0
+        hover:bg-gray-700 transition rounded-full
+    }
+
+    .items {
+        @apply flex p-3 items-center gap-5
+    }
+
+    .avatar_notif {
+        @apply rounded-full w-9 h-9
+    }
+
+    .username_notif {
+        @apply truncate mr-auto
+    }
+    
+    .msg_counter {
+        @apply border rounded-full w-7 h-7
+        shrink-0 bg-green-400
+    }
     /* ── Myself ──────────────────────────────────────────────── */
 
     .box_me {
@@ -130,14 +179,6 @@
         rounded hover:bg-blue-600 transition
     }
 
-    /* .logout_btn {
-        @apply bg-blue-500
-        py-1 px-2 w-1/2
-        flex gap-2
-        items-center text-white 
-        rounded hover:bg-blue-600 transition
-    } */
-
     .delete_btn {
         @apply bg-red-500
         py-1 px-2
@@ -204,7 +245,6 @@
         bg-gray-700
         hover:bg-gray-600 transition
     }
-
 
     /* ── scoreboard ──────────────────────────────────────────────── */
     /* .scoreboad_frame {

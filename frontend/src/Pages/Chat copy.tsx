@@ -82,7 +82,6 @@ export default function Chat ()
   const [prevMsg, setPrevMsg] = useState<{msg: string, time: string, sender: string, avatarUrl:string}[]>([]);
   //permet de garder en memoire touts les messages (le 1er message n es pas ecraser par le 2eme)
 
-  //en cours de discution
   useEffect(() => {
     if (!socket || !selectFriend)
         return;
@@ -102,7 +101,6 @@ export default function Chat ()
         avatarUrl: selectFriend.avatarUrl
       }
       ]);
-      axios.patch(`/api/users/chat/${selectFriend.id}/read`, {withCredentials:true});
     }
     socket.on("privMessage", handler);
     return () => {
@@ -115,7 +113,6 @@ export default function Chat ()
     setPrevMsg([]);
     if (!Myself || !selectFriend)
       return;
-    axios.patch(`/api/users/chat/${selectFriend.id}/read`, {}, {withCredentials:true});
     axios.get(`/api/users/chat/${selectFriend.id}`, {withCredentials:true})
       .then(res => {
         console.log('messages recu:', res.data);
@@ -187,11 +184,7 @@ export default function Chat ()
                   isSelected = 'bg-gray-300';
               return (
                 <div className={`display_lst ${isSelected}`} 
-                  key={idx} onClick={() => {
-                    setSelectFriend(theFriend);
-                    //change le status read en true quand le user click sur le sender
-                    axios.patch(`/api/users/chat/${theFriend.id}/read`, {}, {withCredentials:true});
-                  }}
+                  key={idx} onClick={()=>setSelectFriend(theFriend)}
                 >
                   <img className="rounded-full w-10 h-10" src={theFriend.avatarUrl}></img>
                   <span className={`display_status ${status(theFriend.isOnline)}`}></span>

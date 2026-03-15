@@ -32,13 +32,16 @@ i18n.use(initReactI18next).init({
                 'profile.add' : 'Ajouter en ami',
                 'profile.pending' : 'Demande en attente',
                 'profile.notification' : 'Notifications',
+                'profile.newMessage' : 'Nouveaux messages',
+                'profile.friendRequest' : 'Demande d amis',
+                'profile.search' : 'Recherche',
 
 
-                'profile.opponent' : 'adversaire',
-                'profile.result' : 'resultat',
-                'profile.score' : 'score',
-                'profile.time' : 'duree',
-                'profile.date' : 'date',
+                'profile.opponent' : 'Adversaire',
+                'profile.result' : 'Resultat',
+                'profile.score' : 'Score',
+                'profile.time' : 'Duree',
+                'profile.date' : 'Date',
             
                 'profile.err.data' : 'Nom d utilisateur ou email déjà utilise',
                 'profile.err.wrongPassword' : 'Le mot de passe ne correspond pas au mot de passe actuel',
@@ -77,11 +80,11 @@ i18n.use(initReactI18next).init({
                 'profile.add' : 'Add to Friend',
                 'profile.pending' : 'Pending request',
 
-                'profile.opponent' : 'opponent',
-                'profile.result' : 'result',
-                'profile.score' : 'score',
-                'profile.time' : 'time',
-                'profile.date' : 'date',
+                'profile.opponent' : 'Opponent',
+                'profile.result' : 'Result',
+                'profile.score' : 'Score',
+                'profile.time' : 'Time',
+                'profile.date' : 'Date',
             
                 'profile.err.data' : 'Nom d utilisateur ou email déjà utilise',
                 'profile.err.avatar' : 'Erreur lors du chargement de l image',

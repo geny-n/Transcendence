@@ -42,8 +42,8 @@ const onConnection = async (socket:Socket) => {
 		});
 
 		// Écouter les messages privés (uniquement pour les utilisateurs authentifiés)
-		socket.on("privMessage", async({user, text, time, receivedId}) => {
-			console.log(`message envoyé de ${user} à ${receivedId}`);
+		socket.on("privMessage", async({user, text, time, receivedId, read}) => {
+			// console.log(`message envoyé de ${user} à ${receivedId}`);
 			//envoie du message dans la bdd
 			const message = await prisma.chatMessage.create ({
 				data: {
@@ -51,10 +51,11 @@ const onConnection = async (socket:Socket) => {
 					time: new Date(),
 					senderId: socket.user.id,
 					receiverId: receivedId,
+					read: false,
 				}
 			});
 			
-			socket.to(`user:${receivedId}`).emit("privMessage", {user, text, time, senderId: socket.user.id});
+			socket.to(`user:${receivedId}`).emit("privMessage", {user, text, time, senderId: socket.user.id, read});
 		});
 
 		// Gérer la déconnexion (met à jour la DB)

@@ -188,7 +188,7 @@ export const searchUser = asyncHandler(async (request:Request, response:Response
 
 	const findUser = await prisma.user.findMany({
 		where : { username: { contains: trimmedQ, }, },
-		select : { id: true, username: true, avatarUrl: true },
+		select : { id: true, username: true, avatarUrl: true, isOnline: true, email: true, createdAt:true},
 		take: 10,
 		orderBy: { username: 'asc' },
 	});

@@ -11,6 +11,11 @@ import { CiMail, CiLock } from "react-icons/ci"; // mail && lock icon
 import { LuEye, LuEyeClosed } from "react-icons/lu"; //eyes icon
 import { CgProfile } from "react-icons/cg";//profile icon
 import { FaPencil } from 'react-icons/fa6'; //pencil icon
+import { CiCircleCheck } from "react-icons/ci"; //accepter icon
+import { CiCircleRemove } from "react-icons/ci"; //refuser icon
+import { CiSearch } from "react-icons/ci"; //search icon
+
+
 import './style/Profile.css';
 
 export default function Profile ()
@@ -20,13 +25,16 @@ export default function Profile ()
 
     const [lstFriends, setLstFriends] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, createdAt: string}[]>([]);
     const [Myself, setMyself] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, password: string, createdAt: string} | null>(null);
-    const [selectUser, setSelectUser] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, password?: string, createdAt: string} | null>(null);
+    const [selectUser, setSelectUser] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, createdAt: string} | null>(null);
     
     const [watingRequest, setWatingRequest] = useState<string[]>([]);
     const [lstFriendship, setlstFriendship] = useState<{id: string, username: string, avatarUrl:string}[]>([]);
     const [isShowNotif, setisShowNotif] = useState(0);
-    const [isShowFriendship, setisShowFriendship] = useState(0);
-    const [isShowMessages, setisShowMessages] = useState(0);
+    const [notifMsgUnread, setNotifMsgUnread] = useState<string[]>(([]));
+    const [searchVal, setSeachVal] = useState(""); //reccuprer tout ce que le user tapper dans la barre de recherche
+    const [getSearchVal, setGetSeachVal] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, createdAt: string}[]>([]);
+    // const [isShowFriendship, setisShowFriendship] = useState(0);
+    // const [isShowMessages, setisShowMessages] = useState(0);
 
     const [ActiveUpdate, setActiveUpdate] = useState(0);
     const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -37,6 +45,15 @@ export default function Profile ()
     const navigate = useNavigate();
     
     
+    const handleSearch = async (event:React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        setSeachVal(value);
+        try {
+            const result = await axios.get(`/api/users/search?q=${value}`, {withCredentials:true});
+            setGetSeachVal(result.data.users);
+        }
+        catch {}
+    };
 
 
     const handleLogout = async () =>{
@@ -64,7 +81,7 @@ export default function Profile ()
                 
             }
             catch(error) {
-                console.error('User not authenticated, redirecting to login...', error);
+                // console.error('User not authenticated, redirecting to login...', error);
                 // navigate('/login');
             }
         }
@@ -107,7 +124,7 @@ export default function Profile ()
     }, [Myself]);
 
     const IsFriend = (UserId:string) => {// parcour la liste d ami et retourne true si l id du user en question est dans la liste 
-        return lstFriends.some((friend) => friend.id === UserId); 
+        return lstFriends.some((friend) => friend.id === UserId);
     }
 
     const DeleteFriend = async () => {
@@ -156,7 +173,7 @@ export default function Profile ()
 //     setSelectUser(fakeMe);
 // }, []);
 
-// // useEffect fetchFriends — remplacer par :
+// useEffect fetchFriends — remplacer par :
 // useEffect(() => {
 //     if (!Myself) return;
 //     setLstFriends([
@@ -169,14 +186,18 @@ export default function Profile ()
 // useEffect(() => {
 //     if (!Myself) return;
 //     setlstFriendship([
-//         { id: 'r1', username: 'Alice',   avatarUrl: 'https://i.pravatar.cc/150?u=alice' },
+//         { id: 'r1', username: 'Alffffffffffffffffffffffffffice',   avatarUrl: 'https://i.pravatar.cc/150?u=alice' },
 //         { id: 'r2', username: 'Bob',     avatarUrl: 'https://i.pravatar.cc/150?u=bob' },
 //         { id: 'r3', username: 'Charlie', avatarUrl: 'https://i.pravatar.cc/150?u=charlie' },
 //     ]);
 // }, [Myself]);
 
 
-    
+// const [SearchResults, setSearchResults] = useState<{id: string, username: string, avatarUrl: string, isOnline: boolean, email: string, createdAt: string}[]>([
+//     { id: '5', username: 'Dave',  avatarUrl: 'https://i.pravatar.cc/150?u=dave',  isOnline: true,  email: 'dave@g.com',  createdAt: '2024-01-05' },
+//     { id: '6', username: 'Eve',   avatarUrl: 'https://i.pravatar.cc/150?u=eve',   isOnline: false, email: 'eve@g.com',   createdAt: '2024-01-06' },
+//     { id: '7', username: 'Frank', avatarUrl: 'https://i.pravatar.cc/150?u=frank', isOnline: true,  email: 'frank@g.com', createdAt: '2024-01-07' },
+// ]);
 
     const { // retourne des outils pour gerer le formulaire
         register, //faire le lien avec le input du form
@@ -274,7 +295,7 @@ export default function Profile ()
             return;
         const handleRequest = () => {
             axios.get('/api/friends/pending', { withCredentials: true })
-            .then (result => {
+            .then (result => { 
                 if (!result.data.success || !Array.isArray(result.data.requests)) {
                         throw Error(`Error API Friendship: ${result.status} ${result.statusText}`);
                     }
@@ -362,11 +383,9 @@ export default function Profile ()
     useEffect (() => {
         if (!socket)
             return;
-        const handleDenied = (data : {requestId:string; userId:string}) => {
-            setWatingRequest(prev => prev.filter(id => id !== data.userId));
+        const handleDenied = (data : {requestId:string; userId:string}) => { //recupere les datas envoyer par le back
+            setWatingRequest(prev => prev.filter(id => id !== data.userId)); //enleve data.userId de waitinfrequest pour changer le statut du bouton en "ajouter en ami"
         }
-
-        // socket.on("friend:request_rejected", (data {requestId:string; userId:string});
         socket.on("friend:request_rejected", handleDenied);
         return () => {
             socket.off("friend:request_rejected", handleDenied);
@@ -389,23 +408,45 @@ export default function Profile ()
         setisShowNotif(1);
     }
 
-    const ShowFriendship = () => {
-        setisShowFriendship(1);
-        setisShowMessages(0);
-    }
+    // useEffect (() => {
+    //     if (!socket)
+    //         return;
+    //     const unreadlst = (data : {user:string; senderId:string}) => { //reccupere le username et l id de la personne qui m a envoyre un message
+    //         setNotifMsgUnread(prev => prev.includes(data.senderId) ? prev : [...prev, data.senderId]); 
+    //         //si la personne est deja dans la liste pour les messages non lu, ne rien faire
+    //         //sinon ajouter dans la liste
+    //     }  
+    //     socket.on ("privMessage", unreadlst);
+    //     return () => {
+    //         socket.off ("privMessage", unreadlst);
+    //     }
+    // }, [socket]);
 
-    const ShowMessages = () => {
-        setisShowMessages(1);
-        setisShowFriendship(0);
-    }
 
+    //charge tous les messages non lu au demarage
+    useEffect (() => {
+        if (!Myself || lstFriends.length === 0)
+            return;
+        const allUnreaMsg = async () => {
+            const sendersTab: string[] = []; // creation de tableau vide pour ajouter les amis qui ont envoyer des messages non lu
+            for (const friend of lstFriends)
+            {
+                const result = await axios.get(`/api/users/chat/${friend.id}`, {withCredentials:true});
+                const unreadExist = result.data.messages.some((msg:any) => msg.senderId === friend.id && msg.read === false);
+                if (unreadExist)
+                    sendersTab.push(friend.id);//modifie le tableau en ajoutant l ami si y a au moins un de ses messages qui n est pas lu
+            }
+            setNotifMsgUnread(sendersTab);
+        }
+        allUnreaMsg(); //appel de la fonction
+    }, [Myself, lstFriends]);
 
     const WhichProfile = () => {
         if (!selectUser || !Myself)
             return null;
         
         /////////////////////////////////////////////////////////////////
-
+        console.log('selectUser.createdAt:', selectUser?.createdAt);
         if (selectUser.id === Myself.id) // afficher mon profile
             return (
                 <div>
@@ -455,20 +496,30 @@ export default function Profile ()
                                             <div className="input_form">
 
                                                 <CgProfile />
-                                                <input {...(register("username", {onChange: () => {setErrMsgForm('')}}))} type="text" placeholder={selectUser?.username}/>
+                                                <input {...(register("username", {onChange: () => {setErrMsgForm('')}}))}
+                                                    type="text"
+                                                    placeholder={selectUser?.username}
+                                                    className="input"/>
                                             </div>
                                             {errors.username && <p className="error_input">{`${errors.username.message}`}</p>}
 
                                             <div className="input_form">
                                                 <CiMail />
-                                                <input {...(register("email", {onChange: () => {setErrMsgForm('')}}))} type="text" placeholder={selectUser?.email}/>
+                                                <input {...(register("email", {onChange: () => {setErrMsgForm('')}}))}
+                                                    type="text"
+                                                    placeholder={selectUser?.email}
+                                                    className="input"/>
                                             </div>
                                             {errors.email && <p className="error_input">{`${errors.email.message}`}</p>}
 
                                             <div className="input_form">
                                                 <CiLock />
-                                                <input {...(register("currentPassword", {onChange: () => {setErrMsgForm('')}}))}  type={showPassword ? "text" : "password"} placeholder={t('profile.actuelmdp')} autoComplete="new-password"/>
-                                                    {/* {errors.password && <p className="error_input">{`${errors.password.message}`}</p>} */}
+                                                <input {...(register("currentPassword", {onChange: () => {setErrMsgForm('')}}))}
+                                                    type={showPassword ? "text" : "password"}
+                                                    placeholder={t('profile.actuelmdp')}
+                                                    autoComplete="new-password"
+                                                    className="input"/>
+                                                
                                                 {showPassword ? (
                                                     <LuEye className="icon"
                                                     onClick={passwordVisibility} />
@@ -481,7 +532,10 @@ export default function Profile ()
                                             
                                             <div className="input_form">
                                                 <CiLock />
-                                                <input {...(register("newPassword", {onChange: () => {setErrMsgForm('')}}))}  type={showPassword ? "text" : "password"} placeholder={t('profile.newmdp')}/>
+                                                <input {...(register("newPassword", {onChange: () => {setErrMsgForm('')}}))} 
+                                                    type={showPassword ? "text" : "password"}
+                                                    placeholder={t('profile.newmdp')}
+                                                    className="input"/>
                                                     {/* {errors.password && <p className="error_input">{`${errors.password.message}`}</p>} */}
                                                 {showPassword ? (
                                                     <LuEye className="icon"
@@ -521,13 +575,13 @@ export default function Profile ()
                             {IsFriend(selectUser?.id) ? (
                                 <button className="delete_btn" onClick={DeleteFriend}>{t('profile.delete')}</button>
                             ) : watingRequest.includes(selectUser.id) ? (
-                                <button className="pending_btn" disabled>{t('profile.pending')}</button>
+                                    <button className="pending_btn" disabled>{t('profile.pending')}</button>
                             ) : (
-                                <button className="add_btn" onClick={AddFriend}>{t('profile.add')}</button>
+                                    <button className="add_btn" onClick={AddFriend}>{t('profile.add')}</button>
                             )}
                             
                         </div>
-                    <div className="justify-self-end self-end text-right ">{t('profile.datecreate')} <br/> {selectUser?.createdAt}</div>
+                    <div className="justify-self-end self-end text-right ">{t('profile.datecreate')} <br/> {new Date(selectUser?.createdAt).toLocaleDateString('fr-FR')}</div>
                 </div>
 
                 //ajouter bouton supprimer ami si c est un ami sinon addfriend
@@ -578,9 +632,28 @@ export default function Profile ()
 
                      {/* //////////////////////////notifications//////////////////////////////////// */}
                     <div className="box_notif">
+                    <div className="input_form">
+                        <input placeholder={t('profile.search')}
+                            value={searchVal}
+                            onChange={handleSearch}
+                            className="input"/>
+                            
+                            <CiSearch className="icon"/>
+                    </div>
+
+                        <ul>
+                            {
+                                searchVal && (
+                                    //SearchResults.filter((user) => user.username.includes(searchVal))//filtre les donnes et va afficher que les valeurs qui correspondent a linput
+                                    getSearchVal.map((user) =>
+                                        <li key={user.id} onClick={() => 
+                                            {setSeachVal(''); setSelectUser(user); setGetSeachVal([]);}}>
+                                            {user.username}
+                                        </li>)//parcour le tableau filte et affiche dans li
+                                )
+                            }
+                        </ul>
                         <button className="notif" onClick={ShowNotif}>{t('profile.notification')}</button>
-                        
-                        {/* <div className="notif_request">friend request</div> */}
                     </div>
 
                      {/* //////////////////////////liste des amis//////////////////////////////////// */}
@@ -594,21 +667,50 @@ export default function Profile ()
                         ))}
                     </div>
             </div>
-            {/* /////////////////////////profile(moi ou user)/////////////////////////////////////// */}
+            {/* /////////////////////////profile(moi ou user) + notif/////////////////////////////////////// */}
             <div className="box_profile">
                 {isShowNotif === 1 ? (
-                    <div>
-                        <div className="bg-red-900 overflow-auto flex gap-5">
-                            <div className="bg-green-900">
+                    <div className="show_notif">
+                        <div className="">
+                            <div className="title_notif">{t('profile.newMessage')}</div>
+                            <div className="p-3">
+                                {notifMsgUnread.map((senderId) => {
+                                    const sender = lstFriends.find(f => f.id === senderId);
+                                    return (
+                                        <div className="items" key={senderId}>
+                                            <img className="avatar_notif" src={sender?.avatarUrl}></img>
+                                            <span className="username_notif">{sender?.username}</span>
+                                            {/* <span className="msg_counter">10</span> */}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                        </div>
+                        <div>
+
+                            <div className="title_notif">{t('profile.friendRequest')}</div>
+                            <div className="p-3">
+                                {lstFriendship.map((theRequest) => (
+                                    <div className="items" key={theRequest.id}>
+                                        <img className="avatar_notif" src={theRequest.avatarUrl}></img>
+                                        <span className="username_notif">{theRequest.username}</span>
+                                        <div className="box_icon">
+                                            <button onClick = {() => AcceptRequest(theRequest.id)}><CiCircleCheck className="icon_notif"/></button>
+                                            <button onClick = {() => DenieRequest(theRequest.id)}><CiCircleRemove className="icon_notif"/></button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        {/* <div className="bg-red-900 overflow-auto flex gap-5 p-2">
+                            <div className="bg-green-900 p-2 rounded-lg">
                                 <button onClick={ShowMessages}>Nouveaux messages</button>
                             </div>
-                            <div className="bg-green-700">
+                            <div className="bg-green-700 rounded-lg">
                                 <button onClick={ShowFriendship}>demande d amis</button>
                             </div>
-                            <div className="box_search">
-                               
-                                
-                            </div>   
+                             
                         </div>
                         <div className="bg-gray-900">
                             {isShowFriendship === 1 && (
@@ -626,7 +728,7 @@ export default function Profile ()
                             {isShowMessages === 1 && (
                                 <div>voici la liste des nouveaux </div>
                             )}
-                        </div>
+                        </div> */}
                     </div>
                 ) : (
                     <>

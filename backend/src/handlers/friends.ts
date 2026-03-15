@@ -330,8 +330,8 @@ export const getFriendList = asyncHandler(async (request:Request, response:Respo
 			OR: [{ user1Id: userId }, { user2Id: userId }]
 		},
 		include: {
-			user1: { select: { id: true, username: true, isOnline: true, avatarUrl: true, email: true } },
-			user2: { select: { id: true, username: true, isOnline: true, avatarUrl: true , email: true } }
+			user1: { select: { id: true, username: true, isOnline: true, avatarUrl: true, email: true, createdAt:true } },
+			user2: { select: { id: true, username: true, isOnline: true, avatarUrl: true , email: true, createdAt: true } }
 		}
 	});
 	console.log("friends:", friends);

@@ -5,86 +5,115 @@ import { matchedData, validationResult } from "express-validator";
 import { hashPassword } from "../utils/helpers.js";
 import type { UserRoles } from "../../generated/prisma/enums.js";
 
+const sortableFields = ['createdAt', 'username', 'email', 'role', 'isOnline'] as const;
+type SortField = (typeof sortableFields)[number];
+
+const isSortField = (value: string): value is SortField => {
+	return sortableFields.includes(value as SortField);
+};
+
+const baseUserSelect = {
+	id: true,
+	email: true,
+	username: true,
+	avatarUrl: true,
+	role: true,
+	isOnline: true,
+	createdAt: true,
+} as const;
+
 export const listAllUsers = asyncHandler(async (req: Request, res: Response) => {
-	let page = req.query.page ?? '1';
-	console.log("Inside listAllUsers: page:", page);
+	const pageRaw = req.query.page ?? '1';
+	const sizeRaw = req.query.size ?? '20';
+	const sortByRaw = req.query.sortBy ?? 'createdAt';
+	const sortDirRaw = req.query.sortDir ?? 'desc';
+	const searchRaw = req.query.search;
 
-	let size = req.query.size ?? '20';
-	console.log("size:", size);
-
-	let sortBy = req.query.sortBy ?? 'createdAt';
-	console.log("sortBy:", sortBy);
-
-	let sortDir = req.query.sortBy ?? 'desc';
-	console.log("sortDir:", sortDir);
-
-	if (typeof page !== 'string' || page.trim().length < 1 ||
-		typeof size !== 'string' || size.trim().length < 1 ||
-		typeof sortBy !== 'string' || typeof sortDir !== 'string' )  {
+	if (typeof pageRaw !== 'string' || typeof sizeRaw !== 'string' || typeof sortByRaw !== 'string' || typeof sortDirRaw !== 'string') {
 		return res.status(400).json({
 			success: false,
-			message: "Incorrect query paramaters"
+			message: "Incorrect query parameters"
 		});
 	}
 
-	page = page.trim();
-	size = size.trim();
-	sortBy = sortBy.trim();
-	sortDir = sortDir.trim();
+	const page = Number.parseInt(pageRaw.trim(), 10);
+	const size = Number.parseInt(sizeRaw.trim(), 10);
+	const sortBy = sortByRaw.trim();
+	const sortDir = sortDirRaw.trim().toLowerCase();
+	const search = typeof searchRaw === 'string' ? searchRaw.trim() : '';
 
-	const usersList = await prisma.user.findMany({
-		skip: (Number(page) - 1) * Number(size),
-		take: Number(size),
+	if (!Number.isInteger(page) || page < 1 || !Number.isInteger(size) || size < 1 || size > 100) {
+		return res.status(400).json({
+			success: false,
+			message: "Page and size must be valid integers (size between 1 and 100)"
+		});
+	}
+
+	if (!isSortField(sortBy) || (sortDir !== 'asc' && sortDir !== 'desc')) {
+		return res.status(400).json({
+			success: false,
+			message: "Invalid sorting parameters"
+		});
+	}
+
+	const whereClause = search
+		? {
+			OR: [
+				{ username: { contains: search } },
+				{ email: { contains: search } },
+				{ id: { contains: search } },
+			],
+		}
+		: undefined;
+
+	const findManyArgs: Parameters<typeof prisma.user.findMany>[0] = {
+		skip: (page - 1) * size,
+		take: size,
 		orderBy: {
 			[sortBy]: sortDir,
 		},
-		omit: { password: true, refreshToken: true }
-	});
+		select: {
+			...baseUserSelect,
+			_count: {
+				select: {
+					sentFriendRequests: true,
+					receivedFriendRequests: true,
+					friendshipAsUser1: true,
+					friendshipAsUser2: true,
+					msgSent: true,
+					MsgReceived: true,
+					matchWins: true,
+					matchLosses: true,
+				}
+			}
+		}
+	};
+
+	const countArgs: Parameters<typeof prisma.user.count>[0] = {};
+
+	if (whereClause) {
+		findManyArgs.where = whereClause;
+		countArgs.where = whereClause;
+	}
+
+	const [usersList, total] = await Promise.all([
+		prisma.user.findMany(findManyArgs),
+		prisma.user.count(countArgs)
+	]);
+
+	const totalPages = Math.ceil(total / size);
 
 	return res.status(200).json({
 		success: true,
-		usersList: usersList,
+		usersList,
 		count: usersList.length,
-		query: [ {
-			page: page,
-			size: size,
-			sortBy: sortBy,
-			sortDir: sortDir
-		} ]
-	});
-});
-
-export const getUserByUsernameOrId = asyncHandler(async (req: Request, res: Response) => {
-	const search = req.params.search;
-	console.log("Inside getUserByUsername: search:", search);
-
-	if (!search || Array.isArray(search)) {
-		return res.status(401).json({
-			success: false,
-			message: "Multiple search params or empty not allowed"
-		});
-	}
-
-	const user = await prisma.user.findFirst({
-		where: {
-			OR: [
-				{ username: search },
-				{ id: search }
-			]
-		},
-		omit: { password: true, refreshToken: true }
-	});
-
-	if (!user) {
-		return res.status(404).json({
-			success: false,
-			message: "User not found"
-		});
-	}
-
-	return res.status(200).json({
-		success: true,
-		user: user
+		total,
+		page,
+		size,
+		totalPages,
+		sortBy,
+		sortDir,
+		search,
 	});
 });
 
@@ -109,7 +138,7 @@ export const updateUser = asyncHandler(async (req: Request, res: Response) => {
 		});
 	}
 
-	let {
+	const {
 		email,
 		newPassword,
 		username,
@@ -118,12 +147,10 @@ export const updateUser = asyncHandler(async (req: Request, res: Response) => {
 		newPassword: string | undefined,
 		username: string | undefined,
 	};
-	const avatarUrl = req.file?.filenameForMemoryStorage;
-	console.log(`Update fields: Email(${email}), Password(${newPassword}), Username(${username})
-		, Avatar(${avatarUrl})`);
+	const avatarFilename = req.file?.filenameForMemoryStorage;
+	const avatarUrl = avatarFilename ? `/avatars/${avatarFilename}` : undefined;
 
 	const user = await prisma.user.findFirst({ where: { id: userId } });
-	console.log("user:", user);
 
 	if (!user) {
 		return res.status(404).json({
@@ -132,21 +159,27 @@ export const updateUser = asyncHandler(async (req: Request, res: Response) => {
 		})
 	}
 
+	const data: {
+		email?: string | null;
+		password?: string | null;
+		username?: string;
+		avatarUrl?: string | null;
+	} = {};
+
+	if (typeof email === 'string') data.email = email;
+	if (typeof username === 'string') data.username = username;
+	if (typeof newPassword === 'string') data.password = hashPassword(newPassword);
+	if (typeof avatarUrl === 'string') data.avatarUrl = avatarUrl;
+
 	const updatedUser = await prisma.user.update({
 		where: { id: userId },
-		data : {
-			email: email ? email : user.email,
-			password: newPassword ? hashPassword(newPassword) : user.password,
-			username: username ? username : user.username,
-			avatarUrl: avatarUrl ? avatarUrl : user.avatarUrl
-		},
-		omit: { password: true, refreshToken: true }
+		data,
+		select: baseUserSelect,
 	});
-	console.log("updatedUser:", updatedUser);
 
 	return res.status(200).json({
 		success: true,
-		updatedUser: updatedUser
+		updatedUser
 	});
 });
 
@@ -161,7 +194,22 @@ export const deleteUser = asyncHandler(async (req: Request, res: Response) => {
 		});
 	}
 
-	await prisma.user.delete({ where: { id: userId } })
+	if (userId === req.user?.id ) {
+		return res.status(403).json({
+			success: false,
+			message: "Delete itself is forbidden"
+		});		
+	}
+
+	const found = await prisma.user.findUnique({ where: { id: userId }, select: { id: true } });
+	if (!found) {
+		return res.status(404).json({
+			success: false,
+			message: "User not found"
+		});
+	}
+
+	await prisma.user.delete({ where: { id: userId } });
 
 	return res.status(200).json({
 		success: true,
@@ -187,32 +235,31 @@ export const changeUserRole = asyncHandler(async (req: Request, res: Response) =
 		});
 	}
 
-	const role = req.query.role;
-	console.log("role:", role);
-
-	const allowedRoles = ['user', 'admin', 'moderator'];
-
-	if (typeof role !== 'string' || !role || !allowedRoles.includes(role.toLowerCase()))  {
+	const result = validationResult(req);
+	if (!result.isEmpty()) {
 		return res.status(400).json({
 			success: false,
-			message: "Incorrect query paramaters"
+			errors: result.array()
 		});
 	}
 
-	const found = allowedRoles.find((element) => element === role.toLowerCase());
-	console.log("found:", found);
-
-	const newRole = found?.toUpperCase() as UserRoles;
+	const { role } = matchedData(req, { locations: ['body'] }) as { role: UserRoles };
+	if (!role) {
+		return res.status(400).json({
+			success: false,
+			message: "Role is required"
+		});
+	}
 
 	const roleUpdated = await prisma.user.update({
 		where: { id: userId },
-		data: { role: newRole },
+		data: { role },
 		select: { role: true }
 	});
 
 	return res.status(200).json({
 		success: true,
-		roleUpdated: roleUpdated,
-		query: role
+		roleUpdated,
+		query: role,
 	});
 });

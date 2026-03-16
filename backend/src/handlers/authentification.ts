@@ -143,6 +143,7 @@ export const loginUser = asyncHandler(async (request: Request, response: Respons
 		id: user.id,
 		email: user.email,
 		username: user.username,
+		role: user.role,
 		createdAt: user.createdAt,
 	};
 	console.log('userWithoutPassword:', userWithoutPassword);
@@ -239,5 +240,5 @@ export const authHandler = asyncHandler(async (request: Request, response: Respo
 	});
 
 	// redirection frontend
-	return response.redirect("http://localhost:3100/health");
+	return response.redirect("https://localhost:1443/");
 });

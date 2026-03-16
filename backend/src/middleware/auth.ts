@@ -1,4 +1,4 @@
-import type { NextFunction, Request, response, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import { verifyToken } from "../utils/helpers.js";
 import prisma from "../lib/prisma.js";
 
@@ -38,6 +38,7 @@ export const authenticateToken = async (request: Request, response: Response, ne
 				message: "User not found"
 			});
 		}
+
 		request.user = user;
 	} catch (error) {
 		console.error("Login error:", error);

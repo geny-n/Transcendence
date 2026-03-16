@@ -24,16 +24,17 @@ export const socketAuth = async function socketAuthentification(socket:Socket,
 		if (guestId && guestName && /^guest_[a-z0-9]+$/.test(guestId)) {
 			const assignedLabel = nextGuestLabel();
 			socket.user = {
-				id:           guestId,
-				email:        null,
-				password:     null,
-				username:     assignedLabel, // "Invite001" etc., assigné côté serveur
-				fortyTwoId:   null,
-				avatarUrl:    null,
-				createdAt:    new Date(),
-				isOnline:     false,
-				refreshToken: null,
-			};
+				id:				guestId,
+				email:			null,
+				password:		null,
+				username:		assignedLabel,
+				fortyTwoId:		null,
+				avatarUrl:		null,
+				createdAt:		new Date(),
+				isOnline:		false,
+				refreshToken:	null,
+				role:			"GUEST" as const
+			} as any;
 			socket.isGuest = true;
 			console.log(`Invité connecté → ${assignedLabel} (id: ${guestId}).`);
 			return next();

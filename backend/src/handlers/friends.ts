@@ -322,6 +322,7 @@ export const getFriendList = asyncHandler(async (request:Request, response:Respo
 			message: "No user found after authentication"
 		});
 	}
+
 	const userId = request.user.id;
 	console.log("Inside getFriendList: userId:", userId);
 

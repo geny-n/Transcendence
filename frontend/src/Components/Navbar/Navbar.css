@@ -3,7 +3,7 @@
 @layer components
 {
     .nav-style{
-        @apply fixed left-1/2 top-[20px] -translate-x-1/2 
+        @apply relative left-1/2 -translate-x-1/2 
         flex justify-between items-center gap-16 
         py-3 px-10 rounded-full 
         bg-black/60 backdrop-blur-md 

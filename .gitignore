@@ -19,3 +19,6 @@ dist/
 /generated/prisma
 
 /generated/prisma
+
+#env
+.env

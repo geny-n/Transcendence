@@ -6,7 +6,7 @@ import prisma from "./prisma.js";
 import { getAllFriendIds } from "../utils/helpers.js";
 import { disconnectUser } from "../socket/disconnect.js";
 import { initPong } from "../socket/pong.js";
-
+// import { modoration } from "./moderation.js";
 
 let io: Server;
 
@@ -54,6 +54,7 @@ const onConnection = async (socket:Socket) => {
 					read: false,
 				}
 			});
+			// const {}
 			
 			socket.to(`user:${receivedId}`).emit("privMessage", {user, text, time, senderId: socket.user.id, read});
 		});

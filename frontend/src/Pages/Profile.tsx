@@ -703,32 +703,7 @@ export default function Profile ()
                                 ))}
                             </div>
                         </div>
-                        {/* <div className="bg-red-900 overflow-auto flex gap-5 p-2">
-                            <div className="bg-green-900 p-2 rounded-lg">
-                                <button onClick={ShowMessages}>Nouveaux messages</button>
-                            </div>
-                            <div className="bg-green-700 rounded-lg">
-                                <button onClick={ShowFriendship}>demande d amis</button>
-                            </div>
-                             
-                        </div>
-                        <div className="bg-gray-900">
-                            {isShowFriendship === 1 && (
-                                <div>
-                                    {lstFriendship.map((theRequest) => (
-                                        <div className="flex gap-10" key={theRequest.id}>
-                                            <img className="rounded-full w-9 h-9" src={theRequest.avatarUrl}></img>
-                                            <span className="truncate">{theRequest.username}</span>
-                                            <button onClick = {() => AcceptRequest(theRequest.id)}>accepter</button>
-                                            <button onClick = {() => DenieRequest(theRequest.id)}>refuser</button>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                            {isShowMessages === 1 && (
-                                <div>voici la liste des nouveaux </div>
-                            )}
-                        </div> */}
+                       
                     </div>
                 ) : (
                     <>

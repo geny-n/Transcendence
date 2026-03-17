@@ -14,7 +14,6 @@ datasource db {
 	// url      = "mysql://root:root@localhost:3306/mydb"
 }
 
-
 // schema.prisma
 model User {
 	id				String		@id @default(uuid())
@@ -64,8 +63,8 @@ model Match {
 	scoreWinner Int
 	scoreLoser  Int
 
-	winner  User?  @relation("matchWins",   fields: [winnerId],  references: [id])
-	loser   User?  @relation("matchLosses", fields: [loserId],   references: [id])
+	winner  User?  @relation("matchWins",   fields: [winnerId],  references: [id], onDelete: SetNull)
+	loser   User?  @relation("matchLosses", fields: [loserId],   references: [id], onDelete: SetNull)
 }
 
 // Table pour les demandes d'amitie EN ATTENTE
@@ -75,11 +74,11 @@ model Friendship {
 	receiverId	String
 	status		FriendRequestStatus	@default(PENDING) // PENDING, ACCEPTED, REJECTED, BLOCKED
 	createdAt	DateTime			@default(now())
-	updateAt	DateTime			@updatedAt
+	updatedAt	DateTime			@updatedAt
 
 	// Relations
-	sender		User	@relation("sender", fields: [senderId], references: [id])
-	receiver	User	@relation("receiver", fields: [receiverId], references: [id])
+	sender		User	@relation("sender", fields: [senderId], references: [id], onDelete: Cascade)
+	receiver	User	@relation("receiver", fields: [receiverId], references: [id], onDelete: Cascade)
 
 	// Empeche les doublons 
 	@@unique([senderId, receiverId])
@@ -93,8 +92,8 @@ model Friend {
 	user2Id		String
 	createdAt	DateTime	@default(now())
 
-	user1	User	@relation("user1", fields: [user1Id], references: [id])
-	user2	User	@relation("user2", fields: [user2Id	], references: [id])
+	user1	User	@relation("user1", fields: [user1Id], references: [id], onDelete: Cascade)
+	user2	User	@relation("user2", fields: [user2Id], references: [id], onDelete: Cascade)
 
 	@@unique([user1Id, user2Id])
 }
@@ -110,17 +109,16 @@ enum FriendRequestStatus {
 enum UserRoles {
 	USER
 	ADMIN
-	MODERATOR
 	GUEST
 }
 
 model ChatMessage {
 	id			String @id @default(uuid())
 	message		String
-	time 		DateTime
+	time 		DateTime @default(now())
 	senderId	String
 	receiverId	String
 
-	sender		User	@relation("sender", fields: [senderId], references: [id])
-	receiver	User	@relation("receiver", fields: [receiverId], references: [id])
+	sender		User	@relation("sender", fields: [senderId], references: [id], onDelete: Cascade)
+	receiver	User	@relation("receiver", fields: [receiverId], references: [id], onDelete: Cascade)
 }

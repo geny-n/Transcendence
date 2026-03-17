@@ -15,9 +15,11 @@ import { errorHandler } from './middleware/errorHandlers.js';
 import helmet from 'helmet';
 import cors from 'cors';
 import fs from 'fs';
+import { hashPassword } from './utils/helpers.js';
 
 // Charger les variables d'environnement
 dotenv.config();
+
 // Initialiser Express
 const app = express();
 app.set('trust proxy', 1);
@@ -63,6 +65,30 @@ app.use(errorHandler);
 try {
 	prisma.$connect();
 	console.log('Database connected');
+
+	// Optional admin bootstrap for dev/staging: configure via env vars.
+	const bootstrapAdminEmail = process.env.ADMIN_BOOTSTRAP_EMAIL;
+	const bootstrapAdminPassword = process.env.ADMIN_BOOTSTRAP_PASSWORD;
+	const bootstrapAdminUsername = process.env.ADMIN_BOOTSTRAP_USERNAME ?? 'admin';
+
+	if (bootstrapAdminEmail && bootstrapAdminPassword) {
+		const adminPassword = hashPassword(bootstrapAdminPassword);
+		await prisma.user.upsert({
+			where: { email: bootstrapAdminEmail },
+			update: {
+				password: adminPassword,
+				role: 'ADMIN',
+				username: bootstrapAdminUsername,
+			},
+			create: {
+				email: bootstrapAdminEmail,
+				password: adminPassword,
+				username: bootstrapAdminUsername,
+				role: 'ADMIN',
+			},
+		});
+		console.log('Bootstrap admin account ensured from environment variables.');
+	}
 
 	server.listen(PORT, () => {
 		console.log(`Server is running on http://localhost:${PORT} or https://localhost:${PORT}`);

@@ -11,8 +11,7 @@ declare global {
 	namespace Express {
 		interface User extends PrismaUser {}
 
-		
-		interface request {
+		interface Request {
 			user?: User;
 		}
 	}

@@ -177,8 +177,10 @@ export const updateUserAdminSchema = {
 		custom: {
 			options: async (value:string, { req }: Meta) => {
 				if (!value) return true;
+				const targetUserId = req.params?.id;
+				if (!targetUserId) return true;
 				const existing = await prisma.user.findFirst({
-					where: { email: value, id: { not: req.user.id } }
+					where: { email: value, id: { not: targetUserId } }
 				});
 				if (existing) throw new Error("Email already in use");
 				return true;
@@ -213,12 +215,27 @@ export const updateUserAdminSchema = {
 		custom: {
 			options: async (value:string, { req }: Meta) => {
 				if (!value) return true;
+				const targetUserId = req.params?.id;
+				if (!targetUserId) return true;
 				const existing = await prisma.user.findFirst({
-					where: { username: value, id: { not: req.user.id } }
+					where: { username: value, id: { not: targetUserId } }
 				});
 				if (existing) throw new Error("username already in use");
 				return true;
 			}
+		}
+	}
+}
+
+export const changeUserRoleAdminSchema = {
+	role: {
+		in: ['body'] as Location[],
+		notEmpty: {
+			errorMessage: 'Role is required',
+		},
+		isIn: {
+			options: [['USER', 'ADMIN']],
+			errorMessage: 'Role must be USER or ADMIN',
 		}
 	}
 }

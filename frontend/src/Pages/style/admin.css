@@ -1,0 +1,253 @@
+@import "tailwindcss";
+
+.admin-page {
+	min-height: calc(100vh - 64px);
+	padding: 1.5rem;
+	background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+	color: #0f172a;
+}
+
+.admin-header {
+	margin-bottom: 1rem;
+}
+
+.admin-header h1 {
+	font-size: 1.8rem;
+	font-weight: 800;
+}
+
+.admin-header p {
+	margin-top: 0.25rem;
+	color: #334155;
+}
+
+.admin-toolbar {
+	display: grid;
+	grid-template-columns: 1fr repeat(5, auto);
+	gap: 0.5rem;
+	margin-bottom: 1rem;
+	align-items: center;
+}
+
+.admin-toolbar input,
+.admin-toolbar select,
+.admin-toolbar button,
+.admin-form input,
+.admin-form button,
+.admin-role-box select,
+.admin-role-box button,
+.admin-danger-zone button {
+	border: 1px solid #cbd5e1;
+	border-radius: 0.6rem;
+	padding: 0.55rem 0.75rem;
+	background: #ffffff;
+}
+
+.admin-toolbar button,
+.admin-form button,
+.admin-role-box button,
+.admin-danger-zone button {
+	cursor: pointer;
+	font-weight: 600;
+	background: #f1f5f9;
+	transition: background-color 120ms ease-in-out;
+}
+
+.admin-toolbar button:hover,
+.admin-form button:hover,
+.admin-role-box button:hover,
+.admin-danger-zone button:hover {
+	background: #e2e8f0;
+}
+
+.admin-grid {
+	display: grid;
+	grid-template-columns: 410px 1fr;
+	gap: 1rem;
+}
+
+.admin-users-list,
+.admin-editor {
+	background: rgba(255, 255, 255, 0.95);
+	border: 1px solid #cbd5e1;
+	border-radius: 0.8rem;
+	padding: 1rem;
+	box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+}
+
+.admin-list-head {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 0.75rem;
+	font-weight: 600;
+}
+
+.admin-user-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 0.7rem;
+	width: 100%;
+	border: 1px solid #e2e8f0;
+	border-radius: 0.7rem;
+	padding: 0.65rem;
+	background: #fff;
+	margin-bottom: 0.5rem;
+	text-align: left;
+	cursor: pointer;
+}
+
+.admin-user-item.active {
+	border-color: #0f172a;
+	background: #f8fafc;
+}
+
+.admin-user-item-main .name {
+	display: block;
+	font-weight: 700;
+}
+
+.admin-user-item-avatar {
+	width: 42px;
+	height: 42px;
+	border-radius: 999px;
+	overflow: hidden;
+	flex-shrink: 0;
+	background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
+	display: grid;
+	place-items: center;
+	border: 1px solid #94a3b8;
+}
+
+.avatar {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+.avatar-fallback {
+	font-size: 0.9rem;
+	font-weight: 800;
+	color: #0f172a;
+	line-height: 1;
+	text-transform: uppercase;
+}
+
+.admin-user-item-main .email {
+	display: block;
+	font-size: 0.85rem;
+	color: #475569;
+}
+
+.admin-user-item-main {
+	min-width: 0;
+	flex: 1;
+}
+
+.admin-user-item-main .email,
+.admin-user-item-main .name {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.admin-user-item-tags {
+	display: flex;
+	gap: 0.35rem;
+}
+
+.tag {
+	font-size: 0.7rem;
+	padding: 0.2rem 0.4rem;
+	border-radius: 999px;
+	font-weight: 700;
+	border: 1px solid transparent;
+}
+
+.tag-admin {
+	background: #dbeafe;
+	color: #1e40af;
+	border-color: #93c5fd;
+}
+
+.tag-user {
+	background: #ecfccb;
+	color: #365314;
+	border-color: #bef264;
+}
+
+.tag-online {
+	background: #dcfce7;
+	color: #14532d;
+	border-color: #86efac;
+}
+
+.tag-offline {
+	background: #f1f5f9;
+	color: #334155;
+	border-color: #cbd5e1;
+}
+
+.admin-pagination {
+	display: flex;
+	gap: 0.5rem;
+	justify-content: flex-end;
+	margin-top: 0.75rem;
+}
+
+.admin-form {
+	display: grid;
+	gap: 0.75rem;
+	margin-top: 0.75rem;
+}
+
+.admin-form label {
+	display: grid;
+	gap: 0.35rem;
+	font-weight: 600;
+}
+
+.admin-role-box,
+.admin-danger-zone {
+	margin-top: 1rem;
+	padding-top: 1rem;
+	border-top: 1px solid #e2e8f0;
+	display: grid;
+	gap: 0.6rem;
+}
+
+.admin-danger-zone button {
+	background: #fee2e2;
+	border-color: #fecaca;
+	color: #7f1d1d;
+}
+
+.admin-message {
+	padding: 0.7rem;
+	border-radius: 0.6rem;
+	margin-bottom: 0.75rem;
+	font-weight: 600;
+}
+
+.admin-message.success {
+	background: #dcfce7;
+	color: #14532d;
+	border: 1px solid #86efac;
+}
+
+.admin-message.error {
+	background: #fee2e2;
+	color: #7f1d1d;
+	border: 1px solid #fecaca;
+}
+
+@media (max-width: 980px) {
+	.admin-toolbar {
+		grid-template-columns: 1fr 1fr;
+	}
+
+	.admin-grid {
+		grid-template-columns: 1fr;
+	}
+}

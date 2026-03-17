@@ -13,6 +13,7 @@ import Profile from './Pages/Profile'
 import Login from './Pages/Login'
 import Register from './Pages/Register'
 import Matchmaking from './Pages/Matchmaking'
+import Admin from './Pages/Admin'
 import {Routes, Route} from "react-router-dom"
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/matchmaking" element={<Matchmaking />} />
+        <Route path='/admin' element={<Admin />}/>
       </Routes>
     </>
   )

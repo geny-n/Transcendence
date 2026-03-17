@@ -322,7 +322,6 @@ export const getFriendList = asyncHandler(async (request:Request, response:Respo
 			message: "No user found after authentication"
 		});
 	}
-
 	const userId = request.user.id;
 	console.log("Inside getFriendList: userId:", userId);
 
@@ -360,7 +359,7 @@ export const getPendingRequests = asyncHandler(async (request:Request, response:
 			status: "PENDING"
 		},
 		include: {
-			sender: { select: { id: true, username: true } }
+			sender: { select: { id: true, username: true , avatarUrl:true } }
 		}
 	});
 	console.log("pending:", pending);

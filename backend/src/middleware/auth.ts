@@ -28,7 +28,11 @@ export const authenticateToken = async (request: Request, response: Response, ne
 	// ajouter l'ID de l'utilisateur a la requete
 	try {
 		const user = await prisma.user.findFirst({
-			where : { id: decoded.userId }
+			where : { id: decoded.userId },
+			include: {
+				matchWins: { select: { id: true, winnerId: true, loserId: true } },
+				matchLosses: { select: { id: true, winnerId: true,  loserId: true } }
+			}
 		})
 		console.log("user:", user);
 
@@ -38,7 +42,6 @@ export const authenticateToken = async (request: Request, response: Response, ne
 				message: "User not found"
 			});
 		}
-
 		request.user = user;
 	} catch (error) {
 		console.error("Login error:", error);

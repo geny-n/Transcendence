@@ -54,6 +54,8 @@ export const resizeAvatar = async (request:Request, response:Response, next: Nex
 				width: 512,
 				height: 512,
 				fit: 'fill',
+				// fit: 'cover',
+				position: 'center',
 				withoutEnlargement: true
 			})
 			.toFile(outputPath);

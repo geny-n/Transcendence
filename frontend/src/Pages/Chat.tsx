@@ -9,7 +9,7 @@ export default function Chat ()
 {
   const navigate = useNavigate();
   const [lstFriends, setLstFriends] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean}[]>([]);
-  const [myself, setMyself] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean} | null>(null);
+  const [Myself, setMyself] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean} | null>(null);
 
   // To send authorization credentials using the Fetch API in JavaScript, 
   // you need to allow the credentials to be sent to the server by adding the «credential: 'include'» parameter when calling the fetch() method. 
@@ -20,6 +20,8 @@ export default function Chat ()
   // In this JavaScript Fetch API with Credentials example, we send a request with «credential: 'include'» 
   // parameter to the ReqBin echo URL using the fetch() method. 
   // Click Execute to run the JavaScript Fetch API with Credentials example online and see the result.
+ 
+ 
   useEffect(() => {
     const fetchMe = async () => {
       try {
@@ -32,7 +34,7 @@ export default function Chat ()
         setMyself(response.data.user);
       }
       catch(error) {
-        console.error('User not authenticated, redirecting to login...', error);
+        // console.error('User not authenticated, redirecting to login...', error);
         navigate('/login');
       }
     }
@@ -40,20 +42,18 @@ export default function Chat ()
   }, [navigate]);
 
   useEffect(() => {
-    if (!myself) return;
-
+    if (!Myself) return;
     const fetchFriends = async () => {
-      // setLoading(true);
       try {
         const result = await axios.get('/api/friends', {
           withCredentials: true,
         });
-        
+          
         if (!result.data.success || !Array.isArray(result.data.friends)) {
           throw Error(`Error API Friends: ${result.status} ${result.statusText}`);
         }
         const friends = result.data.friends.map((f: any) => {
-          if (f.user1.id === myself.id)
+          if (f.user1.id === Myself.id)
             return f.user2;
           else
             return f.user1;
@@ -63,13 +63,9 @@ export default function Chat ()
       catch(error) {
         console.error('Error fetch : ', error);
       }
-      // finally {
-      //   setLoading(false);
-      // }
-
     }
       fetchFriends();
-  }, [myself]);
+  }, [Myself]);
 
   const[selectFriend, setSelectFriend] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean} | null>(null);
 
@@ -80,30 +76,13 @@ export default function Chat ()
     return "bg-gray-300";
   }
 
-  const socket = TheSocket();
-  
+  const { socket } = TheSocket();
+  console.log("socket id:", socket?.id);
   const [NewMsg, setNewMsg] = useState('');
   const [prevMsg, setPrevMsg] = useState<{msg: string, time: string, sender: string, avatarUrl:string}[]>([]);
   //permet de garder en memoire touts les messages (le 1er message n es pas ecraser par le 2eme)
 
-  // useEffect (() => {
-  //   if (!socket)
-  //     return;
-  //   socket.on('privMessage', (incoming: { user: string; text: string; time: string; senderId: string }) => {
-  //     console.log('socket recu:', incoming, 'selectFriend:', selectFriend?.username);
-  //     if (incoming.senderId !== selectFriend?.id) return;
-  //     setPrevMsg(prevMsg => [
-  //       ...prevMsg,
-  //       {
-  //         msg: incoming.text,
-  //         time: incoming.time,
-  //         sender: incoming.user
-  //       }
-  //     ])
-  //   });
-  //   return () => { socket.off(`privMessage`);};
-  // }, [socket]);
-
+  //en cours de discution
   useEffect(() => {
     if (!socket || !selectFriend)
         return;
@@ -113,7 +92,7 @@ export default function Chat ()
       time: string;
       senderId: string;
     }) => {
-      console.log('socket recu:', incoming, 'selectFriend:', selectFriend.username);
+      // console.log('socket recu:', incoming, 'selectFriend:', selectFriend.username);
       if (incoming.senderId !== selectFriend.id)
           return;
       setPrevMsg(prev => [...prev, {
@@ -123,6 +102,7 @@ export default function Chat ()
         avatarUrl: selectFriend.avatarUrl
       }
       ]);
+      axios.patch(`/api/users/chat/${selectFriend.id}/read`, {withCredentials:true});
     }
     socket.on("privMessage", handler);
     return () => {
@@ -133,8 +113,9 @@ export default function Chat ()
   //pour selectionner uniquement les messages concernant l ami selectionne
   useEffect(() => {
     setPrevMsg([]);
-    if (!myself || !selectFriend)
+    if (!Myself || !selectFriend)
       return;
+    axios.patch(`/api/users/chat/${selectFriend.id}/read`, {}, {withCredentials:true});
     axios.get(`/api/users/chat/${selectFriend.id}`, {withCredentials:true})
       .then(res => {
         console.log('messages recu:', res.data);
@@ -144,44 +125,44 @@ export default function Chat ()
 
           // Si senderId = mon id → c'est moi qui ai envoyé → affiche mon username
           // Sinon → c'est mon ami qui a envoyé → affiche son username
-          sender: m.senderId === myself.id ? myself.username : selectFriend.username,
-          avatarUrl: m.senderId === myself.id ? myself.avatarUrl : selectFriend.avatarUrl, 
+          sender: m.senderId === Myself.id ? Myself.username : selectFriend.username,
+          avatarUrl: m.senderId === Myself.id ? Myself.avatarUrl : selectFriend.avatarUrl, 
         }));
         setPrevMsg(loaded);
       })
   }, [selectFriend]);
 
   const sendMsg = () => {
-    if (!NewMsg.trim() || !myself || !selectFriend || !socket) //verifier les messages vides ou espace avant et fin du message
+    if (!NewMsg.trim() || !Myself || !selectFriend || !socket) //verifier les messages vides ou espace avant et fin du message
       return; 
     const theTime = new Date().toLocaleTimeString("fr-FR", { hour: '2-digit', minute: '2-digit' });
     socket.emit("privMessage", {
-      user: myself.username,
+      user: Myself.username,
       text: NewMsg,
       time: theTime,
       receivedId: selectFriend.id,
     });
 
-    setPrevMsg([...prevMsg, {msg:NewMsg, time:theTime, sender: myself.username, avatarUrl:myself.avatarUrl}]);
+    setPrevMsg([...prevMsg, {msg:NewMsg, time:theTime, sender: Myself.username, avatarUrl:Myself.avatarUrl}]);
     setNewMsg('');
   }
 
     return (
-      <div className="all_chat_screen"> {/*toute la zone*/}
-        {/* <div className="chat_screen"> */}
-        
-        <div className="top">{/*(box top)*/}
+      <div className="all_chat_screen">        
+        <div className="top">
           {/* ***************************************************************** */}
-          <div className="box_search"> {/* recherche (box1)*/}
-            <input
-              type="text"
-              placeholder="recherche"
-              className="search"/>
+          <div className="myPP">
+            {Myself && (
+              <>
+              <img className="rounded-full w-9 h-9" src={Myself.avatarUrl}></img>
+              <p>{Myself.username}</p>
+              </>
+            )}
           </div>
             
           {/* ***************************************************************** */}
 
-          <div className="box_friend">{/* box_firend */}
+          <div className="box_friend">
             {selectFriend && (
             <>
               <div className="relative">
@@ -197,9 +178,8 @@ export default function Chat ()
 
           {/* ***************************************************************** */}
 
-        <div className="bottom">{/*(box bottom)*/}
+        <div className="bottom">
           <div className="box_list">
-            {/* <div className="display_lst">theFriend.username</div> */}
             {lstFriends.map((theFriend, idx) =>
             {
               let isSelected;
@@ -207,7 +187,11 @@ export default function Chat ()
                   isSelected = 'bg-gray-300';
               return (
                 <div className={`display_lst ${isSelected}`} 
-                  key={idx} onClick={()=>setSelectFriend(theFriend)}
+                  key={idx} onClick={() => {
+                    setSelectFriend(theFriend);
+                    //change le status read en true quand le user click sur le sender
+                    axios.patch(`/api/users/chat/${theFriend.id}/read`, {}, {withCredentials:true});
+                  }}
                 >
                   <img className="rounded-full w-10 h-10" src={theFriend.avatarUrl}></img>
                   <span className={`display_status ${status(theFriend.isOnline)}`}></span>
@@ -215,7 +199,6 @@ export default function Chat ()
                 </div>
               );
             })}
-            {myself && <p>Connecte en tant que : {myself.username}</p>}
           </div>
           
           {/* ***************************************************************** */}
@@ -252,7 +235,6 @@ export default function Chat ()
             </div>
           </div>
         </div>
-        {/* <div className="bg-green-200 mx-5 h-10">sdfsd</div> */}
       </div>
     )
 

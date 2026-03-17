@@ -6,7 +6,7 @@ import prisma from "./prisma.js";
 import { getAllFriendIds } from "../utils/helpers.js";
 import { disconnectUser } from "../socket/disconnect.js";
 import { initPong } from "../socket/pong.js";
-
+// import { modoration } from "./moderation.js";
 
 let io: Server;
 
@@ -42,8 +42,8 @@ const onConnection = async (socket:Socket) => {
 		});
 
 		// Écouter les messages privés (uniquement pour les utilisateurs authentifiés)
-		socket.on("privMessage", async({user, text, time, receivedId}) => {
-			console.log(`message envoyé de ${user} à ${receivedId}`);
+		socket.on("privMessage", async({user, text, time, receivedId, read}) => {
+			// console.log(`message envoyé de ${user} à ${receivedId}`);
 			//envoie du message dans la bdd
 			const message = await prisma.chatMessage.create ({
 				data: {
@@ -51,10 +51,12 @@ const onConnection = async (socket:Socket) => {
 					time: new Date(),
 					senderId: socket.user.id,
 					receiverId: receivedId,
+					read: false,
 				}
 			});
+			// const {}
 			
-			socket.to(`user:${receivedId}`).emit("privMessage", {user, text, time, senderId: socket.user.id});
+			socket.to(`user:${receivedId}`).emit("privMessage", {user, text, time, senderId: socket.user.id, read});
 		});
 
 		// Gérer la déconnexion (met à jour la DB)
@@ -68,10 +70,9 @@ const onConnection = async (socket:Socket) => {
 export const initSocket = (HttpServer: HttpServer) => {
 	io = new Server(HttpServer, {
 		cors: {
-			origin: process.env.FRONTEND_URL!,
+			origin: process.env.FRONTEND_URL || 'https://localhost:1443',
 			credentials: true
-		},
-		pingTimeout: 2000,
+		}
 	});
 
 	// Middleware

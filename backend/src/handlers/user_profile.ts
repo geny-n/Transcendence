@@ -14,7 +14,8 @@ export const getMyProfile = asyncHandler(async (request:Request, response:Respon
 		username: request.user.username,
 		email: request.user.email,
 		avatarUrl: request.user.avatarUrl,
-		role: request.user.role
+		role: request.user.role,
+		createdAt: request.user.createdAt,
 	};
 	console.log('inside getMyProfile: userWithoutPassword:', userWithoutPassword);
 
@@ -85,7 +86,6 @@ export const updateMyProfile = asyncHandler(async (request:Request, response:Res
 		},
 	});
 	console.log("updateUser:", updateUser);
-
 	const userWithoutPassword = {
 		id : updateUser.id,
 		username: updateUser.username,
@@ -189,7 +189,7 @@ export const searchUser = asyncHandler(async (request:Request, response:Response
 
 	const findUser = await prisma.user.findMany({
 		where : { username: { contains: trimmedQ, }, role: 'USER' },
-		select : { id: true, username: true, avatarUrl: true },
+		select : { id: true, username: true, avatarUrl: true, isOnline: true, email: true, createdAt:true},
 		take: 10,
 		orderBy: { username: 'asc' },
 	});
@@ -201,7 +201,6 @@ export const searchUser = asyncHandler(async (request:Request, response:Response
 			message: "User not found."
 		})
 	}
-
 	response.status(200).json({
 		success: true,
 		users: findUser,

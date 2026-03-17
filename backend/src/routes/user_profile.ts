@@ -9,10 +9,10 @@ import { authLimiter } from "../middleware/rateLimit.js";
 const router = Router();
 
 router.get('/users/me', authenticateToken, getMyProfile);
+router.get('/users/search', authLimiter, authenticateToken, searchUser);//deplacer
 router.get('/users/:id', authenticateToken, getUserProfile);
 router.put('/users/me', authenticateToken, checkSchema(updateProfileSchema), updateMyProfile);
 router.post('/users/me/password', authenticateToken, checkSchema(changePasswordSchema), changePassword);
 router.put('/users/me/avatar', authenticateToken, upload.single('avatar'), resizeAvatar, changeAvatar);
-router.get('/users/search', authLimiter, authenticateToken, searchUser);
 
 export default router;

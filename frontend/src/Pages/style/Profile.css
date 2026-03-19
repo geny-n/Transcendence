@@ -12,19 +12,23 @@
         flex flex-col
         overflow-hidden
         bg-gray-900
+        /* shrink-0 */
     }
-    
     /* ── Notification ──────────────────────────────────────────────── */
 
     .box_notif {  /* afficher bouton vers notif */
         @apply p-3
-        flex flex-col gap-3
-        overflow-auto
+        
+        flex gap-3
+        md:flex-col
+        /* overflow-auto */
         border-y-1
     }
 
     .notif {
-        @apply rounded-lg p-3
+        @apply
+        rounded-lg p-3
+        items-center
         bg-blue-400
     }
 
@@ -124,25 +128,39 @@
     /* ── Profile ──────────────────────────────────────────────── */
     .box_profile {
         @apply overflow-auto
-        flex-1 flex flex-col gap-15 
+        flex-1 flex flex-col 
+        md:gap-15
+        gap-3
     }
 
     .profile_banner {
-        @apply bg-gray-900
-        grid grid-cols-[auto_1fr_auto]
-        p-5
-        gap-5
-        overflow-x-auto
+        @apply 
+        bg-gray-900
+        flex flex-col md:flex-row
+        /* md:grid grid-cols-[auto_1fr_auto] */
+        /* p-5 */
+        gap-7
+        /* overflow-x-auto */
     }
 
     .box_avatar {
-        @apply relative
-        w-32
-        py-2
-        shrink-0 justify-self-start
+        @apply 
+        /* relative */
+        flex-none
+        bg-red-400
+        /* md:w-40 md:h-auto */
+        w-32 h-32 
+        rounded-full
+        justify-self-center 
+        /* w-32 */
+        p-2
+        /* shrink-0 justify-self-start */
     }
     .avatar {
-       @apply rounded-full w-30 h-30 
+       @apply rounded-full
+       /* w-30 md:h-30 */
+       /* w-10 h-10 */
+       /* shrink-0  */
     }
 
     .avatar_btn {
@@ -154,13 +172,27 @@
     }
 
     .box_data {
-        @apply flex flex-col
-        gap-9
-        items-center
-        justify-self-center
+        @apply 
+        md:w-96 md:h-auto  flex-auto
+        h-30
+        flex flex-col
+         /* gap-9 */
+        /* items-center */
+        /* justify-self-center */
         /* absolute left-1/2 -translate-x-1/2 */
-        text-center
-        /* bg-red-300 */
+        /* text-center */
+        bg-red-300
+    }
+
+    .box_date
+    {
+        @apply bg-green-700 
+        /* flex-1 */
+        md:w-40 md:h-auto
+        h-15
+        /* justify-self-end
+        self-end
+        text-right */
     }
 
     .data_txt_username {

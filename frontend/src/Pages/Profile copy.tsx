@@ -30,6 +30,7 @@ export default function Profile ()
     const [watingRequest, setWatingRequest] = useState<string[]>([]);
     const [lstFriendship, setlstFriendship] = useState<{id: string, username: string, avatarUrl:string}[]>([]);
     const [isShowNotif, setisShowNotif] = useState(0);
+    const [notifMsgUnread, setNotifMsgUnread] = useState<string[]>(([]));
     const [searchVal, setSeachVal] = useState(""); //reccuprer tout ce que le user tapper dans la barre de recherche
     const [getSearchVal, setGetSeachVal] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, createdAt: string}[]>([]);
     // const [isShowFriendship, setisShowFriendship] = useState(0);
@@ -40,6 +41,7 @@ export default function Profile ()
     const passwordVisibility = () => setShowPassword(!showPassword);
     const [errMsgForm, setErrMsgForm] = useState<string>('');
     const [errMsgAvatar, setErrMsgAvatar] = useState<string>('');
+    const [errlogout, setLogout] = useState<string>('');
     const logout_url = '/api/logout';
     const navigate = useNavigate();
     
@@ -51,7 +53,9 @@ export default function Profile ()
             const result = await axios.get(`/api/users/search?q=${value}`, {withCredentials:true});
             setGetSeachVal(result.data.users);
         }
-        catch {}
+        catch {
+            setGetSeachVal([]);
+        }
     };
 
 
@@ -59,10 +63,10 @@ export default function Profile ()
         try{
             await axios.get(logout_url);
             localStorage.removeItem("token");
-            console.log("User logout successfull");
+            // console.log("User logout successfull");
             navigate("/");
         }catch(error){
-            console.log("Erreur logout: ", error);
+            setLogout('Error logout');
         }
     };
 
@@ -158,41 +162,41 @@ export default function Profile ()
     
 
     // useEffect fetchMe — remplacer par :
-// useEffect(() => {
-//     const fakeMe = {
-//         id: '1',
-//         username: 'nnn',
-//         avatarUrl: 'https://i.pravatar.cc/150?u=ngeny',
-//         isOnline: true,
-//         email: 'ngeny@g.com',
-//         password: '',
-//         createdAt: '2024-01-01'
-//     };
-//     setMyself(fakeMe);
-//     setSelectUser(fakeMe);
-// }, []);
+useEffect(() => {
+    const fakeMe = {
+        id: '1',
+        username: 'nnn',
+        avatarUrl: 'https://i.pravatar.cc/150?u=ngeny',
+        isOnline: true,
+        email: 'ngeny@g.com',
+        password: '',
+        createdAt: '2024-01-01'
+    };
+    setMyself(fakeMe);
+    setSelectUser(fakeMe);
+}, []);
 
-// // useEffect fetchFriends — remplacer par :
-// useEffect(() => {
-//     if (!Myself) return;
-//     setLstFriends([
-//         { id: '2', username: 'Alice',   avatarUrl: 'https://i.pravatar.cc/150?u=alice',   isOnline: true,  email: 'alice@g.com',   createdAt: '2024-01-02' },
-//         { id: '3', username: 'Bob',     avatarUrl: 'https://i.pravatar.cc/150?u=bob',     isOnline: false, email: 'bob@g.com',     createdAt: '2024-01-03' },
-//         { id: '4', username: 'Charlie', avatarUrl: 'https://i.pravatar.cc/150?u=charlie', isOnline: true,  email: 'charlie@g.com', createdAt: '2024-01-04' },
-//     ]);
-// }, [Myself]);
+// useEffect fetchFriends — remplacer par :
+useEffect(() => {
+    if (!Myself) return;
+    setLstFriends([
+        { id: '2', username: 'Alice',   avatarUrl: 'https://i.pravatar.cc/150?u=alice',   isOnline: true,  email: 'alice@g.com',   createdAt: '2024-01-02' },
+        { id: '3', username: 'Bob',     avatarUrl: 'https://i.pravatar.cc/150?u=bob',     isOnline: false, email: 'bob@g.com',     createdAt: '2024-01-03' },
+        { id: '4', username: 'Charlie', avatarUrl: 'https://i.pravatar.cc/150?u=charlie', isOnline: true,  email: 'charlie@g.com', createdAt: '2024-01-04' },
+    ]);
+}, [Myself]);
 
-// useEffect(() => {
-//     if (!Myself) return;
-//     setlstFriendship([
-//         { id: 'r1', username: 'Alffffffffffffffffffffffffffice',   avatarUrl: 'https://i.pravatar.cc/150?u=alice' },
-//         { id: 'r2', username: 'Bob',     avatarUrl: 'https://i.pravatar.cc/150?u=bob' },
-//         { id: 'r3', username: 'Charlie', avatarUrl: 'https://i.pravatar.cc/150?u=charlie' },
-//     ]);
-// }, [Myself]);
+useEffect(() => {
+    if (!Myself) return;
+    setlstFriendship([
+        { id: 'r1', username: 'Alffffffffffffffffffffffffffice',   avatarUrl: 'https://i.pravatar.cc/150?u=alice' },
+        { id: 'r2', username: 'Bob',     avatarUrl: 'https://i.pravatar.cc/150?u=bob' },
+        { id: 'r3', username: 'Charlie', avatarUrl: 'https://i.pravatar.cc/150?u=charlie' },
+    ]);
+}, [Myself]);
 
 
-// const [SearchResults, setSearchResults] = useState<{id: string, username: string, avatarUrl: string, isOnline: boolean, email: string, createdAt: string}[]>([
+// const [searchVal, setSsearchVal] = useState<{id: string, username: string, avatarUrl: string, isOnline: boolean, email: string, createdAt: string}[]>([
 //     { id: '5', username: 'Dave',  avatarUrl: 'https://i.pravatar.cc/150?u=dave',  isOnline: true,  email: 'dave@g.com',  createdAt: '2024-01-05' },
 //     { id: '6', username: 'Eve',   avatarUrl: 'https://i.pravatar.cc/150?u=eve',   isOnline: false, email: 'eve@g.com',   createdAt: '2024-01-06' },
 //     { id: '7', username: 'Frank', avatarUrl: 'https://i.pravatar.cc/150?u=frank', isOnline: true,  email: 'frank@g.com', createdAt: '2024-01-07' },
@@ -294,7 +298,7 @@ export default function Profile ()
             return;
         const handleRequest = () => {
             axios.get('/api/friends/pending', { withCredentials: true })
-            .then (result => {
+            .then (result => { 
                 if (!result.data.success || !Array.isArray(result.data.requests)) {
                         throw Error(`Error API Friendship: ${result.status} ${result.statusText}`);
                     }
@@ -382,11 +386,9 @@ export default function Profile ()
     useEffect (() => {
         if (!socket)
             return;
-        const handleDenied = (data : {requestId:string; userId:string}) => {
-            setWatingRequest(prev => prev.filter(id => id !== data.userId));
+        const handleDenied = (data : {requestId:string; userId:string}) => { //recupere les datas envoyer par le back
+            setWatingRequest(prev => prev.filter(id => id !== data.userId)); //enleve data.userId de waitinfrequest pour changer le statut du bouton en "ajouter en ami"
         }
-
-        // socket.on("friend:request_rejected", (data {requestId:string; userId:string});
         socket.on("friend:request_rejected", handleDenied);
         return () => {
             socket.off("friend:request_rejected", handleDenied);
@@ -409,12 +411,45 @@ export default function Profile ()
         setisShowNotif(1);
     }
 
+    // useEffect (() => {
+    //     if (!socket)
+    //         return;
+    //     const unreadlst = (data : {user:string; senderId:string}) => { //reccupere le username et l id de la personne qui m a envoyre un message
+    //         setNotifMsgUnread(prev => prev.includes(data.senderId) ? prev : [...prev, data.senderId]); 
+    //         //si la personne est deja dans la liste pour les messages non lu, ne rien faire
+    //         //sinon ajouter dans la liste
+    //     }  
+    //     socket.on ("privMessage", unreadlst);
+    //     return () => {
+    //         socket.off ("privMessage", unreadlst);
+    //     }
+    // }, [socket]);
+
+
+    //charge tous les messages non lu au demarage
+    useEffect (() => {
+        if (!Myself || lstFriends.length === 0)
+            return;
+        const allUnreaMsg = async () => {
+            const sendersTab: string[] = []; // creation de tableau vide pour ajouter les amis qui ont envoyer des messages non lu
+            for (const friend of lstFriends)
+            {
+                const result = await axios.get(`/api/users/chat/${friend.id}`, {withCredentials:true});
+                const unreadExist = result.data.messages.some((msg:any) => msg.senderId === friend.id && msg.read === false);
+                if (unreadExist)
+                    sendersTab.push(friend.id);//modifie le tableau en ajoutant l ami si y a au moins un de ses messages qui n est pas lu
+            }
+            setNotifMsgUnread(sendersTab);
+        }
+        allUnreaMsg(); //appel de la fonction
+    }, [Myself, lstFriends]);
+
     const WhichProfile = () => {
         if (!selectUser || !Myself)
             return null;
         
         /////////////////////////////////////////////////////////////////
-        console.log('selectUser.createdAt:', selectUser?.createdAt);
+        // console.log('selectUser.createdAt:', selectUser?.createdAt);
         if (selectUser.id === Myself.id) // afficher mon profile
             return (
                 <div>
@@ -430,7 +465,7 @@ export default function Profile ()
                         />
                         <div className="box_avatar">
                             {/* <div className="w-30 pl-1 "> */}
-                                <img className="avatar" src={selectUser?.avatarUrl}></img>
+                                {/* <img className="avatar" src={selectUser?.avatarUrl}></img> */}
                                 <button type="button" className="avatar_btn" onClick={() => document.getElementById('getAvatar')?.click()}><FaPencil size={20}/></button>
                                 {errMsgAvatar && <p className="error_input">{errMsgAvatar}</p>}
                             {/* </div> */}
@@ -446,11 +481,12 @@ export default function Profile ()
                                         <p className="data_txt_email">{selectUser?.email}</p>
                                     </div>
                                         
-                                    <div className="flex gap-4">
+                                    <div className="flex flex-wrap gap-4">
                                         <button className="data_btn px-6" onClick={onShow}>{t('profile.modifier')}</button>
                                         <button className="data_btn px-2" onClick={handleLogout}> {t('profile.deconnecion')} 
                                             <BiLogOut className="w-5 h-5 shrink-0"/>
                                         </button>
+                                        {errlogout && <p className="error_input">{errlogout}</p>}
                                     </div>
                                 </div>
                                 <div className="justify-self-end self-end text-right ">{t('profile.datecreate')} <br/> {new Date(selectUser?.createdAt).toLocaleDateString('fr-FR')}</div>
@@ -642,13 +678,16 @@ export default function Profile ()
                         <div className="">
                             <div className="title_notif">{t('profile.newMessage')}</div>
                             <div className="p-3">
-                                {lstFriendship.map((theRequest) => (
-                                    <div className="items" key={theRequest.id}>
-                                        <img className="avatar_notif" src={theRequest.avatarUrl}></img>
-                                        <span className="username_notif">{theRequest.username}</span>
-                                        <span className="msg_counter">10</span>
-                                    </div>
-                                ))}
+                                {notifMsgUnread.map((senderId) => {
+                                    const sender = lstFriends.find(f => f.id === senderId);
+                                    return (
+                                        <div className="items" key={senderId}>
+                                            <img className="avatar_notif" src={sender?.avatarUrl}></img>
+                                            <span className="username_notif">{sender?.username}</span>
+                                            {/* <span className="msg_counter">10</span> */}
+                                        </div>
+                                    );
+                                })}
                             </div>
 
                         </div>
@@ -668,32 +707,7 @@ export default function Profile ()
                                 ))}
                             </div>
                         </div>
-                        {/* <div className="bg-red-900 overflow-auto flex gap-5 p-2">
-                            <div className="bg-green-900 p-2 rounded-lg">
-                                <button onClick={ShowMessages}>Nouveaux messages</button>
-                            </div>
-                            <div className="bg-green-700 rounded-lg">
-                                <button onClick={ShowFriendship}>demande d amis</button>
-                            </div>
-                             
-                        </div>
-                        <div className="bg-gray-900">
-                            {isShowFriendship === 1 && (
-                                <div>
-                                    {lstFriendship.map((theRequest) => (
-                                        <div className="flex gap-10" key={theRequest.id}>
-                                            <img className="rounded-full w-9 h-9" src={theRequest.avatarUrl}></img>
-                                            <span className="truncate">{theRequest.username}</span>
-                                            <button onClick = {() => AcceptRequest(theRequest.id)}>accepter</button>
-                                            <button onClick = {() => DenieRequest(theRequest.id)}>refuser</button>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                            {isShowMessages === 1 && (
-                                <div>voici la liste des nouveaux </div>
-                            )}
-                        </div> */}
+                       
                     </div>
                 ) : (
                     <>

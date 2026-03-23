@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { TheSocket } from '../socket';
+// import { BiLogOut } from "react-icons/bi"; //logout icon
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type T_updateForm, updateForm } from '../lib/types';
 import { CiCircleInfo } from "react-icons/ci";//info icon
@@ -15,8 +16,6 @@ import { CiCircleCheck } from "react-icons/ci"; //accepter icon
 import { CiCircleRemove } from "react-icons/ci"; //refuser icon
 import { CiSearch } from "react-icons/ci"; //search icon
 import { IoIosArrowBack } from "react-icons/io"; //return icon
-import useUser from '../lib/user';
-
 import './style/Profile.css';
 
 export default function Profile ()
@@ -24,19 +23,14 @@ export default function Profile ()
     const {t} = useTranslation();
     const { socket } = TheSocket();
 
-    const Myself = useUser (state => state.userMyself);
-    const fetchMe = useUser (state => state.fetchMe);
-    
-    const lstFriends = useUser (state => state.userFriends);
-    const getFriend = useUser (state => state.fetchFriends);
-
-    const initSocket = useUser (state => state.initsocket);
-    const waitingRequest = useUser (state => state.waitingRequest);
-    const notifMsgUnread = useUser (state => state.NotifMsgUnread);
-
+    const [lstFriends, setLstFriends] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, createdAt: string}[]>([]);
+    const [Myself, setMyself] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, password: string, createdAt: string} | null>(null);
     const [selectUser, setSelectUser] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, createdAt: string} | null>(null);
+    
+    const [watingRequest, setWatingRequest] = useState<string[]>([]);
     const [lstFriendship, setlstFriendship] = useState<{id: string, username: string, avatarUrl:string}[]>([]);
     const [isShowNotif, setisShowNotif] = useState(0);
+    const [notifMsgUnread, setNotifMsgUnread] = useState<string[]>(([]));
     const [searchVal, setSearchVal] = useState(""); //reccuprer tout ce que le user tapper dans la barre de recherche
     const [getSearchVal, setGetSeachVal] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, createdAt: string}[]>([]);
 
@@ -51,21 +45,6 @@ export default function Profile ()
     const navigate = useNavigate();
     
     
-    useEffect(() => {//recuperer mes informations
-        fetchMe().then(user => {
-            if (!user)
-                navigate('/login');
-            else
-                setSelectUser(user);
-        });
-    }, []);
-
-    useEffect (() => {
-        if (!socket)
-            return;
-        initSocket(socket);
-    }, [socket]);
-
     const handleSearch = async (event:React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
         setSearchVal(value);
@@ -78,15 +57,73 @@ export default function Profile ()
         }
     };
 
+
     const handleLogout = async () =>{
         try{
             await axios.get(logout_url);
             localStorage.removeItem("token");
+            // console.log("User logout successfull");
             navigate("/");
         }catch(error){
             setLogout('Error logout');
         }
     };
+
+    useEffect(() => {//recuperer mes informations
+        const fetchMe = async () => {
+            try {
+                const response = await axios.get('/api/users/me', {
+                    withCredentials:true
+                });
+                if (!response.data.success) {
+                    throw Error(`Error API Me: ${response.status} ${response.statusText}`);
+                }
+                setMyself(response.data.user);
+                setSelectUser(response.data.user);//affiche mon profile par default au chargement de la page
+                
+            }
+            catch(error) {
+                // console.error('User not authenticated, redirecting to login...', error);
+                // navigate('/login');
+            }
+        }
+        fetchMe()
+    }, []);
+
+
+    const getFriend = async (myself = Myself) => { //reccuperer la liste d ami et mettre dans lstFriends
+        if (!myself)
+            return;
+        try {
+            const result = await axios.get('/api/friends', {
+                withCredentials: true,
+            });
+            if (!result.data.success || !Array.isArray(result.data.friends)) {
+                throw Error(`Error API Friends: ${result.status} ${result.statusText}`);
+            }
+            const friends = result.data.friends.map((f: any) => {
+                // [
+                //     { "user1": { "id": "moi", ... }, "user2": { "id": "ami1", ... } },
+                //     { "user1": { "id": "ami2", ... }, "user2": { "id": "moi", ... } }
+                // ]
+                if (f.user1.id === myself.id)
+                    return f.user2;
+                else
+                    return f.user1;
+                
+            });
+            setLstFriends(friends);
+        }
+        catch(error) {
+            console.error('Error fetch : ', error);
+        }
+    }
+
+    useEffect(() => {//charger la liste d amis au demarrage de la page pour pouvoir afficher la liste dans la sidebar
+        if (!Myself)
+            return;
+        getFriend();
+    }, [Myself]);
 
     const IsFriend = (UserId:string) => {// parcour la liste d ami et retourne true si l id du user en question est dans la liste 
         return lstFriends.some((friend) => friend.id === UserId);
@@ -99,12 +136,12 @@ export default function Profile ()
             await axios.delete(`/api/friends/${selectUser.id}`, {
                 withCredentials: true,
             });
-            useUser.setState(state => ({
-                userFriends : lstFriends.filter(friend => friend.id !== selectUser.id),
-                waitingRequest : state.waitingRequest.filter(id => id !== selectUser.id)
-            }));
+            setLstFriends(lstFriends.filter(friend => friend.id !== selectUser.id));
+            setWatingRequest(prev => prev.filter(id => id !== selectUser.id));
+
         }
         catch {}
+        
     }
     
     const AddFriend = async () => { //envoie une demande d ami et ajoute dans la bd friendship
@@ -115,21 +152,61 @@ export default function Profile ()
                 { receiverId: selectUser.id },
                 { withCredentials: true }
         );
-        useUser.setState(state => ({
-            waitingRequest: [...state.waitingRequest, selectUser.id]
-        }));
             // setLstFriends([...lstFriends, selectUser]);
-            // setWatingRequest([...watingRequest, selectUser.id]);
+            setWatingRequest([...watingRequest, selectUser.id]);
         }
         catch {}
     }
+
+    
+
+    // useEffect fetchMe — remplacer par :
+// useEffect(() => {
+//     const fakeMe = {
+//         id: '1',
+//         username: 'nnn',
+//         avatarUrl: 'https://i.pravatar.cc/150?u=ngeny',
+//         isOnline: true,
+//         email: 'ngeny@g.com',
+//         password: '',
+//         createdAt: '2024-01-01'
+//     };
+//     setMyself(fakeMe);
+//     setSelectUser(fakeMe);
+// }, []);
+
+// // useEffect fetchFriends — remplacer par :
+// useEffect(() => {
+//     if (!Myself) return;
+//     setLstFriends([
+//         { id: '2', username: 'Alrffffffffffffffffffffffice',   avatarUrl: 'https://i.pravatar.cc/150?u=alice',   isOnline: true,  email: 'alice@g.com',   createdAt: '2024-01-02' },
+//         { id: '3', username: 'Bob',     avatarUrl: 'https://i.pravatar.cc/150?u=bob',     isOnline: false, email: 'bob@g.com',     createdAt: '2024-01-03' },
+//         { id: '4', username: 'Charlie', avatarUrl: 'https://i.pravatar.cc/150?u=charlie', isOnline: true,  email: 'charlie@g.com', createdAt: '2024-01-04' },
+//     ]);
+// }, [Myself]);
+
+// useEffect(() => {
+//     if (!Myself) return;
+//     setlstFriendship([
+//         { id: 'r1', username: 'Alffffffffffffffffffffffffffice',   avatarUrl: 'https://i.pravatar.cc/150?u=alice' },
+//         { id: 'r2', username: 'Bob',     avatarUrl: 'https://i.pravatar.cc/150?u=bob' },
+//         { id: 'r3', username: 'Charlie', avatarUrl: 'https://i.pravatar.cc/150?u=charlie' },
+//     ]);
+// }, [Myself]);
+
+
+// const [searchVal, setSsearchVal] = useState<{id: string, username: string, avatarUrl: string, isOnline: boolean, email: string, createdAt: string}[]>([
+//     { id: '5', username: 'Dave',  avatarUrl: 'https://i.pravatar.cc/150?u=dave',  isOnline: true,  email: 'dave@g.com',  createdAt: '2024-01-05' },
+//     { id: '6', username: 'Eve',   avatarUrl: 'https://i.pravatar.cc/150?u=eve',   isOnline: false, email: 'eve@g.com',   createdAt: '2024-01-06' },
+//     { id: '7', username: 'Frank', avatarUrl: 'https://i.pravatar.cc/150?u=frank', isOnline: true,  email: 'frank@g.com', createdAt: '2024-01-07' },
+// ]);
 
     const { // retourne des outils pour gerer le formulaire
         register, //faire le lien avec le input du form
         handleSubmit, // valide les champs avec zod si error envoie le message d erreur 
         reset,
         formState: {errors}
-      } = useForm<T_updateForm>({//dit a la librairie react-hook-form d utiliser le schema zod pour valider les champs
+      } = useForm<T_updateForm>({//dit a react-hook-form d utiliser le schema zod pour valider les champs
         resolver: zodResolver(updateForm), 
     });
 
@@ -163,10 +240,10 @@ export default function Profile ()
                 ...selectUser, username:data.username || selectUser.username, 
                     email:data.email || selectUser.email
             });
-            useUser.setState({ userMyself: {
+            setMyself({
                 ...Myself, username:data.username || Myself.username, 
                     email:data.email || Myself.email
-            }});
+            });
             setActiveUpdate(0);
         }
         catch(err) 
@@ -194,9 +271,9 @@ export default function Profile ()
             setSelectUser({
                 ...selectUser!, avatarUrl:res.data.avatarUrl || selectUser?.avatarUrl
             });
-            useUser.setState({userMyself : {
+            setMyself({
                 ...Myself!, avatarUrl:res.data.avatarUrl || Myself?.avatarUrl
-            }});
+            });
         }
         catch(err) 
         {
@@ -281,14 +358,36 @@ export default function Profile ()
         catch {}
     }
 
+    useEffect (() => {//voir l ami accepter sur ma page
+        if (!socket || !Myself || !selectUser)
+            return;
+        const handleAccepted = (data: {frindId:string}) => {
+            getFriend(Myself);
+            setWatingRequest(prev => prev.filter(id => id !== data.frindId));
+        }
+        socket.on("friend:request_accepted", handleAccepted);
+        return () => {
+            socket.off("friend:request_accepted", handleAccepted);
+        }
+    }, [socket, Myself]);
+
+    useEffect (() => {//quand je supprime quelau un je disparait de sa page
+        if (!socket || !Myself)
+            return;
+        const handleDelete = () => {
+            getFriend(Myself);
+        }
+        socket.on("friend:unfriended", handleDelete);
+        return () => {
+            socket.off("friend:unfriended", handleDelete);
+        }
+    }, [socket, Myself]);
+
     useEffect (() => {
         if (!socket)
             return;
         const handleDenied = (data : {requestId:string; userId:string}) => { //recupere les datas envoyer par le back
-            // setWatingRequest(prev => prev.filter(id => id !== data.userId)); //enleve data.userId de waitinfrequest pour changer le statut du bouton en "ajouter en ami"
-            useUser.setState(state => ({
-                waitingRequest: state.waitingRequest.filter(id => id !== data.userId)
-            }));
+            setWatingRequest(prev => prev.filter(id => id !== data.userId)); //enleve data.userId de waitinfrequest pour changer le statut du bouton en "ajouter en ami"
         }
         socket.on("friend:request_rejected", handleDenied);
         return () => {
@@ -313,13 +412,46 @@ export default function Profile ()
         setResponsive(true);
     }
 
+    // useEffect (() => {
+    //     if (!socket)
+    //         return;
+    //     const unreadlst = (data : {user:string; senderId:string}) => { //reccupere le username et l id de la personne qui m a envoyre un message
+    //         setNotifMsgUnread(prev => prev.includes(data.senderId) ? prev : [...prev, data.senderId]); 
+    //         //si la personne est deja dans la liste pour les messages non lu, ne rien faire
+    //         //sinon ajouter dans la liste
+    //     }  
+    //     socket.on ("privMessage", unreadlst);
+    //     return () => {
+    //         socket.off ("privMessage", unreadlst);
+    //     }
+    // }, [socket]);
+
+
+    //charge tous les messages non lu au demarage
+    useEffect (() => {
+        if (!Myself || lstFriends.length === 0)
+            return;
+        const allUnreadMsg = async () => {
+            const sendersTab: string[] = []; // creation de tableau vide pour ajouter les amis qui ont envoyer des messages non lu
+            for (const friend of lstFriends)
+            {
+                const result = await axios.get(`/api/users/chat/${friend.id}`, {withCredentials:true});
+                const unreadExist = result.data.messages.some((msg:any) => msg.senderId === friend.id && msg.read === false);
+                if (unreadExist)
+                    sendersTab.push(friend.id);//modifie le tableau en ajoutant l ami si y a au moins un de ses messages qui n est pas lu
+            }
+            setNotifMsgUnread(sendersTab);
+        }
+        allUnreadMsg(); //appel de la fonction
+    }, [Myself, lstFriends]);
+
     const WhichProfile = () => {
         if (!selectUser || !Myself)
             return null;
         
         /////////////////////////////////////////////////////////////////
-        
-        if (selectUser.id === Myself.id) // afficher mon profil
+        // console.log('selectUser.createdAt:', selectUser?.createdAt);
+        if (selectUser.id === Myself.id) // afficher mon profile
             return (
                 <div>
                     <div className="profile_banner">
@@ -344,6 +476,7 @@ export default function Profile ()
                                 {/* </div> */}
                             </div>
 
+                        
                                 <div className="box_data">
                             
                                     <div /* className="text-center" */>
@@ -359,6 +492,10 @@ export default function Profile ()
                                         {errlogout && <p className="error_input">{errlogout}</p>}
                                     </div>
                                 </div>
+                                {/* <div className="box_date">
+                                    <div>{t('profile.datecreate')}</div>
+                                    <div>{new Date(selectUser?.createdAt).toLocaleDateString('fr-FR')}</div>
+                                </div> */}
                             </>
                         )}
                         {ActiveUpdate === 1 && ( // si il est en mode modifier
@@ -454,7 +591,7 @@ export default function Profile ()
                             <div className="flex gap-4 w-full items-center justify-center">
                                 {IsFriend(selectUser?.id) ? (
                                     <button className="delete_btn" onClick={DeleteFriend}>{t('profile.delete')}</button>
-                                ) : waitingRequest.includes(selectUser.id) ? (
+                                ) : watingRequest.includes(selectUser.id) ? (
                                         <button className="pending_btn" disabled>{t('profile.pending')}</button>
                                 ) : (
                                         <button className="add_btn" onClick={AddFriend}>{t('profile.add')}</button>

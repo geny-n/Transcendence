@@ -129,7 +129,7 @@
     .box_profile {
         @apply overflow-auto
         flex-1 flex flex-col 
-        md:gap-15
+        /* md:m-15 */
         gap-3
     }
 
@@ -138,20 +138,21 @@
         bg-gray-900
         flex flex-col md:flex-row
         /* md:grid grid-cols-[auto_1fr_auto] */
-        /* p-5 */
-        gap-7
+        p-3
+        gap-5
+        /* md:m-35 */
         /* overflow-x-auto */
     }
 
     .box_avatar {
         @apply 
-        /* relative */
+        relative
         flex-none
-        bg-red-400
-        /* md:w-40 md:h-auto */
+        /* bg-red-400 */
+        md:w-40 md:h-auto
         w-32 h-32 
-        rounded-full
-        justify-self-center 
+        /* rounded-full */
+        self-center
         /* w-32 */
         p-2
         /* shrink-0 justify-self-start */
@@ -167,36 +168,30 @@
         @apply bg-blue-300
         absolute
         rounded-full w-8 h-8
-        left-24 top-22
+        left-24 top-27
+        md:left-30 md:top-34
         flex items-center justify-center
     }
 
     .box_data {
         @apply 
         md:w-96 md:h-auto  flex-auto
-        h-30
+        /* h-30 */
         flex flex-col
-         /* gap-9 */
-        /* items-center */
+        /* px-40 */
+        p-2
+        gap-5
+        self-center
         /* justify-self-center */
         /* absolute left-1/2 -translate-x-1/2 */
         /* text-center */
-        bg-red-300
+        /* bg-red-300 */
     }
 
-    .box_date
-    {
-        @apply bg-green-700 
-        /* flex-1 */
-        md:w-40 md:h-auto
-        h-15
-        /* justify-self-end
-        self-end
-        text-right */
-    }
+    
 
     .data_txt_username {
-        @apply truncate text-2xl
+        @apply truncate text-2xl self-center
     }
 
     .data_txt_email {
@@ -205,30 +200,29 @@
 
     .data_btn {
         @apply bg-blue-500
-        py-1 w-1/2
-        flex gap-2
-        text-center text-white
-        rounded hover:bg-blue-600 transition
+        flex gap-2 justify-center items-center
+        p-2
+        rounded-lg hover:bg-blue-600 transition
     }
 
     .delete_btn {
         @apply bg-red-500
         py-1 px-2
-        items-center text-white
+        items-center 
         rounded hover:bg-red-600 transition
     }
 
     .add_btn {
         @apply bg-green-500
         py-1 px-2
-        items-center text-white
+        items-center
         rounded hover:bg-green-600 transition
     }
 
     .pending_btn {
         @apply bg-green-500
         py-1 px-2
-        items-center text-white
+        items-center
         rounded
     }
 

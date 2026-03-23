@@ -45,6 +45,8 @@ const onConnection = async (socket:Socket) => {
 		socket.on("privMessage", async({user, text, time, receivedId, read}) => {
 			// console.log(`message envoyé de ${user} à ${receivedId}`);
 			//envoie du message dans la bdd
+			if (!text || text.length > 500)
+				return;
 			const message = await prisma.chatMessage.create ({
 				data: {
 					message: text,

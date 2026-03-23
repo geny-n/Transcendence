@@ -99,6 +99,9 @@
         items-center text-left
         rounded-lg
         focus:outline-none focus:ring-2 focus:ring-orange-500
+        min-h-15
+        max-h-64
+        overflow-y-auto
     }
     .send_but {
         @apply bg-orange-500

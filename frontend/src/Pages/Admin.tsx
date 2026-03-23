@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import z from 'zod';
 import { ForbidenRegex, PasswordRegex, UserNameRegex } from '../lib/regex';
-import { useForm, type FieldValues } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 type AdminUser = {
@@ -64,6 +64,33 @@ const createAdminUpdateForm = (t: (key: string) => string) => z.object({
 	)
 })
 
+const createAdminCreateForm = (t: (key: string) => string) => z.object({
+	email: z.preprocess(
+		emptyStringToUndefined,
+		z
+			.email({ message: t('admin.validation.invalidEmail') })
+			.trim()
+	),
+	username: z.preprocess(
+		emptyStringToUndefined,
+		z
+			.string()
+			.trim()
+			.min(3, t('admin.validation.usernameMin'))
+			.max(24, t('admin.validation.usernameMax'))
+			.regex(UserNameRegex, t('admin.validation.usernamePattern'))
+	),
+	password: z.preprocess(
+		emptyStringToUndefined,
+		z
+			.string()
+			.trim()
+			.min(8, t('admin.validation.passwordMin'))
+			.regex(PasswordRegex, t('admin.validation.passwordPattern'))
+			.regex(ForbidenRegex, t('admin.validation.passwordSpecialChars'))
+	)
+})
+
 const admin = () => {
 	const { t } = useTranslation()
 	const { user } = useAuth()
@@ -86,6 +113,10 @@ const admin = () => {
 	const [confirmDelete, setConfirmDelete] = useState<boolean>(false)
 
 	const adminUpdateForm = useMemo(() => createAdminUpdateForm(t), [t])
+	type UpdateFormValues = z.infer<typeof adminUpdateForm>
+	const adminCreateForm = useMemo(() => createAdminCreateForm(t), [t])
+	type CreateFormValues = z.infer<typeof adminCreateForm>
+
 	const sortByOptions = useMemo(() => ([
 		{ value: 'createdAt' as const, label: t('admin.sort.createdAt') },
 		{ value: 'username' as const, label: t('admin.sort.username') },
@@ -94,7 +125,20 @@ const admin = () => {
 		{ value: 'isOnline' as const, label: t('admin.sort.status') },
 	]), [t])
 
-	const { register, handleSubmit, reset, formState: { errors } } = useForm({ resolver: zodResolver(adminUpdateForm) })
+	const {
+		register: registerUpdate,
+		handleSubmit: handleSubmitUpdate,
+		reset: resetUpdate,
+		formState: { errors: updateErrors }
+	} = useForm({ resolver: zodResolver(adminUpdateForm) })
+
+	const {
+		register: registerCreate,
+		handleSubmit: handleSubmitCreate,
+		reset: resetCreate,
+		formState: { errors: createErrors }
+	} = useForm({ resolver: zodResolver(adminCreateForm) })
+
 	const [formAvatar, setFormAvatar] = useState<File | null>(null)
 	const [formRole, setFormRole] = useState<UserRoles>('USER')
 
@@ -102,7 +146,12 @@ const admin = () => {
 
 	const resetForm = (target : AdminUser | null) => {
 		if (!target) {
-			reset({
+			resetUpdate({
+				username: '',
+				email: '',
+				password: ''
+			})
+			resetCreate({
 				username: '',
 				email: '',
 				password: ''
@@ -111,7 +160,7 @@ const admin = () => {
 			return;
 		}
 
-		reset({
+		resetUpdate({
 			username: target.username,
 			email: target.email ?? '',
 			password: ''
@@ -187,7 +236,30 @@ const admin = () => {
 		setConfirmDelete(false)
 	}
 
-	const updateUser = async (data: FieldValues) => {
+	const createUser = async (data: CreateFormValues) => {
+		setLoading(true)
+		setMessage('')
+		setError('')
+
+		const { email, username, password } = data
+
+		try {
+			await axios.post('/api/register', { email, username, password })
+
+			setMessage(t('admin.feedback.createSuccess'))
+			await fetchUsers()
+		} catch (error) {
+			if (axios.isAxiosError(error)) {
+				setError(error.response?.data?.message ?? t('admin.feedback.createError'))
+			} else {
+				setError(t('admin.feedback.unexpectedCreateError'))
+			}
+		} finally {
+			setLoading(false)
+		}
+	}
+
+	const updateUser = async (data: UpdateFormValues) => {
 		if (!selectedUser) return
 
 		setLoading(true)
@@ -313,6 +385,35 @@ const admin = () => {
 			{message ? <p className='admin-message success'>{message}</p> : null}
 			{error ? <p className='admin-message error'>{error}</p> : null}
 
+			<section className='admin-create-user'>
+				<div className='admin-create-head'>
+					<h2>{t('admin.create.title')}</h2>
+					<p>{t('admin.create.subtitle')}</p>
+				</div>
+
+				<form onSubmit={handleSubmitCreate(createUser)} className='admin-create-form'>
+					<label>
+						{t('admin.form.username')}
+						<input type="text" {...registerCreate('username')} autoComplete='username'/>
+						{createErrors.username && <p className='admin-message error'>{createErrors.username.message}</p>}
+					</label>
+
+					<label>
+						{t('admin.form.email')}
+						<input type="email" {...registerCreate('email')} autoComplete='email'/>
+						{createErrors.email && <p className='admin-message error'>{createErrors.email.message}</p>}
+					</label>
+
+					<label>
+						{t('admin.form.password')}
+						<input type="password" {...registerCreate('password')} autoComplete='current-password'/>
+						{createErrors.password && <p className='admin-message error'>{createErrors.password.message}</p>}
+					</label>
+
+					<button type='submit' disabled={loading}>{t('admin.actions.createUser')}</button>
+				</form>
+			</section>
+
 			<div className='admin-grid'>
 				<div className='admin-users-list'>
 					<div className='admin-list-head'>
@@ -352,28 +453,28 @@ const admin = () => {
 					{selectedUser ? (
 						<>
 							<h2>{t('admin.editor.title', { username: selectedUser.username })}</h2>
-							<form onSubmit={handleSubmit(updateUser)} className='admin-form'>
+							<form onSubmit={handleSubmitUpdate(updateUser)} className='admin-form'>
 								<label>
 									{t('admin.form.username')}
-									<input type="text" defaultValue={selectedUser.username} {...register('username')} autoComplete='username' />
-									{errors.username && <p className='admin-message error'>{errors.username.message}</p>}
+									<input type="text" defaultValue={selectedUser.username} {...registerUpdate('username')} autoComplete='username' />
+									{updateErrors.username && <p className='admin-message error'>{updateErrors.username.message}</p>}
 								</label>
 
 								<label>
 									{t('admin.form.email')}
-									<input type="email" defaultValue={selectedUser.email ?? undefined} {...register('email')} />
-									{errors.email && <p className='admin-message error'>{errors.email.message}</p>}
+									<input type="email" defaultValue={selectedUser.email ?? undefined} {...registerUpdate('email')} />
+									{updateErrors.email && <p className='admin-message error'>{updateErrors.email.message}</p>}
 								</label>
 
 								<label>
 									{t('admin.form.newPassword')}
 									<input
 										type="password"
-										{...register('password')}
+										{...registerUpdate('password')}
 										autoComplete='new-password'
 										placeholder={t('admin.form.passwordPlaceholder')}
 									/>
-									{errors.password && <p className='admin-message error'>{errors.password.message}</p>}
+									{updateErrors.password && <p className='admin-message error'>{updateErrors.password.message}</p>}
 								</label>
 
 								<label>

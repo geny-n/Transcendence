@@ -5,6 +5,7 @@ import './index.css'
 import './language.tsx'
 import { BrowserRouter } from 'react-router-dom'
 import axios from 'axios'
+import { RefreshProvider } from './refreshToken.tsx'
 
 
 export type UserRoles = "USER" | "ADMIN" | "GUEST"
@@ -57,7 +58,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 	<AuthProvider>
 		<React.StrictMode>
 			<BrowserRouter>
-				<App />
+				<RefreshProvider>
+					<App />
+				</RefreshProvider>
 			</BrowserRouter>
 		</React.StrictMode>
 	</AuthProvider>

@@ -3,6 +3,7 @@
 .admin-page {
 	min-height: calc(100vh - 64px);
 	padding: 1.5rem;
+	padding-top: calc(var(--spacing) * 30);
 	background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
 	color: #0f172a;
 }
@@ -32,6 +33,8 @@
 .admin-toolbar input,
 .admin-toolbar select,
 .admin-toolbar button,
+.admin-create-form input,
+.admin-create-form button,
 .admin-form input,
 .admin-form button,
 .admin-role-box select,
@@ -44,6 +47,7 @@
 }
 
 .admin-toolbar button,
+.admin-create-form button,
 .admin-form button,
 .admin-role-box button,
 .admin-danger-zone button {
@@ -54,10 +58,83 @@
 }
 
 .admin-toolbar button:hover,
+.admin-create-form button:hover,
 .admin-form button:hover,
 .admin-role-box button:hover,
 .admin-danger-zone button:hover {
 	background: #e2e8f0;
+}
+
+.admin-create-user {
+	position: relative;
+	margin-bottom: 1rem;
+	padding: 1rem;
+	border-radius: 0.9rem;
+	border: 1px solid #bfdbfe;
+	background:
+		radial-gradient(circle at top right, rgba(56, 189, 248, 0.18), transparent 50%),
+		linear-gradient(165deg, #ffffff 0%, #f0f9ff 100%);
+	box-shadow: 0 12px 30px rgba(14, 116, 144, 0.12);
+}
+
+.admin-create-head {
+	margin-bottom: 0.85rem;
+	text-align: left;
+}
+
+.admin-create-head h2 {
+	margin: 0;
+	font-size: 1.15rem;
+	font-weight: 800;
+	color: #0c4a6e;
+	letter-spacing: 0.02em;
+}
+
+.admin-create-form {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+	gap: 0.75rem;
+	align-items: end;
+}
+
+.admin-create-form label {
+	display: grid;
+	gap: 0.35rem;
+	font-weight: 700;
+	font-size: 0.9rem;
+	color: #0f172a;
+	text-align: left;
+}
+
+.admin-create-form input {
+	border-color: #bae6fd;
+	background: #ffffff;
+}
+
+.admin-create-form input:focus {
+	outline: none;
+	border-color: #0284c7;
+	box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.22);
+}
+
+.admin-create-form button {
+	align-self: end;
+	padding: 0.62rem 1rem;
+	border-color: #0ea5e9;
+	background: linear-gradient(180deg, #38bdf8 0%, #0ea5e9 100%);
+	color: #082f49;
+	font-weight: 800;
+	white-space: nowrap;
+}
+
+.admin-create-form button:hover {
+	background: linear-gradient(180deg, #0ea5e9 0%, #0284c7 100%);
+	color: #e0f2fe;
+}
+
+.admin-create-form button:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
 }
 
 .admin-grid {
@@ -243,11 +320,29 @@
 }
 
 @media (max-width: 980px) {
+	.admin-create-form {
+		grid-template-columns: 1fr 1fr;
+	}
+
+	.admin-create-form button {
+		grid-column: 1 / -1;
+	}
+
 	.admin-toolbar {
 		grid-template-columns: 1fr 1fr;
 	}
 
 	.admin-grid {
 		grid-template-columns: 1fr;
+	}
+}
+
+@media (max-width: 640px) {
+	.admin-create-form {
+		grid-template-columns: 1fr;
+	}
+
+	.admin-create-head h2 {
+		font-size: 1.02rem;
 	}
 }

@@ -17,11 +17,13 @@ import { CiSearch } from "react-icons/ci"; //search icon
 
 
 import './style/Profile.css';
+import { useAuth } from '../main';
 
 export default function Profile ()
 {
     const {t} = useTranslation();
     const { socket } = TheSocket();
+    const { setUser } = useAuth();
 
     const [lstFriends, setLstFriends] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, createdAt: string}[]>([]);
     const [Myself, setMyself] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, password: string, createdAt: string} | null>(null);
@@ -59,6 +61,7 @@ export default function Profile ()
     const handleLogout = async () =>{
         try{
             await axios.get(logout_url);
+            setUser(null);
             localStorage.removeItem("token");
             console.log("User logout successfull");
             navigate("/");

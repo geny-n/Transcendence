@@ -8,12 +8,12 @@ import { roleGuard } from "../middleware/roleGuard.js";
 
 const router = Router();
 
-router.post('/friends/requests', authLimiter, authenticateToken, roleGuard(['USER']), checkSchema(friendRequestSchema)
+router.post('/friends/requests', authLimiter, authenticateToken, roleGuard(['USER', 'ADMIN']), checkSchema(friendRequestSchema)
 	, sendFriendRequest);
-router.patch('/friends/requests/:id', authenticateToken, roleGuard(['USER']), checkSchema(friendActionSchema)
+router.patch('/friends/requests/:id', authenticateToken, roleGuard(['USER', 'ADMIN']), checkSchema(friendActionSchema)
 	, friendRequestAction);
-router.get('/friends', authenticateToken, roleGuard(['USER']), getFriendList);
-router.get('/friends/pending', authenticateToken, roleGuard(['USER']), getPendingRequests);
-router.delete('/friends/:id', authenticateToken, roleGuard(['USER']), unfriend);
+router.get('/friends', authenticateToken, roleGuard(['USER', 'ADMIN']), getFriendList);
+router.get('/friends/pending', authenticateToken, roleGuard(['USER', 'ADMIN']), getPendingRequests);
+router.delete('/friends/:id', authenticateToken, roleGuard(['USER', 'ADMIN']), unfriend);
 
 export default router;

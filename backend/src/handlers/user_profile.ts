@@ -1,8 +1,9 @@
 import type { Request, Response } from "express";
 import { matchedData, validationResult } from "express-validator";
 import prisma from "../lib/prisma.js";
-import { comparePassword, hashPassword } from "../utils/helpers.js";
+import { comparePassword, getAllFriendIds, hashPassword } from "../utils/helpers.js";
 import { asyncHandler } from "../utils/asyncHandlers.js";
+import { getIO } from "../lib/socket.js";
 
 export const getMyProfile = asyncHandler(async (request:Request, response:Response) => {
 	if (!request.user) {
@@ -86,6 +87,7 @@ export const updateMyProfile = asyncHandler(async (request:Request, response:Res
 		},
 	});
 	console.log("updateUser:", updateUser);
+
 	const userWithoutPassword = {
 		id : updateUser.id,
 		username: updateUser.username,
@@ -93,6 +95,20 @@ export const updateMyProfile = asyncHandler(async (request:Request, response:Res
 		avatarUrl: updateUser.avatarUrl,
 	};
 	console.log('userWithoutPassword:', userWithoutPassword);
+
+	try {
+		const io = getIO();
+		const friends = await getAllFriendIds(request.user.id);
+
+		friends.forEach(friendsId => {
+			io.to(`user:${friendsId}`).emit('friend:profile_updated', {
+				userId : userWithoutPassword.id,
+				user: userWithoutPassword
+			})
+		});
+	} catch (error) {
+		console.error('Socket broadcast error (non-blocking):', error);
+	}
 
 	return response.status(200).json({
 		success: true,
@@ -158,6 +174,20 @@ export const changeAvatar = asyncHandler(async (request:Request, response:Respon
 		data : { avatarUrl: avatarUrl }
 	});
 	console.log('updateUser:', updateUser);
+
+	try {
+		const io = getIO();
+		const friends = await getAllFriendIds(request.user.id);
+
+		friends.forEach(friendsId => {
+			io.to(`user:${friendsId}`).emit('friend:avatar_updated', {
+				userId : updateUser.id,
+				avatarUrl: avatarUrl
+			})
+		});
+	} catch (error) {
+		console.error('Socket broadcast error (non-blocking):', error);
+	}
 
 	response.status(200).json({
 		success: true,

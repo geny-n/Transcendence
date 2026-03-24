@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './style/Chat.css'
 // import defaultpp from '/pp/default.jpg'
@@ -26,6 +26,7 @@ export default function Chat ()
   //permet de garder en memoire touts les messages (le 1er message n es pas ecraser par le 2eme)
   const [errMsg, setErrMsg] = useState('');
 
+  const scrollAuto = useRef<HTMLDivElement>(null);
 
   // const [lstFriends, setLstFriends] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean}[]>([]);
   // const [Myself, setMyself] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean} | null>(null);
@@ -42,11 +43,11 @@ export default function Chat ()
  
  
   useEffect(() => {//recuperer mes informations
-        // fetchMe().then(user => {
-        //     if (!user)
-        //         navigate('/login');
-        // });
-        fetchMe();
+        fetchMe().then(user => {
+            if (!user)
+                navigate('/login');
+        });
+        // fetchMe();
     }, []);
 
     useEffect (() => {
@@ -132,75 +133,81 @@ export default function Chat ()
     setErrMsg('');
   }
 
-    return (
-      <div className="all_chat_screen">        
-        <div className="top">
-          {/* ***************************************************************** */}
-          <div className="myPP">
-            {Myself && (
-              <>
-              <img className="rounded-full w-9 h-9" src={Myself.avatarUrl}></img>
-              <p>{Myself.username}</p>
-              </>
-            )}
-          </div>
-            
-          {/* ***************************************************************** */}
+  useEffect (() => {
+    scrollAuto.current?.scrollIntoView({ behavior: 'auto'});
+  }, [prevMsg, errMsg]);
 
-          <div className="box_friend">
-            {selectFriend && (
+  return (
+    <div className="all_chat_screen">        
+      <div className="top">
+        {/* ***************************************************************** */}
+        <div className="myPP">
+          {Myself && (
             <>
-              <div className="relative">
-                <div className="w-13 pl-1">
-                  <img className="rounded-full w-9 h-9" src={selectFriend.avatarUrl}></img>
-                  <span className={`friend_status ${status(selectFriend.isOnline)}`}></span>
-                </div>
-              </div>
-              <div className="truncate">{selectFriend.username}</div>
-            </>)}
-          </div>
+            <img className="rounded-full w-9 h-9" src={Myself.avatarUrl}></img>
+            <p>{Myself.username}</p>
+            </>
+          )}
         </div>
+            
+        {/* ***************************************************************** */}
 
-          {/* ***************************************************************** */}
+        <div className="box_friend">
+          {selectFriend && (
+            <>
+            <div className="relative">
+              <div className="w-13 pl-1">
+                <img className="rounded-full w-9 h-9" src={selectFriend.avatarUrl}></img>
+                <span className={`friend_status ${status(selectFriend.isOnline)}`}></span>
+              </div>
+            </div>
+            <div className="truncate">{selectFriend.username}</div>
+            </>)}
+        </div>
+      </div>
 
-        <div className="bottom">
-          <div className="box_list">
-            {lstFriends.map((theFriend, idx) =>
-            {
-              let isSelected;
-              if (selectFriend?.id === theFriend.id)
-                  isSelected = 'bg-gray-300';
-              return (
-                <div className={`display_lst ${isSelected}`} 
-                  key={idx} onClick={() => {
-                    setSelectFriend(theFriend);
-                    //change le status read en true quand le user click sur le sender
-                    axios.patch(`/api/users/chat/${theFriend.id}/read`, {}, {withCredentials:true});
-                  }}
-                >
-                  <img className="rounded-full w-10 h-10" src={theFriend.avatarUrl}></img>
-                  <span className={`display_status ${status(theFriend.isOnline)}`}></span>
-                  <div className="truncate">{theFriend.username}</div>
-                </div>
-              );
-            })}
-          </div>
+      {/* ***************************************************************** */}
+
+      <div className="bottom">
+        <div className="box_list">
+          {lstFriends.map((theFriend, idx) => {
+            let isSelected;
+            if (selectFriend?.id === theFriend.id)
+                isSelected = 'bg-gray-300';
+            return (
+              <div className={`display_lst ${isSelected}`} 
+                key={idx} onClick={() => {
+                  setSelectFriend(theFriend);
+                  //change le status read en true quand le user click sur le sender
+                  axios.patch(`/api/users/chat/${theFriend.id}/read`, {}, {withCredentials:true});
+                }}
+              >
+                <img className="rounded-full w-10 h-10" src={theFriend.avatarUrl}></img>
+                <span className={`display_status ${status(theFriend.isOnline)}`}></span>
+                <div className="truncate">{theFriend.username}</div>
+              </div>
+            );
+          })}
+        </div>
           
-          {/* ***************************************************************** */}
+        {/* ***************************************************************** */}
           
-          <div className="w-2/3 flex flex-col ">
-              <div className="box_message">
-              {/* permet de mapper chaque message envoyer en leur donnant un index pour les affichiers dans l ordre d envoie */}
-              {prevMsg.map((theMsg, idx) =>
+        <div className="w-2/3 flex flex-col ">
+          <div className="box_message">
+            {/* permet de mapper chaque message envoyer en leur donnant un index pour les affichiers dans l ordre d envoie */}
+            {prevMsg.map((theMsg, idx) =>
               <div className="display_Msg" key={idx}>
                 <div className="flex gap-3">
                   <img className="rounded-full w-12 h-12" src={theMsg.avatarUrl}></img>
                   <span className="text-sm font-semibold">{theMsg.sender}</span>
                   <span className="text-sm text-body">{theMsg.time}</span>
                 </div>
-                <span className="flex items-left pt-1 text-left whitespace-normal">{theMsg.msg}</span>
-              </div>)}
-            </div>
+                <span className="flex items-left pt-1 text-left whitespace-pre-wrap">{theMsg.msg}</span>
+              </div>
+            )}
+            {errMsg && <p className='err'>{errMsg}</p>}
+            <div ref={scrollAuto}></div>
+          </div>
           
           {/* ***************************************************************** */}  
           
@@ -210,18 +217,23 @@ export default function Chat ()
                 onChange={e => {setNewMsg(e.target.value); setErrMsg('');}}
                 placeholder='votre message'
                 className="send_msg"
-                // style={{
-                //   resize: 'none',
-                // }}
+                style={{
+                  resize: 'none',
+                }}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMsg();
+                  }
+                }}
               />
-              {errMsg && <p className='err'>{errMsg}</p>}
-              <button className="send_but" onClick={sendMsg}>
-                Envoyer
-              </button>
-            </div>
+            <button className="send_but" onClick={sendMsg}>
+              Envoyer
+            </button>
           </div>
         </div>
       </div>
-    )
+    </div>
+  )
 
 }

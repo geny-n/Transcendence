@@ -49,7 +49,7 @@ export default function Profile ()
     const [errlogout, setLogout] = useState<string>('');
     const logout_url = '/api/logout';
     const navigate = useNavigate();
-    
+
     
     useEffect(() => {//recuperer mes informations
         fetchMe().then(user => {
@@ -130,7 +130,7 @@ export default function Profile ()
         reset,
         formState: {errors}
       } = useForm<T_updateForm>({//dit a la librairie react-hook-form d utiliser le schema zod pour valider les champs
-        resolver: zodResolver(updateForm), 
+        resolver: zodResolver(updateForm(t)), 
     });
 
     const onShow = () => {

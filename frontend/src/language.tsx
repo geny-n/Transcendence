@@ -15,10 +15,22 @@ i18n.use(initReactI18next).init({
                 'navbar.profile' : 'Profile',
                 'navbar.admin' : 'Admin',
                 'navbar.login' : 'Connexion',
-                'navbar.register' : 'Connexion',
+                'navbar.register' : 'Inscription',
 
                 //HomePage
                 'homepage.home' : 'Bienvenue sur notre transcendence',
+
+                //types
+                'types.connexion.email' : 'Email invalide',
+                'types.connexion.mdp' : 'Mot dq invalide',
+                'types.min.3' : 'Ne peux contenir moins de 3 caracteres',
+                'types.max.24' : 'Ne peux contenir plus de 24 caracteres',
+                'types.allowed_chars' : 'Caracteres autorises: lettres, chiffres, - et _',
+                'types.email' : 'Email valide requis',
+                'types.min.10' : 'Ne peux contenir moins de 10 caracteres',
+                'types.mdp.char' : 'Doit contenir minuscule, majuscule, chiffre et caractere special',
+                'types.mdp.allow' : 'Caracteres speciaux autorises: !@#$%&*()_-+=',
+                'types.inscription.mdp.similar' : 'Les mots de passes doivent etre similaires',
 
                 //Admin
                 'admin.common.loading': 'Chargement...',
@@ -93,7 +105,6 @@ i18n.use(initReactI18next).init({
                 'profile.friendRequest' : 'Demande d amis',
                 'profile.search' : 'Recherche',
 
-
                 'profile.opponent' : 'Adversaire',
                 'profile.result' : 'Resultat',
                 'profile.score' : 'Score',
@@ -103,14 +114,6 @@ i18n.use(initReactI18next).init({
                 'profile.err.data' : 'Nom d utilisateur ou email déjà utilise',
                 'profile.err.wrongPassword' : 'Le mot de passe ne correspond pas au mot de passe actuel',
                 'profile.err.avatar' : 'Erreur lors du chargement de l image',
-                'profile.err.usernameMin' : 'Ne peux contenir moins de 3 caracteres',
-                'profile.err.Max' : 'Ne peux contenir plus de 24 caracteres',
-                'profile.err.regex' : 'Caracteres autorises: lettres, chiffres, - et _',
-                'profile.err.email' : 'Email valide requis',
-                'profile.err.passMin' : 'Ne peux contenir moins de 10 caracteres',
-                'profile.err.PasswordRegex' : 'Doit contenir minuscule, majuscule, chiffre et caractere special',
-                'profile.err.ForbidenRegex' : '  .regex(ForbidenRegex, "Caracteres speciaux autorises: !@#$%&*()_-+=")',
-
             }
         },
         en: {
@@ -127,6 +130,18 @@ i18n.use(initReactI18next).init({
 
                 //HomePage
                 'homepage.home' : 'Welcome to our transcendence',
+
+                //types
+                'types.connexion.email' : 'Invalid email',
+                'types.connexion.mdp' : 'Invalid password',
+                'types.min.3' : 'Cannot contain less than 3 characters',
+                'types.max.24' : 'Cannot contain more than 24 characters',
+                'types.allowed_chars' : 'Allowed characters: letters, numbers, - and _',
+                'types.email' : 'Valid email required',
+                'types.min.10' : 'Cannot contain less than 10 characters',
+                'types.mdp.char' : 'Must contain lowercase, uppercase, number and special character',
+                'types.mdp.allow' : 'Allowed special characters: !@#$%&*()_-+=',
+                'types.inscription.mdp.similar' : 'Passwords must match',
 
                 //Admin
                 'admin.common.loading': 'Loading...',
@@ -187,6 +202,7 @@ i18n.use(initReactI18next).init({
                 //profile
                 'profile.modifier' : 'Update',
                 'profile.deconnecion' : 'logout',
+                'profile.datecreate' : 'Creation date',
                 'profile.actuelmdp' : 'Current password',
                 'profile.newmdp' : 'New password',
                 'profile.save' : 'Save',
@@ -194,6 +210,10 @@ i18n.use(initReactI18next).init({
                 'profile.delete' : 'Delete friend',
                 'profile.add' : 'Add to Friend',
                 'profile.pending' : 'Pending request',
+                'profile.notification' : 'Notifications',
+                'profile.newMessage' : 'New messages',
+                'profile.friendRequest' : 'Friend requests',
+                'profile.search' : 'Search',
 
                 'profile.opponent' : 'Opponent',
                 'profile.result' : 'Result',
@@ -201,17 +221,9 @@ i18n.use(initReactI18next).init({
                 'profile.time' : 'Time',
                 'profile.date' : 'Date',
             
-                'profile.err.data' : 'Nom d utilisateur ou email déjà utilise',
-                'profile.err.avatar' : 'Erreur lors du chargement de l image',
-
-                'profile.err.usernameMin' : 'Cannot be less than 3 characters',
-                'profile.err.Max' : 'Ne peux contenir plus de 24 caracteres',
-                'profile.err.regex' : 'Caracteres autorises: lettres, chiffres, - et _',
-                'profile.err.email' : 'Email valide requis',
-                'profile.err.passMin' : 'Ne peux contenir moins de 10 caracteres',
-                'profile.err.PasswordRegex' : 'Doit contenir minuscule, majuscule, chiffre et caractere special',
-                'profile.err.ForbidenRegex' : '  .regex(ForbidenRegex, "Caracteres speciaux autorises: !@#$%&*()_-+=")',
-                
+                'profile.err.data' : 'Username or email already in use',
+                'profile.err.wrongPassword' : 'Password does not match current password',
+                'profile.err.avatar' : 'Error loading image',
             }
         },
         es : {
@@ -228,6 +240,18 @@ i18n.use(initReactI18next).init({
 
                 //HomePage
                 'homepage.home' : 'Bienvenido a nuestra transcendence',
+
+                //types
+                'types.connexion.email' : 'Email invalido',
+                'types.connexion.mdp' : 'Contraseña invalida',
+                'types.min.3' : 'No puede contener menos de 3 caracteres',
+                'types.max.24' : 'No puede contener mas de 24 caracteres',
+                'types.allowed_chars' : 'Caracteres permitidos: letras, numeros, - y _',
+                'types.email' : 'Se requiere un email valido',
+                'types.min.10' : 'No puede contener menos de 10 caracteres',
+                'types.mdp.char' : 'Debe contener minuscula, mayuscula, numero y caracter especial',
+                'types.mdp.allow' : 'Caracteres especiales permitidos: !@#$%&*()_-+=',
+                'types.inscription.mdp.similar' : 'Las contraseñas deben coincidir',
 
                 //Admin
                 'admin.common.loading': 'Cargando...',
@@ -284,10 +308,11 @@ i18n.use(initReactI18next).init({
                 'admin.validation.passwordMin': 'Debe contener al menos 8 caracteres',
                 'admin.validation.passwordPattern': 'Debe incluir minuscula, mayuscula, numero y caracter especial',
                 'admin.validation.passwordSpecialChars': 'Caracteres especiales permitidos: !@#$%&*()_-+=',
+                
                 //profile
                 'profile.modifier' : 'Modificar',
                 'profile.deconnecion' : 'Desconexión',
-                'profile.datecreate' : 'Date de creation',
+                'profile.datecreate' : 'Fecha de creacion',
                 'profile.actuelmdp' : 'Contraseña actual',
                 'profile.newmdp' : 'Nueva contraseña',
                 'profile.save' : 'Guardar',
@@ -295,7 +320,10 @@ i18n.use(initReactI18next).init({
                 'profile.delete' : 'Eliminar el amigo',
                 'profile.add' : 'Agregar como amigo',
                 'profile.pending' : 'Solicitud pendiente',
-
+                'profile.notification' : 'Notificaciones',
+                'profile.newMessage' : 'Nuevos mensajes',
+                'profile.friendRequest' : 'Solicitudes de amistad',
+                'profile.search' : 'Buscar',
 
                 'profile.opponent' : 'Oponente',
                 'profile.result' : 'Resultado',
@@ -304,14 +332,8 @@ i18n.use(initReactI18next).init({
                 'profile.date' : 'Fecha',
             
                 'profile.err.data' : 'Nombre de usuario o correo electrónico ya en uso',
+                'profile.err.wrongPassword' : 'La contraseña no coincide con la contraseña actual',
                 'profile.err.avatar' : 'Error al cargen la imagen',
-                'profile.err.usernameMin' : 'No puede contener menos de 3 caracteres',
-                'profile.err.Max' : 'No puede contener más de 24 caracteres',
-                'profile.err.regex' : 'Caracteres permitidos: letras, números, - y _',
-                'profile.err.email' : 'Se requiere un correo electrónico válido',
-                'profile.err.passMin' : 'No puede contener menos de 10 caracteres',
-                'profile.err.PasswordRegex' : 'Debe contener una minúscula, una mayúscula, un número y un cáracter especial',
-                'profile.err.ForbidenRegex' : 'Caracteres especiales permitidos: !@#$%&*()_-+="',
             }
         }
     }

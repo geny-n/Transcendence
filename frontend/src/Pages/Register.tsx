@@ -13,6 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { type T_inscriptionForm, inscriptionForm } from '../lib/types';
 import axios from "axios";
 import "./style/login.css";
+import { useTranslation } from 'react-i18next';
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -25,13 +26,14 @@ const Register = () => {
 
   const navigate = useNavigate();
   const register_url = '/api/register';
+  const { t } = useTranslation();
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting }
   } = useForm<T_inscriptionForm>({
-    resolver: zodResolver(inscriptionForm),
+    resolver: zodResolver(inscriptionForm(t)),
   });
 
   const onSubmit = async (data: FieldValues) => {

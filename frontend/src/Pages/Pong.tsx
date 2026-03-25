@@ -31,9 +31,12 @@ export default function Pong()
         onClick={() => setShowPong(true)}>
         Jouer</button>
 
-        <button className="btn-play"
-        onClick={() => navigate('/matchmaking')}>
-        Jouer en ligne 🌐</button>
+        <button 
+          className="btn-play"
+          onClick={() => navigate('/matchmaking')}
+        >
+          Jouer en ligne 🌐
+        </button>
 
         <button className="btn-play">
         Parametres</button>

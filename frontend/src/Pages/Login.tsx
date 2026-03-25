@@ -15,7 +15,7 @@ import "./style/login.css";
 import { useAuth } from '../main';
 
 const Login = () => {
-	const { setUser } = useAuth();
+	const { setUser, setAccessToken } = useAuth();
 	const [showPassword, setShowPassword] = useState<boolean>(false);
 	const passwordVisibility = () => setShowPassword(!showPassword);
 
@@ -44,6 +44,11 @@ const Login = () => {
 			);
 			console.log(response.data);
 			console.log(response.data.status);
+			// Store the access token for Socket.io
+			if (response.data.accessToken) {
+				setAccessToken(response.data.accessToken);
+				console.log("[Login] Stored accessToken in context");
+			}
 			const me = await axios.get('/api/users/me', { withCredentials: true });
 			setUser(me.data.user);
 			setErrMsg("");

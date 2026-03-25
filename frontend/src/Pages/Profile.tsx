@@ -14,25 +14,27 @@ import { FaPencil } from 'react-icons/fa6'; //pencil icon
 import { CiCircleCheck } from "react-icons/ci"; //accepter icon
 import { CiCircleRemove } from "react-icons/ci"; //refuser icon
 import { CiSearch } from "react-icons/ci"; //search icon
+import { useAuth } from '../main';
 
 
 import './style/Profile.css';
 
 export default function Profile ()
 {
-    const {t} = useTranslation();
-    const { socket } = TheSocket();
+	const {t} = useTranslation();
+	const { socket } = TheSocket();
+	const { setAccessToken, setUser: setAuthUser } = useAuth();
 
     const [lstFriends, setLstFriends] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, createdAt: string}[]>([]);
-    const [Myself, setMyself] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, password: string, createdAt: string} | null>(null);
-    const [selectUser, setSelectUser] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, createdAt: string} | null>(null);
+    const [Myself, setMyself] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, password: string, createdAt: string, level?: number, experience?: number} | null>(null);
+    const [selectUser, setSelectUser] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, createdAt: string, level?: number, experience?: number} | null>(null);
     
     const [watingRequest, setWatingRequest] = useState<string[]>([]);
     const [lstFriendship, setlstFriendship] = useState<{id: string, username: string, avatarUrl:string}[]>([]);
     const [isShowNotif, setisShowNotif] = useState(0);
     const [notifMsgUnread, setNotifMsgUnread] = useState<string[]>(([]));
     const [searchVal, setSeachVal] = useState(""); //reccuprer tout ce que le user tapper dans la barre de recherche
-    const [getSearchVal, setGetSeachVal] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, createdAt: string}[]>([]);
+    const [getSearchVal, setGetSeachVal] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, createdAt: string, level?: number, experience?: number}[]>([]);
     // const [isShowFriendship, setisShowFriendship] = useState(0);
     // const [isShowMessages, setisShowMessages] = useState(0);
 
@@ -58,8 +60,10 @@ export default function Profile ()
 
     const handleLogout = async () =>{
         try{
-            await axios.get(logout_url);
+            await axios.get(logout_url, { withCredentials: true });
             localStorage.removeItem("token");
+            setAccessToken(null);
+            setAuthUser(null);
             console.log("User logout successfull");
             navigate("/");
         }catch(error){
@@ -476,6 +480,12 @@ export default function Profile ()
                                     <div /* className="text-center" */>
                                         <h1 className="data_txt_username">{selectUser?.username}</h1>
                                         <p className="data_txt_email">{selectUser?.email}</p>
+                                        {selectUser?.level !== undefined && (
+                                            <div className="flex gap-4 text-sm text-slate-400 mt-2">
+                                                <span>Niveau: <span className="font-bold text-purple-300">{selectUser.level}</span></span>
+                                                <span>XP: <span className="font-bold text-indigo-300">{selectUser.experience}</span></span>
+                                            </div>
+                                        )}
                                     </div>
                                         
                                     <div className="flex gap-4">
@@ -571,6 +581,12 @@ export default function Profile ()
                             <div>
                                 <h1 className="data_txt_username">{selectUser?.username}</h1>
                                 <p className="data_txt_email">{selectUser?.email}</p>
+                                {selectUser?.level !== undefined && (
+                                    <div className="flex gap-4 text-sm text-slate-400 mt-2">
+                                        <span>Niveau: <span className="font-bold text-purple-300">{selectUser.level}</span></span>
+                                        <span>XP: <span className="font-bold text-indigo-300">{selectUser.experience}</span></span>
+                                    </div>
+                                )}
                             </div>
                             {IsFriend(selectUser?.id) ? (
                                 <button className="delete_btn" onClick={DeleteFriend}>{t('profile.delete')}</button>

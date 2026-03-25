@@ -1,5 +1,7 @@
 import { Server, Socket } from "socket.io";
 import prisma from "../lib/prisma.js";
+import { verifyToken } from "../utils/helpers.js";
+import { calculateLevel, getXPGain, MAX_LEVEL } from "../utils/xpSystem.js";
 
 // ─── Game Constants ───────────────────────────────────────────────────────────
 const CANVAS_W             = 800;
@@ -58,6 +60,7 @@ interface Room {
 	interval:         ReturnType<typeof setInterval> | null;
 	countdownTimer:   ReturnType<typeof setInterval> | null;
 	disconnectTimers: Map<1 | 2, DisconnectTimer>;
+	endgameCalled:    boolean; // Guard to prevent multiple endGame calls
 
 	// ── Timer de partie ───────────────────────────────────────────────────────
 	startedAt:         Date | null;          // timestamp de début de la vraie partie
@@ -139,6 +142,7 @@ function createRoom(
 		interval:          null,
 		countdownTimer:    null,
 		disconnectTimers:  new Map(),
+		endgameCalled:     false,
 		startedAt:         null,
 		gameTimerMs:       GAME_DURATION_MS,
 		gameTimerStartMs:  null,
@@ -206,8 +210,58 @@ function saveMatch(room: Room, winner: 1 | 2, io: Server): void {
 		io.emit("pong:match_saved", payload);
 		// Notifier les spectateurs du scoreboard (namespace public)
 		io.of("/scoreboard").emit("pong:match_saved", payload);
+
+		// ── Update XP and Level for authenticated players ──────────────────────
+		updatePlayerXP(winnerIdDb, loserIdDb, io).catch((err: unknown) => {
+			console.error("[Pong] Erreur mise à jour XP:", err);
+		});
 	}).catch((err: unknown) => {
 		console.error("[Pong] Erreur sauvegarde match:", err);
+	});
+}
+
+// ─── Update Player XP and Level ──────────────────────────────────────────────────────────
+async function updatePlayerXP(winnerId: string | null, loserId: string | null, io: Server): Promise<void> {
+	const updates: Promise<any>[] = [];
+
+	// Update winner (3 XP)
+	if (winnerId) {
+		updates.push(
+			prisma.user.findUnique({ where: { id: winnerId }, select: { experience: true } })
+				.then(async (user: { experience: number } | null) => {
+					if (!user) return;
+					const newXP = user.experience + getXPGain(true);
+					const newLevel = calculateLevel(newXP);
+					return prisma.user.update({
+						where: { id: winnerId },
+						data: { experience: newXP, level: newLevel },
+					});
+				})
+		);
+	}
+
+	// Update loser (1 XP)
+	if (loserId) {
+		updates.push(
+			prisma.user.findUnique({ where: { id: loserId }, select: { experience: true } })
+				.then(async (user: { experience: number } | null) => {
+					if (!user) return;
+					const newXP = user.experience + getXPGain(false);
+					const newLevel = calculateLevel(newXP);
+					return prisma.user.update({
+						where: { id: loserId },
+						data: { experience: newXP, level: newLevel },
+					});
+				})
+		);
+	}
+
+	await Promise.all(updates);
+
+	// Emit leaderboard update via /leaderboard namespace
+	io.of("/leaderboard").emit("leaderboard:updated", {
+		timestamp: new Date(),
+		updatedPlayers: [winnerId, loserId].filter((id): id is string => id !== null),
 	});
 }
 
@@ -291,6 +345,14 @@ function pauseGameTimer(room: Room): void {
 
 // ─── End game ─────────────────────────────────────────────────────────────────────────────
 function endGame(room: Room, winner: 1 | 2, io: Server): void {
+	if (room.endgameCalled) {
+		console.log(`[endGame] GUARD: endGame already called for room ${room.id}, skipping`);
+		return;
+	}
+	room.endgameCalled = true;
+	console.log(`[endGame] Room ${room.id}: ${room.player1Label} vs ${room.player2Label}, winner: ${winner === 1 ? room.player1Label : room.player2Label}`);
+	console.log(`[DEBUG endGame] userToRoom.size BEFORE cleanup: ${userToRoom.size}`);
+	
 	room.state.status = "ended";
 	room.state.winner = winner;
 	if (room.interval)         { clearInterval(room.interval);          room.interval          = null; }
@@ -500,11 +562,16 @@ function cancelDisconnectTimer(room: Room, player: 1 | 2): void {
 
 // ─── Cleanup ─────────────────────────────────────────────────────────────────────────────────
 function cleanupUserToRoom(room: Room): void {
+	console.log(`[DEBUG cleanupUserToRoom] Removing: player1UserId=${room.player1UserId}, player2UserId=${room.player2UserId}`);
 	userToRoom.delete(room.player1UserId);
 	userToRoom.delete(room.player2UserId);
+	console.log(`[DEBUG cleanupUserToRoom] After delete: size=${userToRoom.size}`);
 }
 
 function cleanupRoom(room: Room): void {
+	console.log(`[cleanupRoom] Cleaning room ${room.id}: ${room.player1Label} vs ${room.player2Label}`);
+	console.log(`[cleanupRoom] Before: socketToRoom.size=${socketToRoom.size}, userToRoom.size=${userToRoom.size}, queue.length=${queue.length}`);
+
 	if (room.interval)       { clearInterval(room.interval);       room.interval       = null; }
 	if (room.countdownTimer) { clearInterval(room.countdownTimer); room.countdownTimer = null; }
 	pauseGameTimer(room);
@@ -516,25 +583,87 @@ function cleanupRoom(room: Room): void {
 	socketToRoom.delete(room.player1SocketId);
 	socketToRoom.delete(room.player2SocketId);
 	cleanupUserToRoom(room);
+	
+	// Remove players from queue if they're still there (e.g., if they joined queue during countdown)
+	// Use splice with reverse loop to safely remove multiple items
+	const beforeLen = queue.length;
+	for (let i = queue.length - 1; i >= 0; i--) {
+		const entry = queue[i];
+		if (entry && (entry.socketId === room.player1SocketId || entry.socketId === room.player2SocketId)) {
+			console.log(`[cleanupRoom] Removing from queue: ${entry.label} (socketId: ${entry.socketId.substring(0, 6)})`);
+			queue.splice(i, 1);
+		}
+	}
+	if (queue.length < beforeLen) {
+		console.log(`[cleanupRoom] Queue length before cleanup: ${beforeLen}, after: ${queue.length}`);
+	}
+	
+	console.log(`[cleanupRoom] DELETED room ${room.id} from rooms map, rooms.size was ${rooms.size}`);
 	rooms.delete(room.id);
+	console.log(`[cleanupRoom] DELETED room ${room.id}, rooms.size now ${rooms.size}`);
+
+	console.log(`[cleanupRoom] After: socketToRoom.size=${socketToRoom.size}, userToRoom.size=${userToRoom.size}, queue.length=${queue.length}`);
 }
 
 // Quitter EXPLICITEMENT → fin immédiate, pas de timer
 function handlePlayerLeave(socket: Socket, io: Server): void {
 	const roomId = socketToRoom.get(socket.id);
-	if (!roomId) return;
-	const room = rooms.get(roomId);
-	if (!room) return;
+	console.log(`[handlePlayerLeave] 🚪 CALLED: socketId=${socket.id.substring(0,8)}, found in socketToRoom: ${!!roomId}`);
+	if (!roomId) {
+		console.log(`[handlePlayerLeave] ❌ Socket NOT in any room, nothing to do`);
+		return;
+	}
 
-	if (room.state.status !== "ended") {
+	const room = rooms.get(roomId);
+	if (!room) {
+		console.log(`[handlePlayerLeave] ❌ Room not found (roomId: ${roomId})`);
+		socketToRoom.delete(socket.id);
+		return;
+	}
+
+	console.log(`[handlePlayerLeave] Player leaving room ${room.id}: ${room.player1Label} vs ${room.player2Label}`);
+	console.log(`[DEBUG handlePlayerLeave] Before: player1UserId=${room.player1UserId}, player2UserId=${room.player2UserId}`);
+
+	// CRITICAL: Mark room as "ended" IMMEDIATELY FIRST
+	// This ensures that even if opponent tries to join_queue during this function,
+	// the room will be detected as "ended" and properly cleaned up
+	// This prevents the race condition where opponent gets "Game still in progress" error
+	const wasAlreadyEnded = room.state.status === "ended";
+	room.state.status = "ended";
+	console.log(`[handlePlayerLeave] 🚪 PLAYER LEAVING: socketId=${socket.id.substring(0,8)}, roomId=${room.id}`);
+	console.log(`[handlePlayerLeave] Player1: userId=${room.player1UserId.substring(0,8)}, socketId=${room.player1SocketId.substring(0,8)}`);
+	console.log(`[handlePlayerLeave] Player2: userId=${room.player2UserId.substring(0,8)}, socketId=${room.player2SocketId.substring(0,8)}`);
+	console.log(`[handlePlayerLeave] Room marked as "ended" (was already ended: ${wasAlreadyEnded})`);
+
+	// THEN remove BOTH players from maps IMMEDIATELY
+	// This prevents any race condition where either player tries to rejoin before cleanup
+	socketToRoom.delete(room.player1SocketId);
+	socketToRoom.delete(room.player2SocketId);
+	userToRoom.delete(room.player1UserId);
+	userToRoom.delete(room.player2UserId);
+	console.log(`[handlePlayerLeave] ✅ CLEANED: deleted both players from userToRoom and socketToRoom`);
+	console.log(`[handlePlayerLeave] userToRoom after clean: size=${userToRoom.size}, p1InMap=${userToRoom.has(room.player1UserId)}, p2InMap=${userToRoom.has(room.player2UserId)}`);
+
+	if (!wasAlreadyEnded) {
+		// Game still in progress - notify opponent and end game
 		cancelDisconnectTimer(room, 1);
 		cancelDisconnectTimer(room, 2);
 		const loser: 1 | 2  = socket.id === room.player1SocketId ? 1 : 2;
 		const winner: 1 | 2 = loser === 1 ? 2 : 1;
 		const opponentSocketId = loser === 1 ? room.player2SocketId : room.player1SocketId;
+		
+		// Notify opponent and immediately end game + cleanup
+		// Do NOT use setImmediate - this causes race condition where player tries to rejoin
+		// before prev room is cleaned up, resulting in "You are still in match" error.
+		// Socket.io buffers the message until opponent is ready.
 		io.to(opponentSocketId).emit("pong:opponent_left");
+		console.log(`[handlePlayerLeave] Opponent notification sent to ${opponentSocketId.substring(0, 6)}`);
+		
+		// End game immediately - cleans up room maps so player can rejoin
 		endGame(room, winner, io);
 	} else {
+		// Game already ended - just cleanup
+		console.log(`[handlePlayerLeave] Game already ended, cleaning up room ${room.id}`);
 		cleanupRoom(room);
 	}
 }
@@ -549,8 +678,14 @@ function handlePlayerDisconnect(socket: Socket, io: Server): void {
 
 	const player: 1 | 2   = socket.id === room.player1SocketId ? 1 : 2;
 	const isGuest: boolean = player === 1 ? room.player1IsGuest : room.player2IsGuest;
+	const userId: string = player === 1 ? room.player1UserId : room.player2UserId;
 
+	// CRITICAL: Remove from BOTH maps immediately on disconnect
+	// This prevents stale entries when player reconnects with new socket
 	socketToRoom.delete(socket.id);
+	userToRoom.delete(userId);
+	console.log(`[handlePlayerDisconnect] Removed player ${userId} from userToRoom on socket disconnect`);
+	
 	startDisconnectTimer(room, player, isGuest, io);
 }
 
@@ -559,6 +694,9 @@ export function initPong(io: Server, socket: Socket): void {
 	const userId  = socket.user?.id ?? socket.id;
 	const isGuest = socket.isGuest ?? false;
 	const label   = socket.user?.username ?? "Invite";
+	
+	// Flag to prevent join_queue calls after leave_game
+	let isQuitting = false;
 
 	// ── Reconnexion en cours de partie ───────────────────────────────────────────
 	socket.on("pong:reconnect", () => {
@@ -585,25 +723,226 @@ export function initPong(io: Server, socket: Socket): void {
 			roomId,
 			playerNumber: player,
 			reconnected:  true,
+			player1Label: room.player1Label,
+			player2Label: room.player2Label,
 		});
 
 		// Reprendre avec countdown → startCountdown relancera le gameTimer
 		startCountdown(room, io, true);
 	});
 
+	// ── Token refresh (keep authenticated users logged in) ───────────────────────
+	socket.on("pong:update_token", async (data: { token: string }) => {
+		// Only process for authenticated users (not guests)
+		if (isGuest) {
+			console.log("[pong:update_token] Ignored for guest connection");
+			return;
+		}
+
+		const { token } = data;
+		if (!token) {
+			console.log("[pong:update_token] No token provided");
+			return;
+		}
+
+		const decoded = verifyToken(token);
+		if (!decoded) {
+			console.log("[pong:update_token] Invalid or expired token");
+			socket.emit("pong:token_invalid");
+			return;
+		}
+
+		try {
+			// Verify user still exists
+			const user = await prisma.user.findFirst({
+				where: { id: decoded.userId }
+			});
+
+			if (!user) {
+				console.log("[pong:update_token] User not found");
+				socket.emit("pong:token_invalid");
+				return;
+			}
+
+			// Update socket.user with latest user info
+			socket.user = user;
+			console.log(`[pong:update_token] Token updated for user ${user.username}`);
+		} catch (error) {
+			console.error("[pong:update_token] Error updating token:", error);
+			socket.emit("pong:token_invalid");
+		}
+	});
+
 	// ── Join queue ─────────────────────────────────────────────────────────────────────
 	socket.on("pong:join_queue", () => {
-		if (queue.some(q => q.socketId === socket.id)) return;
-		if (socketToRoom.has(socket.id)) return;
+		// CRITICAL: Reject if socket is in quit process
+		if (isQuitting) {
+			console.log(`[pong:join_queue] ❌ IGNORED: Socket is quitting (disconnect pending)`);
+			return;
+		}
+		
+		console.log(`[pong:join_queue] 📋 ENTRY: userId=${userId.substring(0,8)}, socketId=${socket.id.substring(0,8)}, label=${label}, isGuest=${isGuest}`);
+		console.log(`[pong:join_queue] Initial state: socketToRoom.size=${socketToRoom.size}, userToRoom.size=${userToRoom.size}, queue.length=${queue.length}`);
+		console.log(`[pong:join_queue] Socket check: socketToRoom.has(socket)=${socketToRoom.has(socket.id)}, userToRoom.has(userId)=${userToRoom.has(userId)}`);
+		
+		// NUCLEAR: Clean up ANY other sockets from this same user already in queue
+		// This prevents duplicate queue entries when user rapidly rejoins
+		console.log(`[pong:join_queue] 🧹 Removing any other sockets from user ${userId.substring(0,8)} already in queue`);
+		const beforeClean = queue.length;
+		for (let i = queue.length - 1; i >= 0; i--) {
+			const entry = queue[i];
+			if (entry && entry.userId === userId && entry.socketId !== socket.id) {
+				console.log(`[pong:join_queue]    Removed stale socket from queue: ${entry.socketId.substring(0,8)}`);
+				queue.splice(i, 1);
+			}
+		}
+		if (queue.length < beforeClean) {
+			console.log(`[pong:join_queue] Cleaned ${beforeClean - queue.length} stale sockets, queue.length now ${queue.length}`);
+		}
+		
+		if (userToRoom.has(userId)) {
+			const stalRoomId = userToRoom.get(userId);
+			const staleRoom = rooms.get(stalRoomId!);
+			console.log(`[DEBUG join_queue] userToRoom FOUND: userId=${userId}, roomId=${stalRoomId}, room exists: ${!!staleRoom}, room status: ${staleRoom?.state.status}`);
+			console.log(`[DEBUG join_queue] rooms.size=${rooms.size}, All room IDs: ${Array.from(rooms.keys()).join(", ")}`);
+		}
 
+		// Already in queue - remove stale entry and re-add to reset position
+		if (queue.some(q => q.socketId === socket.id)) {
+			console.log(`[pong:join_queue] STALE: Already in queue, removing stale entry to reset`);
+			// Remove the stale queue entry
+			for (let i = queue.length - 1; i >= 0; i--) {
+				const entry = queue[i];
+				if (entry && entry.socketId === socket.id) {
+					console.log(`[pong:join_queue] Removed stale queue entry at index ${i}`);
+					queue.splice(i, 1);
+				}
+			}
+			// Continue to re-add below instead of rejecting
+		}
+
+		// Socket is locked in a room - cannot rejoin queue yet
+		if (socketToRoom.has(socket.id)) {
+			// This might be a ghost connection from a previous cleanup failure
+			// Log detailed info for debugging
+			const roomId = socketToRoom.get(socket.id);
+			const room = rooms.get(roomId!);
+			console.log(`[pong:join_queue] socket in room check: roomId: ${roomId}, room exists: ${!!room}, room status: ${room?.state.status}`);
+			
+			// If room doesn't exist but socketToRoom entry remains, force cleanup
+			if (!room) {
+				console.log(`[pong:join_queue] Force cleaning zombie socketToRoom entry`);
+				socketToRoom.delete(socket.id);
+				userToRoom.delete(userId);
+				// Try again
+				queue.push({ socketId: socket.id, userId, isGuest, label });
+				socket.emit("pong:queue_joined", { position: queue.length });
+				console.log(`[pong:join_queue] ACCEPTED (zombie cleanup). Queue length after: ${queue.length}`);
+				return;
+			}
+			
+			// Room exists - check if it's already ended
+			if (room.state.status === "ended") {
+				console.log(`[pong:join_queue] Room is ended but still in map, force cleanup and rejoin`);
+				cleanupRoom(room);  // Force cleanup to remove all references
+				queue.push({ socketId: socket.id, userId, isGuest, label });
+				socket.emit("pong:queue_joined", { position: queue.length });
+				console.log(`[pong:join_queue] ACCEPTED (ended room cleanup). Queue length after: ${queue.length}`);
+				return;
+			}
+			
+			// Game still in progress - reject
+			console.log(`[pong:join_queue] REJECTED: Game in progress`);
+			socket.emit("pong:queue_error", { message: "Vous êtes toujours en partie. Terminez d'abord la partie active." });
+			return;
+		}
+
+		// User is locked in a room - cannot rejoin queue yet
+		// === CHECK 1: User already in userToRoom map ===
+		if (userToRoom.has(userId)) {
+			const roomId = userToRoom.get(userId);
+			const room = rooms.get(roomId!);
+			console.log(`[pong:join_queue] 📎 userId ${userId} found in userToRoom`);
+			console.log(`[pong:join_queue]    RoomId: ${roomId}, Room exists: ${!!room}, Status: ${room?.state.status}`);
+			
+			// Check 1a: Room doesn't exist (stale entry)
+			if (!room) {
+				console.log(`[pong:join_queue] ⚠️ Stale userToRoom entry (room doesn't exist) - cleaning`);
+				userToRoom.delete(userId);
+				queue.push({ socketId: socket.id, userId, isGuest, label });
+				socket.emit("pong:queue_joined", { position: queue.length });
+				return;
+			}
+			
+			// Check 1b: Room is ended (stale but marked)
+			if (room.state.status === "ended") {
+				console.log(`[pong:join_queue] ⏰ Room is ended - cleaning and rejoin`);
+				userToRoom.delete(userId);
+				cleanupRoom(room);
+				queue.push({ socketId: socket.id, userId, isGuest, label });
+				socket.emit("pong:queue_joined", { position: queue.length });
+				return;
+			}
+			
+			// Check 1c: Room still active - user still in game
+			// This should NOT happen if handlePlayerLeave properly cleanedups
+			// But if it does, reject - don't try to "reconnect" as that causes split-brain
+			console.log(`[pong:join_queue] ❌ REJECTED: User still in active game (status=${room.state.status})`);
+			socket.emit("pong:queue_error", { message: "Vous êtes toujours en partie. Attendez que la partie se termine." });
+			return;
+		}
+
+		// === CHECK 2: User NOT in any room - add to queue ===
+		console.log(`[pong:join_queue] ✅ User NOT in userToRoom - adding to queue...`);
 		queue.push({ socketId: socket.id, userId, isGuest, label });
 		socket.emit("pong:queue_joined", { position: queue.length });
+		console.log(`[pong:join_queue] ✅ ACCEPTED. Queue length after: ${queue.length}`);
 
 		if (queue.length >= 2) {
 			const p1 = queue[0];
 			const p2 = queue[1];
+			
+			// CRITICAL: Validate both players exist before using them
+			if (!p1 || !p2) {
+				console.log(`[pong:join_queue] ERROR: queue has ${queue.length} items but p1 or p2 is undefined`);
+				return;
+			}
+			
+			console.log(`[pong:join_queue] About to splice: queue.length=${queue.length}, removing socketIds: ${p1.socketId.substring(0,6)} and ${p2.socketId.substring(0,6)}`);
+			
+			// CRITICAL: Before match-making, verify both players are valid and different
+			if (p1.userId === p2.userId) {
+				console.log(`[pong:join_queue] ⚠️ SAME USER in queue twice! p1=${p1.socketId.substring(0,6)}, p2=${p2.socketId.substring(0,6)}`);
+				console.log(`[pong:join_queue] Removing p2 (stale socket) and trying again`);
+				queue.splice(1, 1);
+				return;
+			}
+			
 			queue.splice(0, 2);
-			if (!p1 || !p2) return;
+			console.log(`[pong:join_queue] After splice: queue.length=${queue.length}`);
+
+			console.log(`[pong:join_queue] MATCH FOUND: ${p1.label} vs ${p2.label}`);
+
+			// NUCLEAR CLEANUP: Before creating room, FORCE clean any stale mappings
+			// This prevents phantom room connections if a player had a previous stale room entry
+			if (socketToRoom.has(p1.socketId)) {
+				const staleRoom1 = rooms.get(socketToRoom.get(p1.socketId)!);
+				if (staleRoom1) {
+					console.log(`[pong:join_queue] WARNING: p1 had stale socketToRoom entry, cleaning stale room: ${socketToRoom.get(p1.socketId)}`);
+					cleanupRoom(staleRoom1);
+				}
+				socketToRoom.delete(p1.socketId);
+			}
+			if (socketToRoom.has(p2.socketId)) {
+				const staleRoom2 = rooms.get(socketToRoom.get(p2.socketId)!);
+				if (staleRoom2) {
+					console.log(`[pong:join_queue] WARNING: p2 had stale socketToRoom entry, cleaning stale room: ${socketToRoom.get(p2.socketId)}`);
+					cleanupRoom(staleRoom2);
+				}
+				socketToRoom.delete(p2.socketId);
+			}
+			userToRoom.delete(p1.userId);
+			userToRoom.delete(p2.userId);
 
 			const room = createRoom(
 				p1.socketId, p1.userId, p1.isGuest, p1.label,
@@ -620,8 +959,8 @@ export function initPong(io: Server, socket: Socket): void {
 			s1?.join(room.id);
 			s2?.join(room.id);
 
-			s1?.emit("pong:game_found", { roomId: room.id, playerNumber: 1 });
-			s2?.emit("pong:game_found", { roomId: room.id, playerNumber: 2 });
+			s1?.emit("pong:game_found", { roomId: room.id, playerNumber: 1, player1Label: room.player1Label, player2Label: room.player2Label });
+			s2?.emit("pong:game_found", { roomId: room.id, playerNumber: 2, player1Label: room.player1Label, player2Label: room.player2Label });
 			startCountdown(room, io);
 		}
 	});
@@ -645,7 +984,25 @@ export function initPong(io: Server, socket: Socket): void {
 	});
 
 	// ── Leave game (explicite) ───────────────────────────────────────────────────────────
-	socket.on("pong:leave_game", () => handlePlayerLeave(socket, io));
+	socket.on("pong:leave_game", () => {
+		console.log(`[pong:leave_game] 🚪 Player requesting leave_game`);
+		isQuitting = true;  // Prevent further join_queue calls
+		handlePlayerLeave(socket, io);
+		
+		// Notify frontend that cleanup is complete - button can now be re-enabled
+		// CRITICAL: Must emit BEFORE disconnect and give Socket.io time to send it
+		socket.emit("pong:cleanup_complete");
+		console.log(`[pong:leave_game] 📤 Sent cleanup_complete signal to frontend (id: ${socket.id.substring(0,8)})`);
+		
+		// Wait longer to ensure:
+		// 1. Socket.io fully sends the cleanup_complete message
+		// 2. Frontend receives and processes it
+		// 3. Socket.io on frontend has time to acknowledge
+		setTimeout(() => {
+			console.log(`[pong:leave_game] 🔌 Now disconnecting socket: ${socket.id.substring(0,8)}`);
+			socket.disconnect(true);  // immediate=true forces disconnect NOW
+		}, 500);  // 500ms to ensure complete cleanup before disconnect
+	});
 
 	// ── Revanche : envoi de la demande ───────────────────────────────────────────────────
 	socket.on("pong:rematch_request", () => {
@@ -722,8 +1079,8 @@ export function initPong(io: Server, socket: Socket): void {
 		requesterSocket.join(room.id);
 		socket.join(room.id);
 
-		requesterSocket.emit("pong:game_found", { roomId: room.id, playerNumber: 1, rematch: true });
-		socket.emit("pong:game_found",          { roomId: room.id, playerNumber: 2, rematch: true });
+		requesterSocket.emit("pong:game_found", { roomId: room.id, playerNumber: 1, rematch: true, player1Label: room.player1Label, player2Label: room.player2Label });
+		socket.emit("pong:game_found",          { roomId: room.id, playerNumber: 2, rematch: true, player1Label: room.player1Label, player2Label: room.player2Label });
 		startCountdown(room, io);
 	});
 

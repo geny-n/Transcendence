@@ -9,19 +9,24 @@ export const getMyProfile = asyncHandler(async (request:Request, response:Respon
 		throw new Error("No user found after authentication");
 	}
 
-	const userWithoutPassword = {
-		id : request.user.id,
-		username: request.user.username,
-		email: request.user.email,
-		avatarUrl: request.user.avatarUrl,
-		role: request.user.role,
-		createdAt: request.user.createdAt,
-	};
-	console.log('inside getMyProfile: userWithoutPassword:', userWithoutPassword);
+	const user = await prisma.user.findFirst({
+		where: { id: request.user.id },
+		select: {
+			id: true,
+			username: true,
+			email: true,
+			avatarUrl: true,
+			role: true,
+			createdAt: true,
+			level: true,
+			experience: true,
+		}
+	});
+	console.log('inside getMyProfile: user:', user);
 
 	return response.status(200).json({
 		success: true,
-		user: userWithoutPassword,
+		user: user,
 	});
 });
 
@@ -38,11 +43,14 @@ export const getUserProfile = asyncHandler(async (request:Request, response:Resp
 
 	const user = await prisma.user.findFirst({
 		where: { id: userId, role: 'USER' },
-		omit: {
-			password: true,
-			refreshToken: true,
-			fortyTwoId: true,
-			role: true
+		select: {
+			id: true,
+			username: true,
+			email: true,
+			avatarUrl: true,
+			createdAt: true,
+			level: true,
+			experience: true,
 		}
 	});
 	console.log('user:', user);
@@ -189,7 +197,7 @@ export const searchUser = asyncHandler(async (request:Request, response:Response
 
 	const findUser = await prisma.user.findMany({
 		where : { username: { contains: trimmedQ, }, role: 'USER' },
-		select : { id: true, username: true, avatarUrl: true, isOnline: true, email: true, createdAt:true},
+		select : { id: true, username: true, avatarUrl: true, isOnline: true, email: true, createdAt:true, level: true, experience: true},
 		take: 10,
 		orderBy: { username: 'asc' },
 	});

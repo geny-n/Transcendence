@@ -13,6 +13,7 @@ const Navbar: React.FC = () => {
 		{label: t('navbar.home'), path: "/"},
 		{label: t('navbar.pong'), path: "/pong"},
 		{label: t('navbar.scoreboard'), path: "/scoreBoard"},
+		{label: "Leaderboard", path: "/leaderboard"},
 		// {label: t('navbar.teams'), path: "/teams"},
 		{label: t('navbar.chat'), path: "/chat"},
 		{label: t('navbar.profile'), path: "/profile"},

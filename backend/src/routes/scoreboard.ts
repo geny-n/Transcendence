@@ -1,6 +1,6 @@
 import { Router } from "express";
 import type { Request, Response } from "express";
-import type { Match } from "../../generated/prisma/client.js";
+import type { Match, User } from "../../generated/prisma/client.js";
 import prisma from "../lib/prisma.js";
 
 const router = Router();
@@ -76,6 +76,48 @@ router.get("/scoreboard", async (req: Request, res: Response) => {
 	}));
 
 	res.json({ total, page, limit, totalPages: Math.ceil(total / limit), matches: result });
+});
+
+// GET /api/leaderboard?limit=100
+// Route publique — classement des joueurs par niveau et expérience
+router.get("/leaderboard", async (req: Request, res: Response) => {
+	const limit = Math.min(100, Math.max(5, parseInt(req.query["limit"] as string) || 100));
+
+	try {
+		const users = await prisma.user.findMany({
+			where: { role: "USER" }, // Exclude guests and admins
+			select: {
+				id: true,
+				username: true,
+				avatarUrl: true,
+				level: true,
+				experience: true,
+			},
+			orderBy: [
+				{ level: "desc" },    // First by level (highest first)
+				{ experience: "desc" }, // Then by experience (highest first)
+			],
+			take: limit,
+		});
+
+		const result = users.map((user: any, index: number) => ({
+			rank: index + 1,
+			id: user.id,
+			username: user.username,
+			avatarUrl: user.avatarUrl,
+			level: user.level,
+			experience: user.experience,
+		}));
+
+		res.json({
+			total: await prisma.user.count({ where: { role: "USER" } }),
+			limit,
+			players: result,
+		});
+	} catch (error) {
+		console.error("[Leaderboard] Error:", error);
+		res.status(500).json({ error: "Failed to fetch leaderboard" });
+	}
 });
 
 export default router;

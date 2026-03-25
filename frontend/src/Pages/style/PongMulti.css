@@ -1,37 +1,4 @@
-.pong-multi-page {
-  min-height: 100vh;
-  background: #0a0a0a;
-}
-
-.game-screen {
-  position: relative;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
-  padding: 20px;
-}
-
-.game-area {
-  margin-top: 80px; /* Espace pour le score en haut */
-}
-
-/* Overlay de fin de partie */
-.game-over-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.85);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  animation: fadeIn 0.3s ease-in;
-}
+@import "tailwindcss";
 
 @keyframes fadeIn {
   from {
@@ -40,16 +7,6 @@
   to {
     opacity: 1;
   }
-}
-
-.game-over-modal {
-  background: white;
-  border-radius: 16px;
-  padding: 40px;
-  max-width: 400px;
-  text-align: center;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-  animation: slideUp 0.4s ease-out;
 }
 
 @keyframes slideUp {
@@ -63,59 +20,71 @@
   }
 }
 
-.game-over-title {
-  font-size: 32px;
-  font-weight: bold;
-  color: #1e3c72;
-  margin-bottom: 20px;
-  font-family: 'Courier New', monospace;
-}
+@layer components {
+  .pong-multi-page {
+    @apply min-h-screen bg-black;
+  }
 
-.game-over-result {
-  font-size: 24px;
-  margin: 20px 0;
-  color: #333;
-}
+  .game-screen {
+    @apply relative min-h-screen flex flex-col justify-center items-center
+    bg-gradient-to-br from-black to-slate-900 py-5 px-5;
+  }
 
-.final-score {
-  font-size: 20px;
-  color: #666;
-  margin: 20px 0;
-  font-family: 'Courier New', monospace;
-}
+  .game-area {
+    @apply mt-20; /* Espace pour le score en haut */
+  }
 
-.btn {
-  padding: 12px 40px;
-  font-size: 18px;
-  font-weight: bold;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: 'Courier New', monospace;
-  margin-top: 20px;
-}
+  /* Overlay de fin de partie */
+  .game-over-overlay {
+    @apply fixed inset-0 bg-black/85 flex justify-center items-center z-[1000];
+    animation: fadeIn 0.3s ease-in;
+  }
 
-.btn-primary {
-  background: #4CAF50;
-  color: white;
-}
+  .game-over-modal {
+    @apply bg-white rounded-2xl py-10 px-10 max-w-sm text-center shadow-2xl;
+    animation: slideUp 0.4s ease-out;
+  }
 
-.btn-primary:hover {
-  background: #45a049;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+  .game-over-title {
+    @apply text-4xl font-bold text-blue-900 mb-5 font-mono;
+  }
+
+  .game-over-result {
+    @apply text-2xl my-5 text-gray-900;
+  }
+
+  .final-score {
+    @apply text-xl text-gray-600 my-5 font-mono;
+  }
+
+  .btn {
+    @apply py-3 px-10 text-lg font-bold border-0 rounded-lg
+    cursor-pointer transition-all duration-300 font-mono mt-5;
+  }
+
+  .btn-primary {
+    @apply bg-green-400 text-white;
+  }
+
+  .btn-primary:hover {
+    @apply bg-green-500 -translate-y-0.5;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+  }
 }
 
 /* Responsive */
 @media (max-width: 900px) {
-  .game-area {
-    transform: scale(0.8);
+  @layer components {
+    .game-area {
+      @apply scale-80;
+    }
   }
 }
 
 @media (max-width: 700px) {
-  .game-area {
-    transform: scale(0.6);
+  @layer components {
+    .game-area {
+      @apply scale-60;
+    }
   }
 }

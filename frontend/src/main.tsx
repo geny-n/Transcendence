@@ -20,12 +20,15 @@ export type User = {
 interface AuthContextType {
 	user: User | null;
 	setUser: React.Dispatch<React.SetStateAction<User | null>>
+	accessToken: string | null;
+	setAccessToken: React.Dispatch<React.SetStateAction<string | null>>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 function AuthProvider({ children }: { children: React.ReactNode }) {
 	const [user, setUser] = useState<User | null>(null);
+	const [accessToken, setAccessToken] = useState<string | null>(null);
 
 	useEffect(() => {
 		const fetchMe = async () => {
@@ -41,7 +44,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
 	}, [])
 
 	return (
-		<AuthContext.Provider value={{ user, setUser }}>
+		<AuthContext.Provider value={{ user, setUser, accessToken, setAccessToken }}>
 			{children}
 		</AuthContext.Provider>
 	)

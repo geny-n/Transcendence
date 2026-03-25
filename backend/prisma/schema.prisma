@@ -27,6 +27,10 @@ model User {
 	isOnline		Boolean		@default(false)
 	refreshToken	String?		@db.Text
 
+	// Level & Experience
+	level			Int			@default(1)
+	experience		Int			@default(0)
+
 	// Relations
 	sentFriendRequests		Friendship[]	@relation("sender")
 	receivedFriendRequests	Friendship[]	@relation("receiver")

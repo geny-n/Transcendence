@@ -13,6 +13,7 @@ interface Props {
 	onLeave:           () => void;
 	onRematch:         () => void;
 	onRematchRespond:  (accept: boolean) => void;
+	isCleaningUp:      boolean;
 }
 
 const REMATCH_COOLDOWN_S = 20;
@@ -36,6 +37,7 @@ export default function PongOverlay({
 	onLeave,
 	onRematch,
 	onRematchRespond,
+	isCleaningUp,
 }: Props) {
 
 	// ── Local 20s cooldown for the "Revanche?" button ─────────────────────────
@@ -59,7 +61,7 @@ export default function PongOverlay({
 		onRematch();
 		setCooldown(REMATCH_COOLDOWN_S);
 		cooldownRef.current = setInterval(() => {
-			setCooldown(c => {
+			setCooldown((c: number) => {
 				if (c <= 1) {
 					clearInterval(cooldownRef.current!);
 					cooldownRef.current = null;
@@ -105,8 +107,8 @@ export default function PongOverlay({
 				<div className="pong-overlay-box">
 					<p className="pong-overlay-title">Adversaire parti</p>
 					<p className="pong-overlay-sub">Victoire par forfait !</p>
-					<button className="btn-play" onClick={onLeave}>
-						Retour au menu
+					<button className="btn-play" onClick={onLeave} disabled={isCleaningUp}>
+						{isCleaningUp ? "Fermeture en cours..." : "Retour au menu"}
 					</button>
 				</div>
 			</div>
@@ -153,8 +155,8 @@ export default function PongOverlay({
 						{won ? "Bien joué !" : "On l'aura la prochaine fois."}
 					</p>
 
-					<button className="btn-play" onClick={onLeave}>
-						Retour au menu
+					<button className="btn-play" onClick={onLeave} disabled={isCleaningUp}>
+						{isCleaningUp ? "Fermeture en cours..." : "Retour au menu"}
 					</button>
 
 					{/* Rematch button — never shown for "opponent left" */}

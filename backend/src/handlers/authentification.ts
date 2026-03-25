@@ -85,10 +85,12 @@ export const loginUser = asyncHandler(async (request: Request, response: Respons
 	console.log("user:", user);
 
 	if (user?.isOnline) {
-		return response.status(200).json({
-			success: true,
-			message: "already logged in"
-		});
+		console.log("[login] User already online, allowing re-login");
+		// Allow re-login even if already online - will be handled by socket disconnect
+		// return response.status(200).json({
+		// 	success: true,
+		// 	message: "already logged in"
+		// });
 	}
 
 	if (!user || !user.password) {
@@ -124,19 +126,24 @@ export const loginUser = asyncHandler(async (request: Request, response: Respons
 	});
 
 	// Configurer les cookies
+	const isSecure = process.env.NODE_ENV === "production" || process.env.FRONTEND_URL?.startsWith("https");
+	console.log(`[login] Setting cookies: isSecure=${isSecure}, NODE_ENV=${process.env.NODE_ENV}, FRONTEND_URL=${process.env.FRONTEND_URL}`);
+	
 	response.cookie("access_token", accessToken, {
 		httpOnly: true,
-		secure: process.env.NODE_ENV === "production",
+		secure: isSecure,
 		sameSite: "lax",
 		maxAge: 15 * 60 * 1000
 	})
+	console.log("[login] access_token cookie set");
 
 	response.cookie("refresh_token", refreshToken, {
 		httpOnly: true,
-		secure: process.env.NODE_ENV === "production",
+		secure: isSecure,
 		sameSite: "lax",
 		maxAge: 7 * 24 * 60 * 60 * 1000
 	});
+	console.log("[login] refresh_token cookie set");
 
 	// Reponse sans le mot de passe
 	const userWithoutPassword = {
@@ -170,7 +177,6 @@ export const logoutUser = asyncHandler(async (request: Request, response: Respon
 			isOnline: false,
 		},
 	});
-
 	friendsIds.forEach(friendsId => {
 		io.to(`user:${friendsId}`).emit('friend:status_changed', {
 			userId: user.id,
@@ -178,15 +184,17 @@ export const logoutUser = asyncHandler(async (request: Request, response: Respon
 		});
 	});
 
+	const isSecure = process.env.NODE_ENV === "production" || process.env.FRONTEND_URL?.startsWith("https");
+
 	response.clearCookie('access_token', {
 		httpOnly: true,
-		secure: process.env.NODE_ENV === "production",
+		secure: isSecure,
 		sameSite: "lax",
 	});
 
 	response.clearCookie('refresh_token', {
 		httpOnly: true,
-		secure: process.env.NODE_ENV === "production",
+		secure: isSecure,
 		sameSite: "lax",
 	});
 
@@ -225,20 +233,43 @@ export const authHandler = asyncHandler(async (request: Request, response: Respo
 	});
 
 	// Set cookies et rediriger
+	const isSecure = process.env.NODE_ENV === "production" || process.env.FRONTEND_URL?.startsWith("https");
+	
 	response.cookie("access_token", accessToken, {
 		httpOnly: true,
-		secure: process.env.NODE_ENV === "production",
+		secure: isSecure,
 		sameSite: "lax",
 		maxAge: 15 * 60 * 1000
 	})
 
 	response.cookie("refresh_token", refreshToken, {
 		httpOnly: true,
-		secure: process.env.NODE_ENV === "production",
+		secure: isSecure,
 		sameSite: "lax",
 		maxAge: 7 * 24 * 60 * 60 * 1000
 	});
 
 	// redirection frontend
 	return response.redirect("https://localhost:1443/");
+});
+
+/**
+ * Endpoint pour récupérer le token d'accès actuel.
+ * Utilisé par Socket.io pour passer le token dans socket.handshake.auth
+ * au lieu de dépendre des cookies HTTP.
+ */
+export const getSocketToken = asyncHandler(async (request: Request, response: Response) => {
+	const token = request.cookies?.access_token;
+	
+	if (!token) {
+		return response.status(401).json({
+			success: false,
+			message: "No valid token"
+		});
+	}
+
+	return response.status(200).json({
+		success: true,
+		token: token
+	});
 });

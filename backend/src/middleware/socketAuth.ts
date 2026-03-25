@@ -13,8 +13,16 @@ function nextGuestLabel(): string {
 export const socketAuth = async function socketAuthentification(socket:Socket,
 	next:(err?: ExtendedError | undefined) => void) {
 	const req = socket.request as Request;
-	const token  = req.cookies?.access_token;
-	console.log("Inside socketAuth: token:", token);
+	
+	// 1. Chercher le token d'abord dans les cookies HTTP
+	let token = req.cookies?.access_token;
+	console.log("Inside socketAuth: token from cookies:", token ? "found" : "missing");
+
+	// 2. Si pas trouvé, chercher dans socket.handshake.auth (fallback pour WebSocket sans cookies)
+	if (!token && socket.handshake.auth?.token) {
+		token = socket.handshake.auth.token as string;
+		console.log("Inside socketAuth: token from auth.token:", token ? "found" : "missing");
+	}
 
 	if (!token) {
 		// Tentative de connexion en tant qu'invité
@@ -61,6 +69,7 @@ export const socketAuth = async function socketAuthentification(socket:Socket,
 		}
 
 		socket.user = user;
+		socket.isGuest = false;
 	} catch (error) {
 		return next(new Error("Server error during authentification of the WebSocket."));
 	}

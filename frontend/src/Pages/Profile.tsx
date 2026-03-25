@@ -18,11 +18,13 @@ import { IoIosArrowBack } from "react-icons/io"; //return icon
 import useUser from '../lib/user';
 
 import './style/Profile.css';
+import { useAuth } from '../main';
 
 export default function Profile ()
 {
     const {t} = useTranslation();
     const { socket } = TheSocket();
+    const { setUser } = useAuth();
 
     const Myself = useUser (state => state.userMyself);
     const fetchMe = useUser (state => state.fetchMe);
@@ -81,6 +83,7 @@ export default function Profile ()
     const handleLogout = async () =>{
         try{
             await axios.get(logout_url);
+            setUser(null);
             localStorage.removeItem("token");
             navigate("/");
         }catch(error){

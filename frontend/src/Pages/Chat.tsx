@@ -4,12 +4,14 @@ import './style/Chat.css'
 // import defaultpp from '/pp/default.jpg'
 import axios from "axios";
 import { TheSocket } from "../socket"
+import { useLocation } from 'react-router-dom';
 import useUser from '../lib/user';
 
 
 export default function Chat ()
 {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const Myself = useUser (state => state.userMyself);
   const fetchMe = useUser (state => state.fetchMe);
@@ -137,6 +139,14 @@ export default function Chat ()
     scrollAuto.current?.scrollIntoView({ behavior: 'auto'});
   }, [prevMsg, errMsg]);
 
+  useEffect (() => {
+    if (!location.state?.friendId || lstFriends.length === 0)
+        return;
+    const friend = lstFriends.find(f => f.id === location.state.friendId);
+    if (friend)
+      setSelectFriend(friend);
+  }, [location.state, lstFriends]);
+  
   return (
     <div className="all_chat_screen">        
       <div className="top">

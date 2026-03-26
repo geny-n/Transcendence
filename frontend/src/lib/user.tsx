@@ -29,7 +29,6 @@ interface UserStore {
     fetchMe: () => Promise<Myself | null>;
     fetchFriends: () => Promise<void>;
 
-
     initsocket: (socket: any) => void;
     // updateMyself: (newMe: Partial<Myself>) => void;
     // AddFriend: (newFriend: Partial<Friends>) =>void
@@ -119,7 +118,7 @@ const useUser = create<UserStore>((set, get) => ({
 
         socket.on("privMessage", (data: { senderId: string}) => {
             set(state => ({
-                NotifMsgUnread : state.NotifMsgUnread.includes(data.senderId) ? state.NotifMsgUnread : [...state.NotifMsgUnread, data.senderId]
+                NotifMsgUnread : state.NotifMsgUnread.includes(data.senderId) ? state.NotifMsgUnread : [...state.NotifMsgUnread, data.senderId],
             }));
         })
     }

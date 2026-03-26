@@ -33,15 +33,17 @@ export default function Profile ()
     const getFriend = useUser (state => state.fetchFriends);
 
     const initSocket = useUser (state => state.initsocket);
-    const waitingRequest = useUser (state => state.waitingRequest);
-    const notifMsgUnread = useUser (state => state.NotifMsgUnread);
 
     const [selectUser, setSelectUser] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, createdAt: string} | null>(null);
     const [lstFriendship, setlstFriendship] = useState<{id: string, username: string, avatarUrl:string}[]>([]);
     const [isShowNotif, setisShowNotif] = useState(0);
     const [searchVal, setSearchVal] = useState(""); //reccuprer tout ce que le user tapper dans la barre de recherche
     const [getSearchVal, setGetSeachVal] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, createdAt: string}[]>([]);
-
+    
+    const waitingRequest = useUser (state => state.waitingRequest);
+    const notifMsgUnread = useUser (state => state.NotifMsgUnread);
+    const count_notif = notifMsgUnread.length + lstFriendship.length;
+    
     const [responsive, setResponsive] = useState(false);
     const [ActiveUpdate, setActiveUpdate] = useState(0);
     const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -49,6 +51,7 @@ export default function Profile ()
     const [errMsgForm, setErrMsgForm] = useState<string>('');
     const [errMsgAvatar, setErrMsgAvatar] = useState<string>('');
     const [errlogout, setLogout] = useState<string>('');
+    
     const logout_url = '/api/logout';
     const navigate = useNavigate();
 
@@ -60,6 +63,7 @@ export default function Profile ()
             else
                 setSelectUser(user);
         });
+        // fetchMe();
     }, []);
 
     useEffect (() => {
@@ -211,7 +215,6 @@ export default function Profile ()
         
     };
 
-    
     useEffect(() => {
         setActiveUpdate(0);
         setErrMsgForm('');
@@ -535,7 +538,12 @@ export default function Profile ()
                                 </li>)//parcour le tableau filte et affiche dans li
                         )}
                     </ul> 
-                    <button className="notif" onClick={ShowNotif}>{t('profile.notification')}</button>
+                    <button className="notif" onClick={ShowNotif}>
+                        {t('profile.notification')}
+                        {count_notif > 0 && (
+                            <div className='absolute right-1 bottom-1 bg-green-500 w-3 h-3 rounded-full flex items-center justify-center'></div>
+                        )}
+                    </button>
                 </div>
                 {/* //////////////////////////liste des amis//////////////////////////////////// */}
                 <div className="box_lst_friend">
@@ -568,10 +576,10 @@ export default function Profile ()
                                 {notifMsgUnread.map((senderId) => {
                                     const sender = lstFriends.find(f => f.id === senderId);
                                     return (
-                                        <div className="items" key={senderId}>
+                                        <div className="items" key={senderId}
+                                            onClick = {() => navigate('/chat', { state : {friendId: senderId} })}>
                                             <img className="avatar_notif" src={sender?.avatarUrl}></img>
                                             <span className="username_notif">{sender?.username}</span>
-                                            {/* <span className="msg_counter">10</span> */}
                                         </div>
                                     );
                                 })}

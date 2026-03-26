@@ -30,6 +30,7 @@
         rounded-lg p-3
         items-center
         bg-blue-400
+        relative
     }
 
     .box_search {
@@ -67,6 +68,7 @@
 
     .items {
         @apply flex p-3 items-center gap-5
+        hover:bg-gray-700 transition rounded-full
     }
 
     .avatar_notif {

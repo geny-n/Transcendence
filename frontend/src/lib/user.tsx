@@ -1,5 +1,6 @@
 import {create} from 'zustand';
 import axios from "axios";
+// import { mockMyself, mockFriends } from './fictif';
 
 export type Myself = {
     id: string,
@@ -38,6 +39,8 @@ const useUser = create<UserStore>((set, get) => ({
 
     userMyself: null,
     userFriends: [],
+    // userMyself: mockMyself,
+    // userFriends: mockFriends,
     waitingRequest: [],
     NotifMsgUnread: [],
 
@@ -120,6 +123,18 @@ const useUser = create<UserStore>((set, get) => ({
             set(state => ({
                 NotifMsgUnread : state.NotifMsgUnread.includes(data.senderId) ? state.NotifMsgUnread : [...state.NotifMsgUnread, data.senderId],
             }));
+        })
+
+        socket.on("friend:profile_updated", (data: { userId: string, user: {username: string, email:string}}) => {
+            set(state => ({
+                userFriends: state.userFriends.map(friend => friend.id === data.userId ? { ...friend, username:data.user.username, email:data.user.email} : friend)
+            }))
+        })
+
+        socket.on("friend:avatar_updated", (data: { userId: string, avatarUrl: string}) => {
+            set(state => ({
+                userFriends: state.userFriends.map(friend => friend.id === data.userId ? { ...friend, avatarUrl:data.avatarUrl} : friend)
+            }))
         })
     }
 }));

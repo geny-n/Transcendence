@@ -121,6 +121,12 @@ i18n.use(initReactI18next).init({
                 'profile.err.data' : 'Nom d utilisateur ou email déjà utilise',
                 'profile.err.wrongPassword' : 'Le mot de passe ne correspond pas au mot de passe actuel',
                 'profile.err.avatar' : 'Erreur lors du chargement de l image',
+
+                //chat
+                'chat.send' : 'Envoyer',
+                'chat.yourMsg' : 'votre message',
+                'chat.longMsg' : 'Votre message est trop long',
+                
             }
         },
         en: {
@@ -238,6 +244,11 @@ i18n.use(initReactI18next).init({
                 'profile.err.data' : 'Username or email already in use',
                 'profile.err.wrongPassword' : 'Password does not match current password',
                 'profile.err.avatar' : 'Error loading image',
+
+                //chat
+                'chat.send' : 'Send',
+                'chat.yourMsg' : 'Your message',
+                'chat.longMsg' : 'Your message is too long',
             }
         },
         es : {
@@ -355,6 +366,135 @@ i18n.use(initReactI18next).init({
                 'profile.err.data' : 'Nombre de usuario o correo electrónico ya en uso',
                 'profile.err.wrongPassword' : 'La contraseña no coincide con la contraseña actual',
                 'profile.err.avatar' : 'Error al cargen la imagen',
+
+                //chat
+                'chat.send' : 'Enviar',
+                'chat.yourMsg' : 'Tu mensaje',
+                'chat.longMsg' : 'Tu mensaje es dmasiado largo',
+            }
+        },
+
+        ar : {
+            translation: {
+                //navbar
+                'navbar.home' : 'الرئيسية',
+                'navbar.pong' : 'بونغ',
+                'navbar.scoreboard' : 'النتائج',
+                'navbar.chat' : 'الدردشة',
+                'navbar.profile' : 'الملف الشخصي',
+                // 'navbar.admin' : 'Admin',
+                'navbar.admin' : 'Admin',
+                'navbar.login' : 'تسجيل الدخول',
+                'navbar.register' : 'التسجيل',
+
+                //HomePage
+                // 'homepage.home' : 'Bienvenido a nuestra transcendence',
+
+                //types
+                'types.connexion.email' : 'البريد الإلكتروني غير صالح',
+                'types.connexion.mdp' : 'كلمة المرور غير صالحة',
+                'types.min.3' : 'لا يمكن أن يحتوي على أقل من 3 أحرف',
+                'types.max.24' : 'لا يمكن أن يحتوي على أكثر من 24 حرفاً',
+                'types.allowed_chars' : 'الأحرف المسموح بها: حروف، أرقام، - و _',
+                'types.email' : 'يرجى إدخال بريد إلكتروني صالح',
+                'types.min.10' : 'لا يمكن أن يحتوي على أقل من 10 أحرف',
+                'types.mdp.char' : 'يجب أن يحتوي على حرف صغير وكبير ورقم وحرف خاص',
+                'types.mdp.allow' : 'الأحرف الخاصة المسموح بها: !@#$%&*()_-+=',
+                'types.inscription.mdp.similar' : 'يجب أن تتطابق كلمتا المرور',
+
+                //Admin
+                'admin.common.loading': 'جارٍ التحميل...',
+                'admin.header.title': 'لوحة الإدارة',
+                'admin.header.subtitle': 'إدارة حسابات المستخدمين والصلاحيات.',
+                'admin.create.title': 'إنشاء مستخدم',
+                'admin.create.subtitle': 'أدخل المعلومات أدناه لإضافة حساب جديد.',
+                'admin.searchPlaceholder': 'البحث بالاسم أو البريد الإلكتروني أو المعرف',
+                'admin.list.usersCount': 'المستخدمون ({{count}})',
+                'admin.list.page': 'الصفحة {{page}}/{{totalPages}}',
+                'admin.emptyState': 'اختر مستخدماً من القائمة لعرض التفاصيل.',
+                'admin.form.username': 'اسم المستخدم',
+                'admin.form.email': 'البريد الإلكتروني',
+                'admin.form.password': 'كلمة المرور',
+                'admin.form.newPassword': 'كلمة المرور الجديدة',
+                'admin.form.passwordPlaceholder': 'اتركه فارغاً للإبقاء على كلمة المرور الحالية',
+                'admin.form.avatar': 'الصورة الشخصية',
+                'admin.role.title': 'دور المستخدم',
+                'admin.delete.title': 'منطقة خطرة',
+                'admin.delete.confirmMessage': 'حذف {{username}}؟ هذا الإجراء لا يمكن التراجع عنه.',
+                'admin.actions.search': 'بحث',
+                'admin.actions.refresh': 'تحديث',
+                'admin.actions.previous': 'السابق',
+                'admin.actions.next': 'التالي',
+                'admin.actions.createUser': 'إنشاء المستخدم',
+                'admin.actions.saveChanges': 'حفظ التغييرات',
+                'admin.actions.updateRole': 'تحديث الدور',
+                'admin.actions.deleteUser': 'حذف هذا المستخدم',
+                'admin.actions.confirm': 'تأكيد',
+                'admin.actions.cancel': 'إلغاء',
+                'admin.sort.createdAt': 'تاريخ الإنشاء',
+                'admin.sort.username': 'اسم المستخدم',
+                'admin.sort.email': 'البريد الإلكتروني',
+                'admin.sort.role': 'الدور',
+                'admin.sort.status': 'الحالة',
+                'admin.sort.desc': 'تنازلي',
+                'admin.sort.asc': 'تصاعدي',
+                'admin.roles.USER': 'مستخدم',
+                'admin.roles.ADMIN': 'مدير',
+                'admin.status.online': 'متصل',
+                'admin.status.offline': 'غير متصل',
+                'admin.editor.title': 'تعديل {{username}}',
+                'admin.feedback.loadError': 'خطأ في تحميل المستخدمين',
+                'admin.feedback.unexpectedLoadError': 'خطأ غير متوقع أثناء تحميل المستخدمين',
+                'admin.feedback.createSuccess': 'تم إنشاء المستخدم بنجاح',
+                'admin.feedback.createError': 'فشل إنشاء المستخدم',
+                'admin.feedback.unexpectedCreateError': 'خطأ غير متوقع أثناء إنشاء المستخدم',
+                'admin.feedback.updateSuccess': 'تم تحديث المستخدم بنجاح',
+                'admin.feedback.updateError': 'فشل تحديث المستخدم',
+                'admin.feedback.unexpectedUpdateError': 'خطأ غير متوقع أثناء تحديث المستخدم',
+                'admin.feedback.roleUpdateSuccess': 'تم تحديث الدور بنجاح',
+                'admin.feedback.roleUpdateError': 'فشل تحديث الدور',
+                'admin.feedback.unexpectedRoleUpdateError': 'خطأ غير متوقع أثناء تحديث الدور',
+                'admin.feedback.deleteSuccess': 'تم حذف المستخدم بنجاح',
+                'admin.feedback.deleteError': 'فشل حذف المستخدم',
+                'admin.feedback.unexpectedDeleteError': 'خطأ غير متوقع أثناء حذف المستخدم',
+                'admin.validation.invalidEmail': 'البريد الإلكتروني غير صالح',
+                'admin.validation.usernameMin': 'لا يمكن أن يحتوي على أقل من 3 أحرف',
+                'admin.validation.usernameMax': 'لا يمكن أن يحتوي على أكثر من 24 حرفاً',
+                'admin.validation.usernamePattern': 'الأحرف المسموح بها: حروف، أرقام، - و _',
+                'admin.validation.passwordMin': 'لا يمكن أن يحتوي على أقل من 8 أحرف',
+                'admin.validation.passwordPattern': 'يجب أن يحتوي على حرف صغير وكبير ورقم وحرف خاص',
+                'admin.validation.passwordSpecialChars': 'الأحرف الخاصة المسموح بها: !@#$%&*()_-+=',
+                
+                // //profile
+                'profile.modifier': 'تعديل',
+                'profile.deconnecion': 'تسجيل الخروج',
+                'profile.datecreate': 'تاريخ الإنشاء',
+                'profile.actuelmdp': 'كلمة المرور الحالية',
+                'profile.newmdp': 'كلمة المرور الجديدة',
+                'profile.save': 'حفظ',
+                'profile.annule': 'إلغاء',
+                'profile.delete': 'إزالة الصديق',
+                'profile.add': 'إضافة صديق',
+                'profile.pending': 'طلب معلق',
+                'profile.notification': 'الإشعارات',
+                'profile.newMessage': 'رسائل جديدة',
+                'profile.friendRequest': 'طلبات الصداقة',
+                'profile.search': 'بحث',
+
+                'profile.opponent': 'الخصم',
+                'profile.result': 'النتيجة',
+                'profile.score': 'النقاط',
+                'profile.time': 'المدة',
+                'profile.date': 'التاريخ',
+
+                'profile.err.data': 'اسم المستخدم أو البريد الإلكتروني مستخدم بالفعل',
+                'profile.err.wrongPassword': 'كلمة المرور لا تتطابق مع كلمة المرور الحالية',
+                'profile.err.avatar': 'خطأ في تحميل الصورة',
+
+                //chat
+                'chat.send' : 'إرسال',
+                'chat.yourMsg' : 'رسالتك',
+                'chat.longMsg' : 'رسالتك طويلة جداً',
             }
         }
     }

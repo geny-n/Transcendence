@@ -72,6 +72,19 @@ export default function Profile ()
         initSocket(socket);
     }, [socket]);
 
+    useEffect(() => {
+        if (!selectUser || !Myself)
+            return;
+        if (selectUser.id === Myself.id)
+        {
+            setSelectUser(Myself);
+            return;
+        }
+        const update = lstFriends.find(f => f.id === selectUser.id);
+        if (update)
+            setSelectUser(update);  
+    }, [lstFriends, Myself]);
+
     const handleSearch = async (event:React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
         setSearchVal(value);

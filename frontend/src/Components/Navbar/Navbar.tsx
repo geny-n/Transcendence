@@ -20,8 +20,11 @@ const Navbar: React.FC = () => {
 	]
 
 	const changeLanguage = (lng: string) => {
-		i18n.changeLanguage(lng)
-
+		if (lng === "ar")
+			document.documentElement.dir = "rtl";
+		else
+			document.documentElement.dir = "ltl";
+		i18n.changeLanguage(lng);
 	}
 	return (
 		<div className="nav-style">
@@ -51,6 +54,7 @@ const Navbar: React.FC = () => {
 				<option value="fr">FR</option>
 				<option value="en">EN</option>
 				<option value="es">ES</option>
+				<option value="ar">AR</option>
 			</select>
 		</div>
 	)

@@ -97,10 +97,10 @@ const Login = () => {
 						autoComplete='current-password'/>
 
 						{showPassword ? (
-							<LuEye className="absolute right-5 cursor-pointer"
+							<LuEye className="absolute inset-e-5 cursor-pointer"
 							onClick={passwordVisibility}/>
 						) : (
-							<LuEyeClosed className="absolute right-5 cursor-pointer"
+							<LuEyeClosed className="absolute inset-e-5 cursor-pointer"
 							onClick={passwordVisibility}/>
 						)}
 					</div>

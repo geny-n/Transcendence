@@ -105,10 +105,10 @@ const Register = () => {
               className="input-field w-5/6" />
 
             {showPassword ? (
-              <LuEye className="absolute right-5 cursor-pointer"
+              <LuEye className="absolute inset-e-5 cursor-pointer"
                 onClick={passwordVisibility} />
             ) : (
-              <LuEyeClosed className="absolute right-5 cursor-pointer"
+              <LuEyeClosed className="absolute inset-e-5 cursor-pointer"
                 onClick={passwordVisibility} />
             )}
           </div>
@@ -122,10 +122,10 @@ const Register = () => {
               className="input-field w-5/6" />
 
             {showConfirmPass ? (
-              <LuEye className="absolute right-5 cursor-pointer"
+              <LuEye className="absolute inset-e-5 cursor-pointer"
                 onClick={ConfirmPassVisibility} />
             ) : (
-              <LuEyeClosed className="absolute right-5 cursor-pointer"
+              <LuEyeClosed className="absolute inset-e-5 cursor-pointer"
                 onClick={ConfirmPassVisibility} />
             )}
           </div>

@@ -6,7 +6,7 @@ import prisma from "./prisma.js";
 import { getAllFriendIds } from "../utils/helpers.js";
 import { disconnectUser } from "../socket/disconnect.js";
 import { initPong } from "../socket/pong.js";
-import { toxicityScale } from "./moderation.js";
+// import { toxicityScale } from "./moderation.js";
 
 let io: Server;
 
@@ -47,12 +47,12 @@ const onConnection = async (socket:Socket) => {
 			//envoie du message dans la bdd
 			if (!text || text.length > 500)
 				return;
-			const isToxic = await toxicityScale(text);
-			if (isToxic)
-			{
-				socket.emit("MessageBlocked");
-				return;
-			}
+			// const isToxic = await toxicityScale(text);
+			// if (isToxic)
+			// {
+			// 	socket.emit("MessageBlocked");
+			// 	return;
+			// }
 			const message = await prisma.chatMessage.create ({
 				data: {
 					message: text,

@@ -21,7 +21,7 @@ export type Friends = {
     createdAt: string
 };
 
-interface UserStore {
+export interface UserStore {
     userMyself: Myself | null;
     userFriends: Friends[];
     waitingRequest: string[];

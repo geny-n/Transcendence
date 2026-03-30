@@ -26,6 +26,9 @@ HEALTHCHECK --interval=30s \
 CMD node --use-system-ca healthcheck.js
 
 COPY . /code
+
+RUN npx prisma generate
+
 RUN mkdir -p dist/public && cp -r src/public dist/
 
 CMD [ "sh", "-c", "npm run db:deploy && npm run start:dev" ]

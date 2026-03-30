@@ -13,6 +13,7 @@ import { type T_connexionForm, connexionForm } from '../lib/types';
 import axios from "axios";
 import "./style/login.css";
 import { useAuth } from '../main';
+import { useTranslation } from 'react-i18next';
 
 const Login = () => {
 	const { setUser, setAccessToken } = useAuth();
@@ -24,12 +25,13 @@ const Login = () => {
 	const navigate = useNavigate();
 	const login_url = '/api/login';
 
+	const { t } = useTranslation();
 	const {
 		register,
 		handleSubmit,
 		formState : { errors, isSubmitting }
 	} = useForm<T_connexionForm>({
-		resolver: zodResolver(connexionForm),
+		resolver: zodResolver(connexionForm(t)),
 	});
 
 	const onSubmit = async (data: FieldValues) => {
@@ -100,10 +102,10 @@ const Login = () => {
 						autoComplete='current-password'/>
 
 						{showPassword ? (
-							<LuEye className="absolute right-5 cursor-pointer"
+							<LuEye className="absolute inset-e-5 cursor-pointer"
 							onClick={passwordVisibility}/>
 						) : (
-							<LuEyeClosed className="absolute right-5 cursor-pointer"
+							<LuEyeClosed className="absolute inset-e-5 cursor-pointer"
 							onClick={passwordVisibility}/>
 						)}
 					</div>

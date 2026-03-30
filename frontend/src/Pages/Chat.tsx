@@ -1,15 +1,32 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './style/Chat.css'
-// import defaultpp from '/pp/default.jpg'
 import axios from "axios";
 import { TheSocket } from "../socket"
+import { useLocation } from 'react-router-dom';
+import useUser from '../lib/user';
+import { useTranslation } from 'react-i18next';
 
 export default function Chat ()
 {
+  const {t} = useTranslation();
   const navigate = useNavigate();
-  const [lstFriends, setLstFriends] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean}[]>([]);
-  const [Myself, setMyself] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean} | null>(null);
+  const location = useLocation();
+
+  const Myself = useUser (state => state.userMyself);
+  const fetchMe = useUser (state => state.fetchMe);
+  
+  const lstFriends = useUser (state => state.userFriends);
+  const initSocket = useUser (state => state.initsocket);
+
+  const [selectFriend, setSelectFriend] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean} | null>(null);
+  const { socket } = TheSocket();
+  
+  const [NewMsg, setNewMsg] = useState('');
+  const [prevMsg, setPrevMsg] = useState<{msg: string, time: string, sender: string, avatarUrl:string}[]>([]);
+  //permet de garder en memoire touts les messages (le 1er message n es pas ecraser par le 2eme)
+  const [errMsg, setErrMsg] = useState('');
+  const scrollAuto = useRef<HTMLDivElement>(null);
 
   // To send authorization credentials using the Fetch API in JavaScript, 
   // you need to allow the credentials to be sent to the server by adding the «credential: 'include'» parameter when calling the fetch() method. 
@@ -22,65 +39,26 @@ export default function Chat ()
   // Click Execute to run the JavaScript Fetch API with Credentials example online and see the result.
  
  
-  useEffect(() => {
-    const fetchMe = async () => {
-      try {
-        const response = await axios.get('/api/users/me', {
-          withCredentials:true
+  useEffect(() => {//recuperer mes informations
+        fetchMe().then(user => {
+            if (!user)
+                navigate('/login');
         });
-        if (!response.data.success) {
-          throw Error(`Error API Me: ${response.status} ${response.statusText}`);
-        }
-        setMyself(response.data.user);
-      }
-      catch(error) {
-        // console.error('User not authenticated, redirecting to login...', error);
-        navigate('/login');
-      }
-    }
-    fetchMe()
-  }, [navigate]);
+        // fetchMe();
+    }, []);
 
-  useEffect(() => {
-    if (!Myself) return;
-    const fetchFriends = async () => {
-      try {
-        const result = await axios.get('/api/friends', {
-          withCredentials: true,
-        });
-          
-        if (!result.data.success || !Array.isArray(result.data.friends)) {
-          throw Error(`Error API Friends: ${result.status} ${result.statusText}`);
-        }
-        const friends = result.data.friends.map((f: any) => {
-          if (f.user1.id === Myself.id)
-            return f.user2;
-          else
-            return f.user1;
-        });
-        setLstFriends(friends);
-      }
-      catch(error) {
-        console.error('Error fetch : ', error);
-      }
-    }
-      fetchFriends();
-  }, [Myself]);
+    useEffect (() => {
+        if (!socket)
+            return;
+        initSocket(socket);
+    }, [socket]);
 
-  const[selectFriend, setSelectFriend] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean} | null>(null);
 
-  
   const status = (isOnline: boolean) => {
     if (isOnline)
         return "bg-emerald-500";
     return "bg-gray-300";
   }
-
-  const { socket } = TheSocket();
-  console.log("socket id:", socket?.id);
-  const [NewMsg, setNewMsg] = useState('');
-  const [prevMsg, setPrevMsg] = useState<{msg: string, time: string, sender: string, avatarUrl:string}[]>([]);
-  //permet de garder en memoire touts les messages (le 1er message n es pas ecraser par le 2eme)
 
   //en cours de discution
   useEffect(() => {
@@ -102,7 +80,7 @@ export default function Chat ()
         avatarUrl: selectFriend.avatarUrl
       }
       ]);
-      axios.patch(`/api/users/chat/${selectFriend.id}/read`, {withCredentials:true});
+      axios.patch(`/api/users/chat/${selectFriend.id}/read`, {}, {withCredentials:true});
     }
     socket.on("privMessage", handler);
     return () => {
@@ -130,11 +108,15 @@ export default function Chat ()
         }));
         setPrevMsg(loaded);
       })
-  }, [selectFriend]);
+  }, [selectFriend, Myself]);
 
   const sendMsg = () => {
     if (!NewMsg.trim() || !Myself || !selectFriend || !socket) //verifier les messages vides ou espace avant et fin du message
-      return; 
+      return;
+    if (NewMsg.length > 500) {
+      setErrMsg(t('chat.longMsg'));
+      return;
+    }
     const theTime = new Date().toLocaleTimeString("fr-FR", { hour: '2-digit', minute: '2-digit' });
     socket.emit("privMessage", {
       user: Myself.username,
@@ -145,97 +127,130 @@ export default function Chat ()
 
     setPrevMsg([...prevMsg, {msg:NewMsg, time:theTime, sender: Myself.username, avatarUrl:Myself.avatarUrl}]);
     setNewMsg('');
+    setErrMsg('');
   }
 
-    return (
-      <div className="all_chat_screen">        
-        <div className="top">
-          {/* ***************************************************************** */}
-          <div className="myPP">
-            {Myself && (
-              <>
-              <img className="rounded-full w-9 h-9" src={Myself.avatarUrl}></img>
-              <p>{Myself.username}</p>
-              </>
-            )}
-          </div>
-            
-          {/* ***************************************************************** */}
 
-          <div className="box_friend">
-            {selectFriend && (
+  //moderation
+  // useEffect (() => {
+  //   if (!socket)
+  //     return ;
+  //   //faire des trucs quand socket.emit appel handlerModo
+  //   const handlerModo = () => {
+
+  //   }
+  //   socket.emit("MessageBlocked", handlerModo);
+  // }, [socket]);
+
+  useEffect (() => {
+    scrollAuto.current?.scrollIntoView({ behavior: 'auto'});
+  }, [prevMsg, errMsg]);
+
+  useEffect (() => {
+    if (!location.state?.friendId || lstFriends.length === 0)
+        return;
+    const friend = lstFriends.find(f => f.id === location.state.friendId);
+    if (friend)
+      setSelectFriend(friend);
+  }, [location.state, lstFriends]);
+  
+  return (
+    <div className="all_chat_screen">        
+      <div className="top">
+        {/* ***************************************************************** */}
+        <div className="myPP">
+          {Myself && (
             <>
-              <div className="relative">
-                <div className="w-13 pl-1">
-                  <img className="rounded-full w-9 h-9" src={selectFriend.avatarUrl}></img>
-                  <span className={`friend_status ${status(selectFriend.isOnline)}`}></span>
-                </div>
-              </div>
-              <div className="truncate">{selectFriend.username}</div>
-            </>)}
-          </div>
+            <img className="rounded-full w-9 h-9" src={Myself.avatarUrl}></img>
+            <p>{Myself.username}</p>
+            </>
+          )}
         </div>
+            
+        {/* ***************************************************************** */}
 
-          {/* ***************************************************************** */}
+        <div className="box_friend">
+          {selectFriend && (
+            <>
+            <div className="relative">
+              <div className="w-13 pl-1">
+                <img className="rounded-full w-9 h-9" src={selectFriend.avatarUrl}></img>
+                <span className={`friend_status ${status(selectFriend.isOnline)}`}></span>
+              </div>
+            </div>
+            <div className="truncate">{selectFriend.username}</div>
+            </>)}
+        </div>
+      </div>
 
-        <div className="bottom">
-          <div className="box_list">
-            {lstFriends.map((theFriend, idx) =>
-            {
-              let isSelected;
-              if (selectFriend?.id === theFriend.id)
-                  isSelected = 'bg-gray-300';
-              return (
-                <div className={`display_lst ${isSelected}`} 
-                  key={idx} onClick={() => {
-                    setSelectFriend(theFriend);
-                    //change le status read en true quand le user click sur le sender
-                    axios.patch(`/api/users/chat/${theFriend.id}/read`, {}, {withCredentials:true});
-                  }}
-                >
-                  <img className="rounded-full w-10 h-10" src={theFriend.avatarUrl}></img>
-                  <span className={`display_status ${status(theFriend.isOnline)}`}></span>
-                  <div className="truncate">{theFriend.username}</div>
-                </div>
-              );
-            })}
-          </div>
+      {/* ***************************************************************** */}
+
+      <div className="bottom">
+        <div className="box_list">
+          {lstFriends.map((theFriend, idx) => {
+            let isSelected;
+            if (selectFriend?.id === theFriend.id)
+                isSelected = 'bg-gray-300';
+            return (
+              <div className={`display_lst ${isSelected}`} 
+                key={idx} onClick={() => {
+                  setSelectFriend(theFriend);
+                  //change le status read en true quand le user click sur le sender
+                  axios.patch(`/api/users/chat/${theFriend.id}/read`, {}, {withCredentials:true});
+                }}
+              >
+                <img className="rounded-full w-10 h-10" src={theFriend.avatarUrl}></img>
+                <span className={`display_status ${status(theFriend.isOnline)}`}></span>
+                <div className="truncate">{theFriend.username}</div>
+              </div>
+            );
+          })}
+        </div>
           
-          {/* ***************************************************************** */}
+        {/* ***************************************************************** */}
           
-          <div className="w-2/3 flex flex-col ">
-              <div className="box_message">
-              {/* permet de mapper chaque message envoyer en leur donnant un index pour les affichiers dans l ordre d envoie */}
-              {prevMsg.map((theMsg, idx) =>
+        <div className="w-2/3 flex flex-col ">
+          <div className="box_message">
+            {/* permet de mapper chaque message envoyer en leur donnant un index pour les affichiers dans l ordre d envoie */}
+            {prevMsg.map((theMsg, idx) =>
               <div className="display_Msg" key={idx}>
                 <div className="flex gap-3">
                   <img className="rounded-full w-12 h-12" src={theMsg.avatarUrl}></img>
                   <span className="text-sm font-semibold">{theMsg.sender}</span>
                   <span className="text-sm text-body">{theMsg.time}</span>
                 </div>
-                <span className="flex items-left pt-1 text-left whitespace-normal">{theMsg.msg}</span>
-              </div>)}
-            </div>
+                <span className="flex items-left pt-1 text-left whitespace-pre-wrap">{theMsg.msg}</span>
+              </div>
+            )}
+            {errMsg && <p className='err'>{errMsg}</p>}
+            <div ref={scrollAuto}></div>
+          </div>
           
           {/* ***************************************************************** */}  
           
           <div className="box_send">
               <textarea
                 value={NewMsg}
-                onChange={e => setNewMsg(e.target.value)}
-                placeholder='votre message'
+                onChange={e => {setNewMsg(e.target.value); setErrMsg('');}}
+                placeholder={t('chat.yourMsg')}
                 className="send_msg"
                 style={{
                   resize: 'none',
                 }}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMsg();
+                  }
+                }}
               />
-              <button className="send_but" onClick={sendMsg}>
-                Envoyer
-              </button>
-            </div>
+            <button className="send_but" onClick={sendMsg}>
+              {t('chat.send')}
+            </button>
           </div>
         </div>
       </div>
-    )
+    </div>
+  )
 
 }

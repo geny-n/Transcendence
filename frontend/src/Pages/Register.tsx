@@ -13,6 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { type T_inscriptionForm, inscriptionForm } from '../lib/types';
 import axios from "axios";
 import "./style/login.css";
+import { useTranslation } from 'react-i18next';
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -25,13 +26,14 @@ const Register = () => {
 
   const navigate = useNavigate();
   const register_url = '/api/register';
+  const { t } = useTranslation();
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting }
   } = useForm<T_inscriptionForm>({
-    resolver: zodResolver(inscriptionForm),
+    resolver: zodResolver(inscriptionForm(t)),
   });
 
   const onSubmit = async (data: FieldValues) => {
@@ -103,10 +105,10 @@ const Register = () => {
               className="input-field w-5/6" />
 
             {showPassword ? (
-              <LuEye className="absolute right-5 cursor-pointer"
+              <LuEye className="absolute inset-e-5 cursor-pointer"
                 onClick={passwordVisibility} />
             ) : (
-              <LuEyeClosed className="absolute right-5 cursor-pointer"
+              <LuEyeClosed className="absolute inset-e-5 cursor-pointer"
                 onClick={passwordVisibility} />
             )}
           </div>
@@ -120,10 +122,10 @@ const Register = () => {
               className="input-field w-5/6" />
 
             {showConfirmPass ? (
-              <LuEye className="absolute right-5 cursor-pointer"
+              <LuEye className="absolute inset-e-5 cursor-pointer"
                 onClick={ConfirmPassVisibility} />
             ) : (
-              <LuEyeClosed className="absolute right-5 cursor-pointer"
+              <LuEyeClosed className="absolute inset-e-5 cursor-pointer"
                 onClick={ConfirmPassVisibility} />
             )}
           </div>

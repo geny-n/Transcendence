@@ -1,201 +1,173 @@
-/* ── ScoreBoard page ────────────────────────────────────────────────────── */
-.scoreboard-page {
-	min-height: 100vh;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: flex-start;
-	padding: 2rem 1rem;
-	background: transparent;
-	color: #e2e8f0;
-}
+@import "tailwindcss";
 
-.scoreboard-title {
-	font-size: 2rem;
-	font-weight: 800;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
-	color: #a5b4fc;
-	margin-bottom: 1.5rem;
-}
+@layer components {
+  /* ── ScoreBoard page ────────────────────────────────────────────────────── */
+  .scoreboard-page {
+    @apply min-h-screen flex flex-col items-center justify-start
+    py-8 px-4 bg-transparent text-slate-200;
+  }
 
-/* ── Square frame ───────────────────────────────────────────────────────── */
-.scoreboard-frame {
-	width:  clamp(320px, 92vw, 780px);
-	aspect-ratio: 1 / 1;
-	background: rgba(15, 15, 30, 0.85);
-	border: 1px solid rgba(99, 102, 241, 0.35);
-	border-radius: 1rem;
-	display: flex;
-	flex-direction: column;
-	overflow: hidden;
-	box-shadow: 0 0 40px rgba(99, 102, 241, 0.12);
-}
+  .scoreboard-title {
+    @apply text-4xl font-black tracking-widest uppercase
+    text-indigo-300 mb-6;
+  }
 
-/* ── Inner scrollable list ──────────────────────────────────────────────── */
-.scoreboard-list {
-	flex: 1;
-	overflow-y: auto;
-	padding: 0.75rem;
-	display: flex;
-	flex-direction: column;
-	gap: 0.6rem;
-	scrollbar-width: thin;
-	scrollbar-color: rgba(99, 102, 241, 0.4) transparent;
-}
+  /* ── Square frame ───────────────────────────────────────────────────────── */
+  .scoreboard-frame {
+    @apply w-[clamp(320px,92vw,780px)] aspect-square
+    bg-gray-950/85 border border-indigo-500/35 rounded-lg
+    flex flex-col overflow-hidden
+    shadow-[0_0_40px_rgba(99,102,241,0.12)];
+  }
 
-.scoreboard-list::-webkit-scrollbar        { width: 6px; }
-.scoreboard-list::-webkit-scrollbar-track  { background: transparent; }
-.scoreboard-list::-webkit-scrollbar-thumb  { background: rgba(99, 102, 241, 0.4); border-radius: 3px; }
+  /* ── Inner scrollable list ──────────────────────────────────────────────── */
+  .scoreboard-list {
+    @apply flex-1 overflow-y-auto py-3 px-3 flex flex-col gap-2;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(99, 102, 241, 0.4) transparent;
+  }
 
-/* ── Match card ─────────────────────────────────────────────────────────── */
-.match-card {
-	display: grid;
-	grid-template-columns: 1fr auto 1fr;
-	align-items: center;
-	background: rgba(30, 30, 60, 0.6);
-	border: 1px solid rgba(99, 102, 241, 0.18);
-	border-radius: 0.6rem;
-	padding: 0.7rem 1rem;
-	gap: 0.5rem;
-	transition: border-color 0.15s;
-}
+  .scoreboard-list::-webkit-scrollbar {
+    width: 6px;
+  }
 
-.match-card:hover {
-	border-color: rgba(99, 102, 241, 0.45);
-}
+  .scoreboard-list::-webkit-scrollbar-track {
+    background: transparent;
+  }
 
-/* Player panels */
-.match-player {
-	display: flex;
-	flex-direction: column;
-	gap: 0.2rem;
-}
+  .scoreboard-list::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.4);
+    border-radius: 3px;
+  }
 
-.match-player--left  { align-items: flex-start; }
-.match-player--right { align-items: flex-end; }
+  /* ── Match card ─────────────────────────────────────────────────────────── */
+  .match-card {
+    @apply grid grid-cols-[1fr_auto_1fr] items-center
+    bg-gray-800/60 border border-indigo-500/18 rounded-md
+    py-3 px-4 gap-2 transition-colors duration-150;
+  }
 
-.match-player__name {
-	font-size: 0.95rem;
-	font-weight: 700;
-	display: flex;
-	align-items: center;
-	gap: 0.35rem;
-}
+  .match-card:hover {
+    @apply border-indigo-500/45;
+  }
 
-.match-player--left  .match-player__name { flex-direction: row; }
-.match-player--right .match-player__name { flex-direction: row-reverse; }
+  /* Player panels */
+  .match-player {
+    @apply flex flex-col gap-0.5;
+  }
 
-.badge-winner { color: #fbbf24; }
-.badge-loser  { color: #94a3b8; }
+  .match-player--left {
+    @apply items-start;
+  }
 
-.match-player__stats {
-	font-size: 0.75rem;
-	color: #94a3b8;
-}
+  .match-player--right {
+    @apply items-end;
+  }
 
-.match-player__stats span { color: #e2e8f0; font-weight: 600; }
+  .match-player__name {
+    @apply text-sm font-bold
+    flex items-center gap-1;
+  }
 
-.badge-guest {
-	font-size: 0.65rem;
-	padding: 0.1rem 0.4rem;
-	border-radius: 9999px;
-	background: rgba(148, 163, 184, 0.12);
-	border: 1px solid rgba(148, 163, 184, 0.25);
-	color: #94a3b8;
-	white-space: nowrap;
-}
+  .match-player--left .match-player__name {
+    @apply flex-row;
+  }
 
-/* Center info */
-.match-center {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 0.25rem;
-	min-width: 110px;
-}
+  .match-player--right .match-player__name {
+    @apply flex-row-reverse;
+  }
 
-.match-score {
-	font-size: 1.5rem;
-	font-weight: 800;
-	font-variant-numeric: tabular-nums;
-	color: #e2e8f0;
-	letter-spacing: 0.05em;
-}
+  .badge-winner {
+    @apply text-amber-400;
+  }
 
-.match-score__sep {
-	color: #475569;
-	margin: 0 0.25em;
-}
+  .badge-loser {
+    @apply text-slate-400;
+  }
 
-.match-duration {
-	font-size: 0.78rem;
-	color: #94a3b8;
-}
+  .match-player__stats {
+    @apply text-xs text-slate-400;
+  }
 
-.match-overtime-badge {
-	font-size: 0.68rem;
-	padding: 0.1rem 0.5rem;
-	border-radius: 9999px;
-	background: rgba(245, 158, 11, 0.15);
-	border: 1px solid rgba(245, 158, 11, 0.35);
-	color: #f59e0b;
-}
+  .match-player__stats span {
+    @apply text-slate-200 font-semibold;
+  }
 
-/* ── Pagination bar ─────────────────────────────────────────────────────── */
-.scoreboard-pager {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 0.75rem;
-	padding: 0.6rem 1rem;
-	border-top: 1px solid rgba(99, 102, 241, 0.18);
-	flex-shrink: 0;
-}
+  .badge-guest {
+    @apply text-xs py-0.5 px-2 rounded-full
+    bg-slate-400/12 border border-slate-400/25
+    text-slate-400 whitespace-nowrap;
+  }
 
-.pager-btn {
-	background: rgba(99, 102, 241, 0.12);
-	border: 1px solid rgba(99, 102, 241, 0.35);
-	color: #a5b4fc;
-	padding: 0.3rem 0.9rem;
-	border-radius: 9999px;
-	font-size: 0.85rem;
-	cursor: pointer;
-	transition: background 0.15s;
-}
+  /* Center info */
+  .match-center {
+    @apply flex flex-col items-center gap-1 min-w-[110px];
+  }
 
-.pager-btn:hover:not(:disabled) { background: rgba(99, 102, 241, 0.28); }
-.pager-btn:disabled { opacity: 0.35; cursor: default; }
+  .match-score {
+    @apply text-2xl font-black
+    text-slate-200 tracking-widest;
+  }
 
-.pager-info {
-	font-size: 0.85rem;
-	color: #94a3b8;
-	white-space: nowrap;
-}
+  .match-score__sep {
+    @apply text-slate-600 mx-1;
+  }
 
-/* ── Empty / loading / error states ────────────────────────────────────── */
-.scoreboard-state {
-	flex: 1;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	color: #64748b;
-	font-size: 0.95rem;
-}
+  .match-duration {
+    @apply text-xs text-slate-400;
+  }
 
-/* ── Live indicator ─────────────────────────────────────────────────────── */
-.scoreboard-live-dot {
-	display: inline-block;
-	width: 8px;
-	height: 8px;
-	border-radius: 50%;
-	background: #4ade80;
-	margin-left: 0.5rem;
-	animation: live-pulse 1.4s ease-in-out infinite;
-	vertical-align: middle;
+  .match-overtime-badge {
+    @apply text-xs py-0.5 px-2 rounded-full
+    bg-amber-600/15 border border-amber-600/35
+    text-amber-500;
+  }
+
+  /* ── Pagination bar ─────────────────────────────────────────────────────── */
+  .scoreboard-pager {
+    @apply flex items-center justify-center gap-3
+    py-2 px-4 border-t border-indigo-500/18 flex-shrink-0;
+  }
+
+  .pager-btn {
+    @apply bg-indigo-500/12 border border-indigo-500/35
+    text-indigo-300 py-1 px-3
+    rounded-full text-xs cursor-pointer transition-colors duration-150;
+  }
+
+  .pager-btn:hover:not(:disabled) {
+    @apply bg-indigo-500/28;
+  }
+
+  .pager-btn:disabled {
+    @apply opacity-35 cursor-default;
+  }
+
+  .pager-info {
+    @apply text-xs text-slate-400 whitespace-nowrap;
+  }
+
+  /* ── Empty / loading / error states ────────────────────────────────────── */
+  .scoreboard-state {
+    @apply flex-1 flex items-center justify-center
+    text-slate-500 text-sm;
+  }
+
+  /* ── Live indicator ─────────────────────────────────────────────────────── */
+  .scoreboard-live-dot {
+    @apply inline-block w-2 h-2 rounded-full
+    bg-green-400 ml-2 align-middle;
+    animation: live-pulse 1.4s ease-in-out infinite;
+  }
 }
 
 @keyframes live-pulse {
-	0%, 100% { opacity: 1;   transform: scale(1);    }
-	50%       { opacity: 0.4; transform: scale(0.75); }
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.75);
+  }
 }

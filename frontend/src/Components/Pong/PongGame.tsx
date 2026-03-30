@@ -22,6 +22,7 @@ interface Props {
 	onLeave:              () => void;
 	onRematch:            () => void;
 	onRematchRespond:     (accept: boolean) => void;
+	isCleaningUp:         boolean;
 }
 
 /**
@@ -45,6 +46,7 @@ export default function PongGame({
 	onLeave,
 	onRematch,
 	onRematchRespond,
+	isCleaningUp,
 }: Props) {
 	const { playerNumber } = gameInfo;
 
@@ -136,8 +138,7 @@ export default function PongGame({
 						rematchFromLabel={rematchFromLabel}
 						onLeave={onLeave}
 						onRematch={onRematch}
-						onRematchRespond={onRematchRespond}
-					/>
+						onRematchRespond={onRematchRespond}					isCleaningUp={isCleaningUp}					/>
 				)}
 			</div>
 

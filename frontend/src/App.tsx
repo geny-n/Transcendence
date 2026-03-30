@@ -7,6 +7,7 @@ import HomeP from './Pages/HomePage'
 import Pong from './Pages/Pong'
 import PongMulti from './Pages/PongMulti'
 import ScoreB from './Pages/ScoreBoard'
+import Leaderboard from './Pages/Leaderboard'
 import Teams from './Pages/Teams'
 import Chat from './Pages/Chat'
 import Profile from './Pages/Profile'
@@ -30,6 +31,7 @@ function App() {
           <Route path="/pong" element={<Pong />} />
           <Route path="/pong-multi" element={<PongMulti />} />
           <Route path="/scoreBoard" element={<ScoreB />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/teams" element={<Teams />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/profile" element={<Profile />} />

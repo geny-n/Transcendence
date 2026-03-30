@@ -92,6 +92,16 @@ export const initSocket = (HttpServer: HttpServer) => {
 		});
 	});
 
+	// ── Namespace public /leaderboard (sans authentification) ────────────────
+	// Permet aux visiteurs non connectés de recevoir les mises à jour du leaderboard
+	const leaderboardNs = io.of("/leaderboard");
+	leaderboardNs.on("connection", (socket) => {
+		console.log(`[Leaderboard] Viewer connecté: ${socket.id}`);
+		socket.on("disconnect", () => {
+			console.log(`[Leaderboard] Viewer déconnecté: ${socket.id}`);
+		});
+	});
+
 	return io;
 }
 

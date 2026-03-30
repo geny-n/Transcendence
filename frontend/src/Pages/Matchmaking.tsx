@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePongSocket } from "../Components/Pong/usePongSocket";
+import { useAuth } from "../main";
 import PongGame from "../Components/Pong/PongGame";
 import "../Components/Pong/pong.css";
 
@@ -13,7 +14,16 @@ import "../Components/Pong/pong.css";
  */
 export default function Matchmaking() {
 	const navigate = useNavigate();
-	const [guestName, setGuestName] = useState<string | undefined>();
+	const { accessToken } = useAuth();
+	
+	// CRITICAL: Persist guestName in sessionStorage to survive component unmount
+	// This prevents phantom queue issues when user quit+rejoin multiple times
+	const [guestName, setGuestName] = useState<string | undefined>(() => {
+		return sessionStorage.getItem('pong_guest_name') || undefined;
+	});
+
+	// Track if we should navigate away after cleanup completes
+	const [shouldNavigateAfterCleanup, setShouldNavigateAfterCleanup] = useState(false);
 
 	const {
 		state,
@@ -23,21 +33,82 @@ export default function Matchmaking() {
 		leaveGame,
 		requestRematch,
 		respondRematch,
-	} = usePongSocket(guestName);
+		socketCreatedTime,
+	} = usePongSocket(guestName, accessToken);
 
 	const handlePlayAsGuest = useCallback(() => {
-		const suffix = Math.random().toString(36).slice(2, 8).toUpperCase();
-		setGuestName(`Invité_${suffix}`);
-	}, []);
-
-	const { phase, queuePosition, gameInfo, gameState, countdown, countdownResuming, winner, opponentLeft, opponentReconnecting, timerRemaining, overtimeMessage, rematchStatus, rematchFromLabel, error } = state;
-
-	// Auto-join the queue as soon as the socket connects
-	useEffect(() => {
-		if (phase === "queue") {
-			joinQueue();
+		// If already set, don't generate a new one - keeps session consistency
+		// This prevents phantom queue issues when user quit+rejoin multiple times
+		if (!guestName) {
+			const suffix = Math.random().toString(36).slice(2, 8).toUpperCase();
+			const newGuestName = `Invité_${suffix}`;
+			sessionStorage.setItem('pong_guest_name', newGuestName);
+			setGuestName(newGuestName);
 		}
-	}, [phase, joinQueue]);
+	}, [guestName]);
+
+	const { phase, queuePosition, gameInfo, gameState, countdown, countdownResuming, winner, opponentLeft, opponentReconnecting, timerRemaining, overtimeMessage, rematchStatus, rematchFromLabel, error, isCleaningUp } = state;
+
+	// Readiness: not cleaning up AND socket >= 1s
+	const [isReadyForQueue, setIsReadyForQueue] = useState(false);
+
+	useEffect(() => {
+		console.log("[Matchmaking] Readiness effect started - socketCreatedTime:", socketCreatedTime?.current, "isCleaningUp:", isCleaningUp);
+		
+		if (isCleaningUp) {
+			console.log("[Matchmaking] Cleanup in progress - blocking readiness");
+			setIsReadyForQueue(false);
+			return;
+		}
+		
+		// Check readiness immediately
+		const checkReady = () => {
+			if (!socketCreatedTime?.current) {
+				console.log("[Matchmaking] Socket created time not set yet");
+				setIsReadyForQueue(false);
+				return false;
+			}
+			
+			const elapsed = Date.now() - socketCreatedTime.current;
+			const isReady = elapsed >= 1000;
+			console.log(`[Matchmaking] Socket age: ${elapsed}ms - Ready: ${isReady}`);
+			setIsReadyForQueue(isReady);
+			return isReady;
+		};
+		
+		// Check immediately
+		checkReady();
+		
+		// Check every 100ms until ready
+		const interval = setInterval(() => {
+			if (checkReady()) {
+				console.log("[Matchmaking] Socket now ready - stopping checks");
+				clearInterval(interval);
+			}
+		}, 100);
+		
+		return () => {
+			console.log("[Matchmaking] Cleaning up readiness checker");
+			clearInterval(interval);
+		};
+	}, [isCleaningUp, socketCreatedTime]);
+
+	const handleJoinQueue = useCallback(() => {
+		console.log(`[Matchmaking] handleJoinQueue called - isReadyForQueue: ${isReadyForQueue}, isCleaningUp: ${isCleaningUp}`);
+		if (!isReadyForQueue || isCleaningUp) {
+			console.warn("[Matchmaking] ❌ NOT READY: Blocking queue join");
+			return;
+		}
+		console.log("[Matchmaking] ✅ READY: Emitting queue join");
+		joinQueue();
+	}, [isReadyForQueue, isCleaningUp, joinQueue]);
+
+	useEffect(() => {
+		if (shouldNavigateAfterCleanup && !isCleaningUp) {
+			navigate("/pong");
+			setShouldNavigateAfterCleanup(false);
+		}
+	}, [shouldNavigateAfterCleanup, isCleaningUp, navigate]);
 
 	const handleCancelQueue = useCallback(() => {
 		leaveQueue();
@@ -46,11 +117,12 @@ export default function Matchmaking() {
 
 	const handleLeaveGame = useCallback(() => {
 		leaveGame();
-		navigate("/pong");
-	}, [leaveGame, navigate]);
+		setShouldNavigateAfterCleanup(true);
+	}, [leaveGame]);
 
 	// ── Error ────────────────────────────────────────────────────────────────
-	if (error) {
+	if (error && phase === "connecting") {
+		// Connection/auth error
 		return (
 			<div className="matchmaking-page">
 				<div className="matchmaking-box">
@@ -71,6 +143,26 @@ export default function Matchmaking() {
 		);
 	}
 
+	// ── Queue Error ──────────────────────────────────────────────────────────
+	if (error && phase === "queue") {
+		// Queue join error
+		return (
+			<div className="matchmaking-page">
+				<div className="matchmaking-box">
+					<p className="matchmaking-title">⚠️ Impossible de rejoindre</p>
+					<p className="matchmaking-sub">{error}</p>
+					<p className="matchmaking-sub" style={{ fontSize: "0.9em", marginTop: "1rem" }}>
+						Attendez quelques secondes avant de réessayer.
+					</p>
+
+					<button className="btn-play" onClick={handleCancelQueue} style={{ marginTop: "1rem" }}>
+						Retour
+					</button>
+				</div>
+			</div>
+		);
+	}
+
 	// ── Connecting ───────────────────────────────────────────────────────────
 	if (phase === "connecting") {
 		return (
@@ -83,8 +175,44 @@ export default function Matchmaking() {
 		);
 	}
 
-	// ── Queue (waiting for opponent) ─────────────────────────────────────────
-	if (phase === "queue") {
+	// ── Queue Waiting (not yet joined) ───────────────────────────────────────
+	// NO auto-join: user must manually click "Rejoindre la file" button
+	if (phase === "queue" && queuePosition === 0) {
+		console.log("[Matchmaking] RENDERING 'Prêt à chercher?' - phase:", phase, "queuePos:", queuePosition, "isReady:", isReadyForQueue, "isCleaning:", isCleaningUp);
+		return (
+			<div className="matchmaking-page">
+				<div className="matchmaking-box">
+					<p className="matchmaking-title">Prêt à chercher un adversaire?</p>
+					<p className="matchmaking-sub" style={{ marginBottom: "2rem" }}>
+						{isCleaningUp
+							? "🔄 Fermeture du match précédent…"
+							: !isReadyForQueue
+								? "⏳ Préparation du serveur… (socket age: " + (socketCreatedTime?.current ? Date.now() - socketCreatedTime.current : 0) + "ms)"
+								: "✅ Cliquez pour rejoindre la file"}
+					</p>
+
+					<button
+						className="btn-play"
+						onClick={handleJoinQueue}
+						disabled={!isReadyForQueue || isCleaningUp}
+						style={{
+							opacity: isReadyForQueue && !isCleaningUp ? 1 : 0.5,
+							cursor: isReadyForQueue && !isCleaningUp ? 'pointer' : 'not-allowed',
+						}}
+					>
+						{isReadyForQueue && !isCleaningUp ? "Rejoindre la file" : "Rejoindre la file (préparation)"}
+					</button>
+
+					<button className="btn-play btn-play-secondary" onClick={() => navigate("/pong")}>
+						Retour
+					</button>
+				</div>
+			</div>
+		);
+	}
+
+	// ── Queue (searching for opponent) ────────────────────────────────────────
+	if (phase === "queue" && queuePosition > 0) {
 		return (
 			<div className="matchmaking-page">
 				<div className="matchmaking-box">
@@ -104,9 +232,7 @@ export default function Matchmaking() {
 
 					<p className="matchmaking-title">Recherche d'adversaire…</p>
 					<p className="matchmaking-sub">
-						{queuePosition > 0
-							? `Position dans la file : ${queuePosition}`
-							: "Connexion à la file…"}
+						Position dans la file : {queuePosition}
 					</p>
 
 					<button className="btn-play" onClick={handleCancelQueue}>
@@ -136,6 +262,7 @@ export default function Matchmaking() {
 				onLeave={handleLeaveGame}
 				onRematch={requestRematch}
 				onRematchRespond={respondRematch}
+				isCleaningUp={isCleaningUp}
 			/>
 		);
 	}

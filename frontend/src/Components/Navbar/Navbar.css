@@ -22,7 +22,7 @@
     .btn-login{
         @apply bg-gradient-to-r from-red-600 to-orange-500
         py-1 px-6 rounded-3xl shadow-2xl
-        text-white text-lg font-semibold;
+        text-white text-lg font-semibold whitespace-nowrap;
     }
     .btn-login:hover{
         @apply from-red-500 to-orange-400;

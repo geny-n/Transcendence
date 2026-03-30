@@ -13,6 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { type T_inscriptionForm, inscriptionForm } from '../lib/types';
 import axios from "axios";
 import "./style/login.css";
+import { useTranslation } from 'react-i18next';
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -22,6 +23,8 @@ const Register = () => {
   const ConfirmPassVisibility = () => setShowConfirmPass(!showConfirmPass);
 
   const [errMsg, setErrMsg] = useState<string>('');
+
+  const { t } = useTranslation();
 
   const navigate = useNavigate();
   const register_url = '/api/register';
@@ -55,10 +58,10 @@ const Register = () => {
           console.log("Backend error: ", err.response.data);
           console.log("Status: ", err.response.status);
           if (err.response.status == 409)
-            setErrMsg("Nom d'utilisateur ou email déjà utilisé")
+            setErrMsg(t('register.err-used'))
         }
         else
-          setErrMsg("Serveur Indisponible");
+          setErrMsg(t('register.err-server'));
       }
     }
   }
@@ -69,10 +72,10 @@ const Register = () => {
       <div className="form-box">
 
         <img src={logo} alt="logo" className="w-50 md:70" />
-        <h1 className="text-lg md:text-xl font-semibold">Inscris-toi pour Jouer</h1>
+        <h1 className="text-lg md:text-xl font-semibold">{t('register.to-play')}</h1>
 
-        <p className="text-lg md:text-sm text-gray-500 text-center">Déjà un compte ?
-          <NavLink className="btn-txt" to="/login">Se connecter</NavLink>
+        <p className="text-lg md:text-sm text-gray-500 text-center">{t('register.has-account')}
+          <NavLink className="btn-txt" to="/login">{t('register.to-login')}</NavLink>
         </p>
 
         <div className="w-full flex flex-col gap-3">
@@ -81,7 +84,7 @@ const Register = () => {
             <CgProfile />
             <input {...(register("username"))}
               type="text"
-              placeholder="Nom d'utilisateur"
+              placeholder={t('register.username')}
               className="input-field w-full" />
           </div>
           {errors.username && <p className="text-left text-red-500 text-xs">{`${errors.username.message}`}</p>}
@@ -90,7 +93,7 @@ const Register = () => {
             <CiMail />
             <input {...(register("email"))}
               type="email"
-              placeholder="Adresse mail"
+              placeholder={t('register.mail')}
               className="input-field w-full" />
           </div>
           {errors.email && <p className="text-left text-red-500 text-xs">{`${errors.email.message}`}</p>}
@@ -99,7 +102,7 @@ const Register = () => {
             <CiLock />
             <input {...(register("password"))}
               type={showPassword ? "text" : "password"}
-              placeholder="Mot de passe"
+              placeholder={t('register.pwd')}
               className="input-field w-5/6" />
 
             {showPassword ? (
@@ -116,7 +119,7 @@ const Register = () => {
             <CiLock />
             <input {...(register("confirmPass"))}
               type={showConfirmPass ? "text" : "password"}
-              placeholder="Confirmer le mot de passe"
+              placeholder={t('register.confirm-pwd')}
               className="input-field w-5/6" />
 
             {showConfirmPass ? (
@@ -133,7 +136,7 @@ const Register = () => {
 
         {errMsg && <p className="text-center text-red-500 text-xs"> {errMsg} </p>}
 
-        <button disabled={isSubmitting} type="submit" className="btn-sign">S'inscrire</button>
+        <button disabled={isSubmitting} type="submit" className="btn-sign">{t('register.to-register')}</button>
 
 
         <div className="relative w-full flex items-center justify-between py-3">

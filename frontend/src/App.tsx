@@ -14,6 +14,7 @@ import Login from './Pages/Login'
 import Register from './Pages/Register'
 import Matchmaking from './Pages/Matchmaking'
 import Admin from './Pages/Admin'
+import About from './Pages/About'
 import { SocketProvider } from './socket.tsx'
 import {Routes, Route, Outlet} from "react-router-dom"
 
@@ -35,6 +36,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/matchmaking" element={<Matchmaking />} />
           <Route path='/admin' element={<Admin />}/>
+          <Route path='/about' element={<About />}></Route>
         </Route>
       </Routes>
     </>

@@ -15,6 +15,7 @@ const Navbar: React.FC = () => {
 		{label: t('navbar.scoreboard'), path: "/scoreBoard"},
 		// {label: t('navbar.teams'), path: "/teams"},
 		{label: t('navbar.chat'), path: "/chat"},
+		{label: t('navbar.about'), path: "/about"},
 		{label: t('navbar.profile'), path: "/profile"},
 		...(user?.role === 'ADMIN' ? [{label: t('navbar.admin'), path: "/admin"}] : [])
 	]

@@ -33,7 +33,7 @@ export const registerUsers = asyncHandler(async (request: Request, response: Res
 	if (existingUser) {
 		return response.status(409).json({
 			success: false,
-			message: "A user with this email address or username already exists."
+			message: "backend.auth.duplicate.user"
 		});
 	}
 
@@ -96,7 +96,7 @@ export const loginUser = asyncHandler(async (request: Request, response: Respons
 	if (!user || !user.password) {
 		return response.status(401).json({
 			success: false,
-			message: "Incorrect credentials"
+			message: "backend.auth.invalid.credentials"
 		});
 	}
 
@@ -106,7 +106,7 @@ export const loginUser = asyncHandler(async (request: Request, response: Respons
 	if (!isPasswordValid) {
 		return response.status(401).json({
 			success: false,
-			message: "Incorrect credentials"
+			message: "backend.auth.invalid.credentials"
 		});
 	}
 
@@ -200,7 +200,7 @@ export const logoutUser = asyncHandler(async (request: Request, response: Respon
 
 	return response.status(200).json({
 		success: true,
-		message: 'Logged out successfully',
+		message: 'backend.auth.logout.success',
 	});
 });
 
@@ -210,7 +210,7 @@ export const authHandler = asyncHandler(async (request: Request, response: Respo
 	// console.log('Type of req.user:', typeof request.user);
 	// console.log('Keys:', request.user ? Object.keys(request.user) : 'null');
 	if (!request.user) {
-		throw new Error("No user found after authentication");
+		throw new Error("backend.auth.no.user.after.authentication");
 	}
 
 	// Maintenant que TypeScript connais la structure
@@ -264,7 +264,7 @@ export const getSocketToken = asyncHandler(async (request: Request, response: Re
 	if (!token) {
 		return response.status(401).json({
 			success: false,
-			message: "No valid token"
+			message: "backend.auth.no.valid.token"
 		});
 	}
 

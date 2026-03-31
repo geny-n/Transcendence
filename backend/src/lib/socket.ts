@@ -77,7 +77,7 @@ const onConnection = async (socket:Socket) => {
 export const initSocket = (HttpServer: HttpServer) => {
 	io = new Server(HttpServer, {
 		cors: {
-			origin: process.env.FRONTEND_URL || 'https://localhost:1443',
+			origin: process.env.FRONTEND_URL,
 			credentials: true
 		}
 	});

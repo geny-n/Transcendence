@@ -12,12 +12,12 @@ dist/
 .vscode/
 
 # Prisma
-/prisma/generated/prisma
+backend/prisma/generated/prisma
 
-/generated/prisma
+backend/generated/prisma
 
-/generated/prisma
+backend/generated/prisma
 
-/generated/prisma
+backend/generated/prisma
 
-/generated/prisma
+backend/generated/prisma

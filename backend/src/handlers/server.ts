@@ -14,7 +14,7 @@ export const refreshTokens = asyncHandler(async (request: Request, response: Res
 	if (!refreshToken) {
 		return response.status(401).json({
 			success: false,
-			message: "Access denied. Token missing."
+			message: "backend.auth.token.missing"
 		});
 	}
 
@@ -25,7 +25,7 @@ export const refreshTokens = asyncHandler(async (request: Request, response: Res
 	if (!decoded) {
 		return response.status(403).json({
 			success: false,
-			message: "Invalid refresh token"
+			message: "backend.auth.refresh.token.invalid"
 		});
 	}
 
@@ -38,7 +38,7 @@ export const refreshTokens = asyncHandler(async (request: Request, response: Res
 	if (!user) {
 		return response.status(404).json({
 			success: false,
-			message: "User not found"
+			message: "backend.auth.user.not.found"
 		});
 	}
 
@@ -49,7 +49,7 @@ export const refreshTokens = asyncHandler(async (request: Request, response: Res
 		});
 		return response.status(403).json({
 			success: false,
-			message: "Refresh token revoked"
+			message: "backend.auth.refresh.token.revoked"
 		});
 	}
 

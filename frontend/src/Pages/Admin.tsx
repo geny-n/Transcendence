@@ -45,7 +45,7 @@ const createAdminUpdateForm = (t: (key: string) => string) => z.object({
 	username: z.preprocess(
 		emptyStringToUndefined,
 		z
-			.string()
+			.string({error: (issue) => issue.input === undefined ? t('admin.validation.string') : ''})
 			.trim()
 			.min(3, t('admin.validation.usernameMin'))
 			.max(24, t('admin.validation.usernameMax'))
@@ -55,7 +55,7 @@ const createAdminUpdateForm = (t: (key: string) => string) => z.object({
 	password: z.preprocess(
 		emptyStringToUndefined,
 		z
-			.string()
+			.string({error: (issue) => issue.input === undefined ? t('admin.validation.string') : ''})
 			.trim()
 			.min(8, t('admin.validation.passwordMin'))
 			.regex(PasswordRegex, t('admin.validation.passwordPattern'))
@@ -74,7 +74,7 @@ const createAdminCreateForm = (t: (key: string) => string) => z.object({
 	username: z.preprocess(
 		emptyStringToUndefined,
 		z
-			.string()
+			.string({error: (issue) => issue.input === undefined ? t('admin.validation.string') : ''})
 			.trim()
 			.min(3, t('admin.validation.usernameMin'))
 			.max(24, t('admin.validation.usernameMax'))
@@ -83,7 +83,7 @@ const createAdminCreateForm = (t: (key: string) => string) => z.object({
 	password: z.preprocess(
 		emptyStringToUndefined,
 		z
-			.string()
+			.string({error: (issue) => issue.input === undefined ? t('admin.validation.string') : ''})
 			.trim()
 			.min(8, t('admin.validation.passwordMin'))
 			.regex(PasswordRegex, t('admin.validation.passwordPattern'))
@@ -201,7 +201,8 @@ const admin = () => {
 			}
 		} catch (error) {
 			if (axios.isAxiosError(error)) {
-				setError(error.response?.data?.message ?? t('admin.feedback.loadError'))
+				const backendMessage = error.response?.data?.message
+				setError(typeof backendMessage === 'string' ? t(backendMessage) : t('admin.feedback.loadError'))
 			} else {
 				setError(t('admin.feedback.unexpectedLoadError'))
 			}
@@ -250,7 +251,8 @@ const admin = () => {
 			await fetchUsers()
 		} catch (error) {
 			if (axios.isAxiosError(error)) {
-				setError(error.response?.data?.message ?? t('admin.feedback.createError'))
+				const backendMessage = error.response?.data?.message
+				setError(typeof backendMessage === 'string' ? t(backendMessage) : t('admin.feedback.createError'))
 			} else {
 				setError(t('admin.feedback.unexpectedCreateError'))
 			}
@@ -282,7 +284,8 @@ const admin = () => {
 			await fetchUsers()
 		} catch (error) {
 			if (axios.isAxiosError(error)) {
-				setError(error.response?.data?.message ?? t('admin.feedback.updateError'))
+				const backendMessage = error.response?.data?.message
+				setError(typeof backendMessage === 'string' ? t(backendMessage) : t('admin.feedback.updateError'))
 			} else {
 				setError(t('admin.feedback.unexpectedUpdateError'))
 			}
@@ -308,7 +311,8 @@ const admin = () => {
 			await fetchUsers()
 		} catch (error) {
 			if (axios.isAxiosError(error)) {
-				setError(error.response?.data?.message ?? t('admin.feedback.roleUpdateError'))
+				const backendMessage = error.response?.data?.message
+				setError(typeof backendMessage === 'string' ? t(backendMessage) : t('admin.feedback.roleUpdateError'))
 			} else {
 				setError(t('admin.feedback.unexpectedRoleUpdateError'))
 			}
@@ -334,7 +338,8 @@ const admin = () => {
 			await fetchUsers()
 		} catch (error) {
 			if (axios.isAxiosError(error)) {
-				setError(error.response?.data?.message ?? t('admin.feedback.deleteError'))
+				const backendMessage = error.response?.data?.message
+				setError(typeof backendMessage === 'string' ? t(backendMessage) : t('admin.feedback.deleteError'))
 			} else {
 				setError(t('admin.feedback.unexpectedDeleteError'))
 			}

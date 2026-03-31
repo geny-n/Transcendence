@@ -10,7 +10,7 @@ export const authenticateToken = async (request: Request, response: Response, ne
 	if (!token) {
 		return response.status(401).json({
 			success: false,
-			message: "Access denied. Token missing."
+			message: "backend.auth.token.missing"
 		});
 	}
 
@@ -21,7 +21,7 @@ export const authenticateToken = async (request: Request, response: Response, ne
 	if (!decoded) {
 		return response.status(403).json({
 			success: false,
-			message: "Invalid or expired token."
+			message: "backend.auth.token.invalid.or.expired"
 		});
 	}
 
@@ -39,7 +39,7 @@ export const authenticateToken = async (request: Request, response: Response, ne
 		if (!user) {
 			return response.status(404).json({
 				success: false,
-				message: "User not found"
+				message: "backend.auth.user.not.found"
 			});
 		}
 		request.user = user;
@@ -47,7 +47,7 @@ export const authenticateToken = async (request: Request, response: Response, ne
 		console.error("Login error:", error);
 		return response.status(500).json({
 			success: false,
-			message: "Server error during authentification"
+			message: "backend.auth.server.error"
 		});
 	}
 	next();

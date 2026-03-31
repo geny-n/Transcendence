@@ -7,7 +7,7 @@ import { getIO } from "../lib/socket.js";
 
 export const getMyProfile = asyncHandler(async (request:Request, response:Response) => {
 	if (!request.user) {
-		throw new Error("No user found after authentication");
+		throw new Error("backend.profile.no.user.after.authentication");
 	}
 
 	const user = await prisma.user.findFirst({
@@ -21,7 +21,9 @@ export const getMyProfile = asyncHandler(async (request:Request, response:Respon
 			createdAt: true,
 			level: true,
 			experience: true,
-		}
+			matchWins: true,
+			matchLosses: true,
+		},
 	});
 	console.log('inside getMyProfile: user:', user);
 
@@ -38,7 +40,7 @@ export const getUserProfile = asyncHandler(async (request:Request, response:Resp
 	if (!userId || Array.isArray(userId)) {
 		return response.status(401).json({
 			success: false,
-			message: "Multiple ID or empty ID not allowed"
+			message: "backend.profile.invalid.user.id"
 		});
 	}
 
@@ -59,7 +61,7 @@ export const getUserProfile = asyncHandler(async (request:Request, response:Resp
 	if (!user) {
 		return response.status(404).json({
 			success: false,
-			message: "User not found"
+			message: "backend.profile.user.not.found"
 		});
 	}
 
@@ -84,7 +86,7 @@ export const updateMyProfile = asyncHandler(async (request:Request, response:Res
 	console.log(`Update fields: Email(${email}), Username(${username})`);
 
 	if (!request.user) {
-		throw new Error("No user found after authentication");
+		throw new Error("backend.profile.no.user.after.authentication");
 	}
 
 	const updateUser = await prisma.user.update({
@@ -139,7 +141,7 @@ export const changePassword = asyncHandler(async (request:Request, response:Resp
 	console.log(`Change Password fields: currentPassword(${currentPassword}), newPassword(${newPassword})`);
 
 	if (!request.user || !request.user.password) {
-		throw new Error("No user found after authentication");
+		throw new Error("backend.profile.no.user.after.authentication");
 	}
 	const isPasswordValid = comparePassword(currentPassword, request.user.password);
 	console.log("isPasswordValid:", isPasswordValid);
@@ -147,7 +149,7 @@ export const changePassword = asyncHandler(async (request:Request, response:Resp
 	if (!isPasswordValid) {
 		return response.status(401).json({
 			success: false,
-			message: "Incorrect credentials"
+			message: "backend.profile.incorrect.credentials"
 		});
 	}
 
@@ -162,7 +164,7 @@ export const changePassword = asyncHandler(async (request:Request, response:Resp
 
 	return response.status(200).json({
 		success: true,
-		message: "Password updated successfully",
+		message: "backend.profile.password.updated",
 	});
 });
 
@@ -170,7 +172,7 @@ export const changeAvatar = asyncHandler(async (request:Request, response:Respon
 	if (!request.file || !request.user) {
 		return response.status(400).json({
 			success: false,
-			message: "No file Uploaded."
+			message: "backend.profile.no.file.uploaded"
 		});
 	}
 
@@ -199,7 +201,7 @@ export const changeAvatar = asyncHandler(async (request:Request, response:Respon
 
 	response.status(200).json({
 		success: true,
-		message: "Avatar uploaded succesfully",
+		message: "backend.profile.avatar.uploaded",
 		avatarUrl: avatarUrl
 	});
 });
@@ -211,7 +213,7 @@ export const searchUser = asyncHandler(async (request:Request, response:Response
 	if (!q || typeof q !== 'string' || q.trim().length < 2) {
 		return response.status(400).json({
 			success: false,
-			message: "The search query must contain at least 2 characters"
+			message: "backend.profile.search.query.too.short"
 		})
 	}
 
@@ -221,7 +223,7 @@ export const searchUser = asyncHandler(async (request:Request, response:Response
 	if (!request.user) {
 		return response.status(400).json({
 			success: false,
-			message: "No user found after authentication."
+			message: "backend.profile.no.user.after.authentication"
 		});
 	}
 
@@ -236,7 +238,7 @@ export const searchUser = asyncHandler(async (request:Request, response:Response
 	if (!findUser) {
 		return response.status(404).json({
 			success: false,
-			message: "User not found."
+			message: "backend.profile.user.not.found"
 		})
 	}
 	response.status(200).json({

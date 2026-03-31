@@ -32,7 +32,7 @@ export const listAllUsers = asyncHandler(async (req: Request, res: Response) => 
 	if (typeof pageRaw !== 'string' || typeof sizeRaw !== 'string' || typeof sortByRaw !== 'string' || typeof sortDirRaw !== 'string') {
 		return res.status(400).json({
 			success: false,
-			message: "Incorrect query parameters"
+			message: "backend.admin.incorect.query.params"
 		});
 	}
 
@@ -45,14 +45,14 @@ export const listAllUsers = asyncHandler(async (req: Request, res: Response) => 
 	if (!Number.isInteger(page) || page < 1 || !Number.isInteger(size) || size < 1 || size > 100) {
 		return res.status(400).json({
 			success: false,
-			message: "Page and size must be valid integers (size between 1 and 100)"
+			message: "backend.admin.invalid.page.size"
 		});
 	}
 
 	if (!isSortField(sortBy) || (sortDir !== 'asc' && sortDir !== 'desc')) {
 		return res.status(400).json({
 			success: false,
-			message: "Invalid sorting parameters"
+			message: "backend.admin.invalid.sorting.params"
 		});
 	}
 
@@ -124,7 +124,7 @@ export const updateUser = asyncHandler(async (req: Request, res: Response) => {
 	if (!userId || Array.isArray(userId)) {
 		return res.status(401).json({
 			success: false,
-			message: "Multiple ID or empty ID not allowed"
+			message: "backend.admin.invalid.user.id"
 		});
 	}
 
@@ -155,7 +155,7 @@ export const updateUser = asyncHandler(async (req: Request, res: Response) => {
 	if (!user) {
 		return res.status(404).json({
 			success: false,
-			message: "User not found."
+			message: "backend.admin.user.not.found"
 		})
 	}
 
@@ -190,14 +190,14 @@ export const deleteUser = asyncHandler(async (req: Request, res: Response) => {
 	if (!userId || Array.isArray(userId)) {
 		return res.status(401).json({
 			success: false,
-			message: "Multiple ID or empty ID not allowed"
+			message: "backend.admin.invalid.user.id"
 		});
 	}
 
 	if (userId === req.user?.id ) {
 		return res.status(403).json({
 			success: false,
-			message: "Delete itself is forbidden"
+			message: "backend.admin.delete.self.forbidden"
 		});		
 	}
 
@@ -205,7 +205,7 @@ export const deleteUser = asyncHandler(async (req: Request, res: Response) => {
 	if (!found) {
 		return res.status(404).json({
 			success: false,
-			message: "User not found"
+			message: "backend.admin.user.not.found"
 		});
 	}
 
@@ -213,7 +213,7 @@ export const deleteUser = asyncHandler(async (req: Request, res: Response) => {
 
 	return res.status(200).json({
 		success: true,
-		message: "User deleted succesfully"
+		message: "backend.admin.delete.success"
 	});
 });
 
@@ -224,14 +224,14 @@ export const changeUserRole = asyncHandler(async (req: Request, res: Response) =
 	if (!userId || Array.isArray(userId)) {
 		return res.status(401).json({
 			success: false,
-			message: "Multiple ID or empty ID not allowed"
+			message: "backend.admin.invalid.user.id"
 		});
 	}
 
 	if (userId === req.user?.id) {
 		return res.status(403).json({
 			success: false,
-			message: "Change your own role is forbidden"
+			message: "backend.admin.change.own.role.forbidden"
 		});
 	}
 
@@ -247,7 +247,7 @@ export const changeUserRole = asyncHandler(async (req: Request, res: Response) =
 	if (!role) {
 		return res.status(400).json({
 			success: false,
-			message: "Role is required"
+			message: "backend.admin.role.required"
 		});
 	}
 

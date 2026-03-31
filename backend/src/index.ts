@@ -39,7 +39,7 @@ if (process.env.NODE_ENV === 'production') {
 // Initialise Socket.io
 initSocket(server);
 
-const PORT = process.env.PORT || 3100;
+const PORT = process.env.PORT;
 const __filename = fileURLToPath(import.meta.url);
 console.log("Inside ../src/index.ts __filename:", __filename);
 
@@ -49,7 +49,7 @@ console.log("__dirname:", __dirname);
 // Middlewares
 app.use(helmet());
 app.use(cors({
-	origin: process.env.FRONTEND_URL || 'https://localhost:1443',
+	origin: process.env.FRONTEND_URL,
 	credentials: true,
 	methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
 	allowedHeaders: ['Content-Type', 'Authorization'],

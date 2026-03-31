@@ -6,14 +6,14 @@ export const roleGuard = (allowedRoles: UserRoles[]) => {
 		if (!req.user) {
 			return res.status(401).json({
 				success: false,
-				message: 'Unauthorized'
+				message: 'backend.middleware.role.unauthorized'
 			});
 		}
 
 		if (!allowedRoles.includes(req.user.role)) {
 			return res.status(403).json({
 				success: false,
-				message: `Forbidden: required role(s): ${allowedRoles.join(', ')}`
+				message: 'backend.middleware.role.forbidden'
 			});
 		}
 

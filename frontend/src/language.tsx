@@ -7,6 +7,64 @@ i18n.use(initReactI18next).init({
     resources:{
         fr: {
             translation: {
+                //Backend response
+                'backend.admin.incorect.query.params' : 'Paramètres de requête incorrects',
+                'backend.admin.invalid.page.size' : 'Page et taille invalides',
+                'backend.admin.invalid.sorting.params' : 'Parametres de tri invalides',
+                'backend.admin.invalid.user.id' : 'Identifiant utilisateur invalide',
+                'backend.admin.user.not.found' : 'Utilisateur introuvable',
+                'backend.admin.delete.self.forbidden' : 'Vous ne pouvez pas vous supprimer vous-meme',
+                'backend.admin.delete.success' : 'Utilisateur supprime avec succes',
+                'backend.admin.change.own.role.forbidden' : 'Vous ne pouvez pas modifier votre propre role',
+                'backend.admin.role.required' : 'Le role est requis',
+
+                'backend.auth.duplicate.user' : 'Un utilisateur avec cet email ou ce nom existe deja',
+                'backend.auth.invalid.credentials' : 'Identifiants incorrects',
+                'backend.auth.logout.success' : 'Deconnexion reussie',
+                'backend.auth.no.user.after.authentication' : 'Aucun utilisateur trouve apres authentification',
+                'backend.auth.no.valid.token' : 'Token invalide',
+                'backend.auth.token.missing' : 'Acces refuse: token manquant',
+                'backend.auth.token.invalid.or.expired' : 'Token invalide ou expire',
+                'backend.auth.user.not.found' : 'Utilisateur introuvable',
+                'backend.auth.server.error' : 'Erreur serveur pendant l authentification',
+                'backend.auth.refresh.token.invalid' : 'Refresh token invalide',
+                'backend.auth.refresh.token.revoked' : 'Refresh token revoque',
+
+                'backend.profile.no.user.after.authentication' : 'Aucun utilisateur trouve apres authentification',
+                'backend.profile.invalid.user.id' : 'Identifiant utilisateur invalide',
+                'backend.profile.user.not.found' : 'Utilisateur introuvable',
+                'backend.profile.incorrect.credentials' : 'Identifiants incorrects',
+                'backend.profile.password.updated' : 'Mot de passe mis a jour avec succes',
+                'backend.profile.no.file.uploaded' : 'Aucun fichier televerse',
+                'backend.profile.avatar.uploaded' : 'Avatar televerse avec succes',
+                'backend.profile.search.query.too.short' : 'La recherche doit contenir au moins 2 caracteres',
+
+                'backend.friends.no.user.after.authentication' : 'Aucun utilisateur trouve apres authentification',
+                'backend.friends.cannot.add.yourself' : 'Vous ne pouvez pas vous ajouter vous-meme',
+                'backend.friends.already.friends' : 'Vous etes deja amis',
+                'backend.friends.request.already.pending' : 'Une demande est deja en attente',
+                'backend.friends.blocked.by.you' : 'Vous avez bloque cet utilisateur',
+                'backend.friends.blocked.you' : 'Cet utilisateur vous a bloque',
+                'backend.friends.unable.to.send.request' : 'Impossible d envoyer la demande',
+                'backend.friends.invalid.request.id' : 'Identifiant de demande invalide',
+                'backend.friends.request.not.found' : 'Demande d ami introuvable',
+                'backend.friends.not.authorized' : 'Non autorise',
+                'backend.friends.internal.error' : 'Erreur interne',
+                'backend.friends.only.receiver.can.accept' : 'Seul le receveur peut accepter',
+                'backend.friends.only.receiver.can.reject' : 'Seul le receveur peut refuser',
+                'backend.friends.only.sender.can.cancel' : 'Seul l expediteur peut annuler',
+                'backend.friends.request.not.pending' : 'La demande n est pas en attente',
+                'backend.friends.invalid.action' : 'Action invalide',
+                'backend.friends.not.friends' : 'Vous n etes pas amis',
+                'backend.friends.unfriended' : 'Amitie supprimee',
+
+                'backend.middleware.role.unauthorized' : 'Non authentifie',
+                'backend.middleware.role.forbidden' : 'Acces interdit',
+                'backend.middleware.upload.not.image' : 'Fichier image requis',
+                'backend.middleware.upload.image.processing.error' : 'Erreur lors du traitement de l image',
+
+                'backend.common.internal.server.error' : 'Erreur interne du serveur',
+
                 //navbar
                 'navbar.home' : 'Accueil',
                 'navbar.pong' : 'PingPong',
@@ -94,6 +152,7 @@ i18n.use(initReactI18next).init({
                 'admin.validation.passwordMin': 'Ne peux contenir moins de 8 caracteres',
                 'admin.validation.passwordPattern': 'Doit contenir minuscule, majuscule, chiffre et caractere special',
                 'admin.validation.passwordSpecialChars': 'Caracteres speciaux autorises: !@#$%&*()_-+=',
+                'admin.validation.string': 'Entrée invalide : chaîne de caractères attendue, valeur indéfinie reçue',
                 //messagerie
                 
                 //profile
@@ -131,6 +190,64 @@ i18n.use(initReactI18next).init({
         },
         en: {
             translation: {
+                //Backend response
+                'backend.admin.incorect.query.params' : 'Incorrect query parameters',
+                'backend.admin.invalid.page.size' : 'Invalid page and size values',
+                'backend.admin.invalid.sorting.params' : 'Invalid sorting parameters',
+                'backend.admin.invalid.user.id' : 'Invalid user id',
+                'backend.admin.user.not.found' : 'User not found',
+                'backend.admin.delete.self.forbidden' : 'You cannot delete your own account',
+                'backend.admin.delete.success' : 'User deleted successfully',
+                'backend.admin.change.own.role.forbidden' : 'You cannot change your own role',
+                'backend.admin.role.required' : 'Role is required',
+
+                'backend.auth.duplicate.user' : 'A user with this email or username already exists',
+                'backend.auth.invalid.credentials' : 'Incorrect credentials',
+                'backend.auth.logout.success' : 'Logged out successfully',
+                'backend.auth.no.user.after.authentication' : 'No user found after authentication',
+                'backend.auth.no.valid.token' : 'No valid token',
+                'backend.auth.token.missing' : 'Access denied: token missing',
+                'backend.auth.token.invalid.or.expired' : 'Invalid or expired token',
+                'backend.auth.user.not.found' : 'User not found',
+                'backend.auth.server.error' : 'Server error during authentication',
+                'backend.auth.refresh.token.invalid' : 'Invalid refresh token',
+                'backend.auth.refresh.token.revoked' : 'Refresh token revoked',
+
+                'backend.profile.no.user.after.authentication' : 'No user found after authentication',
+                'backend.profile.invalid.user.id' : 'Invalid user id',
+                'backend.profile.user.not.found' : 'User not found',
+                'backend.profile.incorrect.credentials' : 'Incorrect credentials',
+                'backend.profile.password.updated' : 'Password updated successfully',
+                'backend.profile.no.file.uploaded' : 'No file uploaded',
+                'backend.profile.avatar.uploaded' : 'Avatar uploaded successfully',
+                'backend.profile.search.query.too.short' : 'Search query must contain at least 2 characters',
+
+                'backend.friends.no.user.after.authentication' : 'No user found after authentication',
+                'backend.friends.cannot.add.yourself' : 'You cannot add yourself',
+                'backend.friends.already.friends' : 'You are already friends',
+                'backend.friends.request.already.pending' : 'A friend request is already pending',
+                'backend.friends.blocked.by.you' : 'You have blocked this user',
+                'backend.friends.blocked.you' : 'You are blocked by this user',
+                'backend.friends.unable.to.send.request' : 'Unable to send request',
+                'backend.friends.invalid.request.id' : 'Invalid request id',
+                'backend.friends.request.not.found' : 'Friend request not found',
+                'backend.friends.not.authorized' : 'Not authorized',
+                'backend.friends.internal.error' : 'Internal error',
+                'backend.friends.only.receiver.can.accept' : 'Only receiver can accept',
+                'backend.friends.only.receiver.can.reject' : 'Only receiver can reject',
+                'backend.friends.only.sender.can.cancel' : 'Only sender can cancel',
+                'backend.friends.request.not.pending' : 'Request is not pending',
+                'backend.friends.invalid.action' : 'Invalid action',
+                'backend.friends.not.friends' : 'Not friends',
+                'backend.friends.unfriended' : 'Unfriended',
+
+                'backend.middleware.role.unauthorized' : 'Unauthorized',
+                'backend.middleware.role.forbidden' : 'Forbidden',
+                'backend.middleware.upload.not.image' : 'Please upload an image file',
+                'backend.middleware.upload.image.processing.error' : 'Error during image processing',
+
+                'backend.common.internal.server.error' : 'Internal server error',
+
                 //navbar
                 'navbar.home' : 'Home',
                 'navbar.pong' : 'PingPong',
@@ -218,6 +335,7 @@ i18n.use(initReactI18next).init({
                 'admin.validation.passwordMin': 'Must contain at least 8 characters',
                 'admin.validation.passwordPattern': 'Must include lowercase, uppercase, number and special character',
                 'admin.validation.passwordSpecialChars': 'Allowed special characters: !@#$%&*()_-+=',
+                'admin.validation.string': 'Invalid input: expected string, received undefined',
                 
                 //profile
                 'profile.modifier' : 'Update',
@@ -253,6 +371,64 @@ i18n.use(initReactI18next).init({
         },
         es : {
             translation: {
+                //Backend response
+                'backend.admin.incorect.query.params' : 'Parámetros de consulta incorrectos',
+                'backend.admin.invalid.page.size' : 'Valores de pagina y tamano invalidos',
+                'backend.admin.invalid.sorting.params' : 'Parametros de ordenacion invalidos',
+                'backend.admin.invalid.user.id' : 'Identificador de usuario invalido',
+                'backend.admin.user.not.found' : 'Usuario no encontrado',
+                'backend.admin.delete.self.forbidden' : 'No puedes eliminar tu propia cuenta',
+                'backend.admin.delete.success' : 'Usuario eliminado correctamente',
+                'backend.admin.change.own.role.forbidden' : 'No puedes cambiar tu propio rol',
+                'backend.admin.role.required' : 'El rol es obligatorio',
+
+                'backend.auth.duplicate.user' : 'Ya existe un usuario con ese email o nombre',
+                'backend.auth.invalid.credentials' : 'Credenciales incorrectas',
+                'backend.auth.logout.success' : 'Sesion cerrada correctamente',
+                'backend.auth.no.user.after.authentication' : 'No se encontro usuario tras la autenticacion',
+                'backend.auth.no.valid.token' : 'Token no valido',
+                'backend.auth.token.missing' : 'Acceso denegado: falta el token',
+                'backend.auth.token.invalid.or.expired' : 'Token invalido o expirado',
+                'backend.auth.user.not.found' : 'Usuario no encontrado',
+                'backend.auth.server.error' : 'Error del servidor durante la autenticacion',
+                'backend.auth.refresh.token.invalid' : 'Refresh token invalido',
+                'backend.auth.refresh.token.revoked' : 'Refresh token revocado',
+
+                'backend.profile.no.user.after.authentication' : 'No se encontro usuario tras la autenticacion',
+                'backend.profile.invalid.user.id' : 'Identificador de usuario invalido',
+                'backend.profile.user.not.found' : 'Usuario no encontrado',
+                'backend.profile.incorrect.credentials' : 'Credenciales incorrectas',
+                'backend.profile.password.updated' : 'Contrasena actualizada correctamente',
+                'backend.profile.no.file.uploaded' : 'No se subio ningun archivo',
+                'backend.profile.avatar.uploaded' : 'Avatar subido correctamente',
+                'backend.profile.search.query.too.short' : 'La busqueda debe tener al menos 2 caracteres',
+
+                'backend.friends.no.user.after.authentication' : 'No se encontro usuario tras la autenticacion',
+                'backend.friends.cannot.add.yourself' : 'No puedes agregarte a ti mismo',
+                'backend.friends.already.friends' : 'Ya son amigos',
+                'backend.friends.request.already.pending' : 'Ya hay una solicitud pendiente',
+                'backend.friends.blocked.by.you' : 'Has bloqueado a este usuario',
+                'backend.friends.blocked.you' : 'Este usuario te ha bloqueado',
+                'backend.friends.unable.to.send.request' : 'No se pudo enviar la solicitud',
+                'backend.friends.invalid.request.id' : 'Identificador de solicitud invalido',
+                'backend.friends.request.not.found' : 'Solicitud de amistad no encontrada',
+                'backend.friends.not.authorized' : 'No autorizado',
+                'backend.friends.internal.error' : 'Error interno',
+                'backend.friends.only.receiver.can.accept' : 'Solo el receptor puede aceptar',
+                'backend.friends.only.receiver.can.reject' : 'Solo el receptor puede rechazar',
+                'backend.friends.only.sender.can.cancel' : 'Solo el emisor puede cancelar',
+                'backend.friends.request.not.pending' : 'La solicitud no esta pendiente',
+                'backend.friends.invalid.action' : 'Accion invalida',
+                'backend.friends.not.friends' : 'No son amigos',
+                'backend.friends.unfriended' : 'Amistad eliminada',
+
+                'backend.middleware.role.unauthorized' : 'No autenticado',
+                'backend.middleware.role.forbidden' : 'Acceso prohibido',
+                'backend.middleware.upload.not.image' : 'Debes subir un archivo de imagen',
+                'backend.middleware.upload.image.processing.error' : 'Error al procesar la imagen',
+
+                'backend.common.internal.server.error' : 'Error interno del servidor',
+
                 //navbar
                 'navbar.home' : 'Inicio',
                 'navbar.pong' : 'PingPong',
@@ -340,6 +516,7 @@ i18n.use(initReactI18next).init({
                 'admin.validation.passwordMin': 'Debe contener al menos 8 caracteres',
                 'admin.validation.passwordPattern': 'Debe incluir minuscula, mayuscula, numero y caracter especial',
                 'admin.validation.passwordSpecialChars': 'Caracteres especiales permitidos: !@#$%&*()_-+=',
+                'admin.validation.string': 'Entrada no válida: se esperaba una cadena, se recibió undefined.',
                 
                 //profile
                 'profile.modifier' : 'Modificar',
@@ -376,6 +553,64 @@ i18n.use(initReactI18next).init({
 
         ar : {
             translation: {
+                //Backend response
+                'backend.admin.incorect.query.params' : 'معلمات الاستعلام غير صحيحة',
+                'backend.admin.invalid.page.size' : 'قيم الصفحة والحجم غير صالحة',
+                'backend.admin.invalid.sorting.params' : 'معلمات فرز غير صالحة',
+                'backend.admin.invalid.user.id' : 'معرف مستخدم غير صالح',
+                'backend.admin.user.not.found' : 'لم يتم العثور على المستخدم',
+                'backend.admin.delete.self.forbidden' : 'لا يمكنك حذف حسابك الخاص',
+                'backend.admin.delete.success' : 'تم حذف المستخدم بنجاح',
+                'backend.admin.change.own.role.forbidden' : 'لا يمكنك تغيير دورك الخاص',
+                'backend.admin.role.required' : 'الدور مطلوب',
+
+                'backend.auth.duplicate.user' : 'يوجد بالفعل مستخدم بهذا البريد الإلكتروني أو الاسم.',
+                'backend.auth.invalid.credentials' : 'بيانات اعتماد غير صحيحة',
+                'backend.auth.logout.success' : 'تم إغلاق الجلسة بشكل صحيح',
+                'backend.auth.no.user.after.authentication' : 'لم يتم العثور على أي مستخدم بعد المصادقة',
+                'backend.auth.no.valid.token' : 'رمز غير صالح',
+                'backend.auth.token.missing' : 'تم رفض الوصول: الرمز المميز مفقود',
+                'backend.auth.token.invalid.or.expired' : 'رمز غير صالح أو منتهي الصلاحية',
+                'backend.auth.user.not.found' : 'لم يتم العثور على المستخدم',
+                'backend.auth.server.error' : 'حدث خطأ في الخادم أثناء المصادقة',
+                'backend.auth.refresh.token.invalid' : 'تحديث الرمز المميز غير الصالح',
+                'backend.auth.refresh.token.revoked' : 'تم إلغاء رمز التحديث',
+
+                'backend.profile.no.user.after.authentication' : 'لم يتم العثور على أي مستخدم بعد المصادقة',
+                'backend.profile.invalid.user.id' : 'معرف مستخدم غير صالح',
+                'backend.profile.user.not.found' : 'لم يتم العثور على المستخدم',
+                'backend.profile.incorrect.credentials' : 'بيانات اعتماد غير صحيحة',
+                'backend.profile.password.updated' : 'تم تحديث كلمة المرور بنجاح',
+                'backend.profile.no.file.uploaded' : 'لم يتم تحميل أي ملف',
+                'backend.profile.avatar.uploaded' : 'تم تحميل الصورة الرمزية بنجاح',
+                'backend.profile.search.query.too.short' : 'يجب أن يتكون مصطلح البحث من حرفين على الأقل',
+
+                'backend.friends.no.user.after.authentication' : 'لم يتم العثور على أي مستخدم بعد المصادقة',
+                'backend.friends.cannot.add.yourself' : 'لا يمكنك إضافة نفسك',
+                'backend.friends.already.friends' : 'إنهم أصدقاء بالفعل',
+                'backend.friends.request.already.pending' : 'يوجد بالفعل طلب معلق.',
+                'backend.friends.blocked.by.you' : 'لقد قمت بحظر هذا المستخدم',
+                'backend.friends.blocked.you' : 'قام هذا المستخدم بحظرك',
+                'backend.friends.unable.to.send.request' : 'تعذر إرسال الطلب.',
+                'backend.friends.invalid.request.id' : 'معرّف الطلب غير صالح',
+                'backend.friends.request.not.found' : 'لم يتم العثور على طلب الصداقة',
+                'backend.friends.not.authorized' : 'غير مصرح به',
+                'backend.friends.internal.error' : 'خطأ داخلي',
+                'backend.friends.only.receiver.can.accept' : 'لا يمكن قبول ذلك إلا من قبل المستلم',
+                'backend.friends.only.receiver.can.reject' : 'لا يمكن رفض الرفض إلا من قبل المتلقي',
+                'backend.friends.only.sender.can.cancel' : 'لا يمكن إلغاء البطاقة إلا من قبل الجهة المصدرة.',
+                'backend.friends.request.not.pending' : 'الطلب ليس قيد الانتظار.',
+                'backend.friends.invalid.action' : 'إجراء غير صالح',
+                'backend.friends.not.friends' : 'إنهم ليسوا أصدقاء',
+                'backend.friends.unfriended' : 'تمت إزالة الصداقة',
+
+                'backend.middleware.role.unauthorized' : 'لم تتم المصادقة عليها',
+                'backend.middleware.role.forbidden' : 'ممنوع الوصول',
+                'backend.middleware.upload.not.image' : 'يجب عليك تحميل ملف صورة',
+                'backend.middleware.upload.image.processing.error' : 'خطأ في معالجة الصورة',
+
+                'backend.common.internal.server.error' : 'خطأ في الخادم الداخلي',
+
                 //navbar
                 'navbar.home' : 'الرئيسية',
                 'navbar.pong' : 'بونغ',
@@ -464,6 +699,7 @@ i18n.use(initReactI18next).init({
                 'admin.validation.passwordMin': 'لا يمكن أن يحتوي على أقل من 8 أحرف',
                 'admin.validation.passwordPattern': 'يجب أن يحتوي على حرف صغير وكبير ورقم وحرف خاص',
                 'admin.validation.passwordSpecialChars': 'الأحرف الخاصة المسموح بها: !@#$%&*()_-+=',
+                'admin.validation.string': 'إدخال غير صالح: كان من المتوقع سلسلة نصية، ولكن تم استلام قيمة غير معرفة.',
                 
                 // //profile
                 'profile.modifier': 'تعديل',

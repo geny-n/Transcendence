@@ -29,7 +29,7 @@ const fileFilter = (request: Request, file: Express.Multer.File, cb: FileFilterC
 	if (file.mimetype.startsWith('image/')) {
 		cb(null, true);
 	} else {
-		cb(new Error('Not an image! Please upload only images.'))
+		cb(new Error('backend.middleware.upload.not.image'))
 	}
 };
 
@@ -65,7 +65,7 @@ export const resizeAvatar = async (request:Request, response:Response, next: Nex
 		console.error('Erreur Sharp resisze:', error);
 		return response.status(500).json({
 			success: false,
-			message: "Error during image processing"
+			message: "backend.middleware.upload.image.processing.error"
 		});
 	}
 }

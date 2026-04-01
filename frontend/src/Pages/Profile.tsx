@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { /* useCallback, */ useEffect, useState } from 'react';
 import axios from "axios";
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -19,6 +19,7 @@ import { useAuth } from '../main';
 import useUser from '../lib/user';
 
 import './style/Profile.css';
+// import Cropper from 'react-easy-crop';
 
 export default function Profile ()
 {
@@ -40,6 +41,11 @@ export default function Profile ()
     const [searchVal, setSearchVal] = useState(""); //reccuprer tout ce que le user tapper dans la barre de recherche
     const [getSearchVal, setGetSeachVal] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean, email: string, createdAt: string}[]>([]);
     
+    // const[imageSrc, setImageSrc] = useState<string | null>(null);
+    // const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area>(height:0, width:0, x:0, y:0);
+    // const [crop, setCrop] = useState({x:0, y: 0});
+    // const [zoom, setZoom] = useState(1);
+
     const waitingRequest = useUser (state => state.waitingRequest);
     const notifMsgUnread = useUser (state => state.NotifMsgUnread);
     const count_notif = notifMsgUnread.length + lstFriendship.length;
@@ -48,6 +54,7 @@ export default function Profile ()
     const [ActiveUpdate, setActiveUpdate] = useState(0);
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const passwordVisibility = () => setShowPassword(!showPassword);
+
     const [errMsgForm, setErrMsgForm] = useState<string>('');
     const [errMsgAvatar, setErrMsgAvatar] = useState<string>('');
     const [errlogout, setLogout] = useState<string>('');
@@ -57,13 +64,13 @@ export default function Profile ()
 
     
     useEffect(() => {//recuperer mes informations
-        fetchMe().then(user => {
-            if (!user)
-                navigate('/login');
-            else
-                setSelectUser(user);
-        });
-        // fetchMe();
+        // fetchMe().then(user => {
+        //     if (!user)
+        //         navigate('/login');
+        //     else
+        //         setSelectUser(user);
+        // });
+        fetchMe();
     }, []);
 
     useEffect (() => {
@@ -203,22 +210,30 @@ export default function Profile ()
         }
     }
 
+
+    // const onCropComplete = useCallback((_:any, croppedPixel:any) => {
+    //     setCroppedAreaPixels(crop)
+    // }, []);
 //    https://blog.stackademic.com/uploading-files-with-react-post-request-dd6c1eebe933
     const handleAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files; //liste des fichiers selectionnes 
+        const file = e.target.files; //liste des fichiers selectionnes
         const formData = new FormData();//creer un conteneur vide 
-        if (file)
-            formData.append('avatar', file[0]);//met le fichier, si il exite, dans le conteneur pour que axios puisse l envoyer au back
+        if (!file)
+            return;
+        formData.append('avatar', file[0]);//met le fichier, si il exite, dans le conteneur pour que axios puisse l envoyer au back
         try {
             const res = await axios.put('/api/users/me/avatar', formData,  {headers: {"content-Type": "multipart/form-data"}, withCredentials: true});
-            
-            //permet de voir la modification dans le front
+            // permet de voir la modification dans le front
             setSelectUser({
                 ...selectUser!, avatarUrl:res.data.avatarUrl || selectUser?.avatarUrl
             });
             useUser.setState({userMyself : {
                 ...Myself!, avatarUrl:res.data.avatarUrl || Myself?.avatarUrl
             }});
+
+            // const localUrl = URL.createObjectURL(file[0]); // 👈 URL locale temporaire
+            // setSelectUser({ ...selectUser!, avatarUrl: localUrl });
+            // useUser.setState({ userMyself: { ...Myself!, avatarUrl: localUrl }});
         }
         catch(err) 
         {
@@ -347,6 +362,15 @@ export default function Profile ()
                         {/* https://medium.com/@denis.mutunga/uploading-images-to-the-backend-in-react-with-formdata-c8035ae64a0c*/}                    
                         {ActiveUpdate === 0 && ( // si il est pas en mode modifier
                             <>
+                            {/* <Cropper
+                                image={imageSrc}
+                                crop={crop}
+                                zoom={zoom}
+                                onCropChange={setCrop}
+                                onZoomChange={setZoom}
+                                onCropComplete={onCropComplete}
+
+                            /> */}
                             {/* modifier avatar*/}
                             <input
                                 id="getAvatar"
@@ -355,6 +379,20 @@ export default function Profile ()
                                 className="hidden"
                                 onChange={handleAvatar}
                             />
+                            {/* <input
+                                // id="getAvatar"
+                                type="range"
+                                value={zoom}
+                                min={1}
+                                max={3}
+                                step={0.1}
+                                aria-labelledby='Zoom'
+                                accept="image/*"
+                                className="hidden"
+                                onChange={(e) => {setZoom(Number(e.target.value));}}
+                            /> */}
+
+                            
                             <div className="box_avatar">
                                 <div title= {`${t('profile.datecreate')} \n ${new Date(selectUser?.createdAt).toLocaleDateString('fr-FR')}`}><CiCircleInfo  className="w-6 h-6"/></div>
 

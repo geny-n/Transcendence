@@ -53,8 +53,8 @@ export const resizeAvatar = async (request:Request, response:Response, next: Nex
 			.resize({
 				width: 512,
 				height: 512,
-				fit: 'fill',
-				// fit: 'cover',
+				// fit: 'fill',
+				fit: 'cover',
 				position: 'center',
 				withoutEnlargement: true
 			})

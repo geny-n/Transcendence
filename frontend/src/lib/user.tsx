@@ -1,6 +1,6 @@
 import {create} from 'zustand';
 import axios from "axios";
-// import { mockMyself, mockFriends } from './fictif';
+// import { mockMyself } from './fictif';
 
 export type Myself = {
     id: string,

@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
 import './strategies/42-strategy.js';
+import './strategies/discord-strategy.js'
 import path from 'path';
 import { fileURLToPath } from 'url';
 import http from 'http';

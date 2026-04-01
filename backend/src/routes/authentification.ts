@@ -13,5 +13,7 @@ router.post('/login', authLimiter, checkSchema(loginSchema), loginUser);
 router.get('/logout', authenticateToken, logoutUser);
 router.get('/socket-token', authenticateToken, getSocketToken);
 router.get('/auth/42', authLimiter, passport.authenticate('42'));
-router.get('/auth/42/callback', passport.authenticate('42', { session: false, failureRedirect: "/login" }), authHandler)
+router.get('/auth/42/callback', passport.authenticate('42', { session: false, failureRedirect: process.env.FRONTEND_URL + "/login" }), authHandler)
+router.get('/auth/discord', authLimiter, passport.authenticate('discord'));
+router.get('/auth/discord/callback', passport.authenticate('discord', { session: false, failureRedirect: process.env.FRONTEND_URL + "/login" }), authHandler);
 export default router;

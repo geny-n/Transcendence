@@ -5,7 +5,7 @@ import prisma from "../lib/prisma.js";
 const options = {
 	clientID: process.env["APP_42_ID"]!,
 	clientSecret: process.env["APP_42_SECRET"]!,
-	callbackURL: "http://localhost:3100/auth/42/callback",
+	callbackURL: process.env["APP_42_CALLBACK"]!,
 }
 
 export default passport.use(
@@ -26,7 +26,7 @@ export default passport.use(
 						fortyTwoId: profile.id,
 						email: email || null,
 						username: profile.username,
-						avatarUrl: profile.photos?.[0]?.value || null
+						avatarUrl: profile.photos?.[0]?.value || "/avatars/default_avatar.png"
 					},
 				});
 				console.log('user:', user);

@@ -5,7 +5,11 @@ export const registerUsersSchema = {
 	email: {
 		trim: true,
 		escape: true,
-		normalizeEmail: true,
+		normalizeEmail: {
+			options : {
+				gmail_remove_dots: false
+			}
+		},
 		notEmpty: {
 			errorMessage: "A email is required."
 		},
@@ -49,7 +53,11 @@ export const loginSchema = {
 	email: {
 		trim: true,
 		escape: true,
-		normalizeEmail: true,
+		normalizeEmail: {
+			options : {
+				gmail_remove_dots: false
+			}
+		},
 		notEmpty: {
 			errorMessage: "A email is required."
 		},
@@ -80,7 +88,11 @@ export const updateProfileSchema = {
 		optional: true,
 		trim: true,
 		escape: true,
-		normalizeEmail: true,
+		normalizeEmail: {
+			options : {
+				gmail_remove_dots: false
+			}
+		},
 		isEmail: {
 			errorMessage : "Please enter a valid email."
 		},
@@ -170,7 +182,11 @@ export const updateUserAdminSchema = {
 		optional: true,
 		trim: true,
 		escape: true,
-		normalizeEmail: true,
+		normalizeEmail: {
+			options : {
+				gmail_remove_dots: false
+			}
+		},
 		isEmail: {
 			errorMessage : "Please enter a valid email."
 		},

@@ -45,7 +45,7 @@ export const getUserProfile = asyncHandler(async (request:Request, response:Resp
 	}
 
 	const user = await prisma.user.findFirst({
-		where: { id: userId, role: 'USER' },
+		where: { id: userId },
 		select: {
 			id: true,
 			username: true,

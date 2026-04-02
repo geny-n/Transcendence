@@ -17,6 +17,8 @@ type AdminUser = {
 	role: UserRoles;
 	isOnline: boolean;
 	createdAt: string;
+	fortyTwoId:	string | null;
+	discordId:	string | null
 };
 
 type AdminUserResponse = {
@@ -432,7 +434,7 @@ const admin = () => {
 						<button type='button' key={entry.id} onClick={() => onSelectUser(entry)} className={`admin-user-item ${selectedUserId === entry.id ? 'active' : ''}`}>
 							<div className='admin-user-item-avatar'>
 								{entry.avatarUrl ? (
-									<img className='avatar' src={`/api/${entry.avatarUrl}`} alt={entry.username} />
+									<img className='avatar' src={entry.discordId || entry.fortyTwoId ? `${entry.avatarUrl}` : `/api/${entry.avatarUrl}`} alt={entry.username} />
 								) : (
 									<span className='avatar-fallback'>{entry.username.charAt(0).toUpperCase()}</span>
 								)}

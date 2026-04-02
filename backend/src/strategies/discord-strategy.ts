@@ -1,4 +1,4 @@
-import passport, { use } from "passport";
+import passport from "passport";
 import { Strategy, DiscordScope } from "discord-strategy"
 import prisma from "../lib/prisma.js";
 
@@ -38,7 +38,8 @@ export default passport.use(new Strategy(options, async (accessToken, refreshTok
 				data: {
 					username: profile.username,
 					email: profile.email ?? null,
-					discordId: profile.id
+					discordId: profile.id,
+					avatarUrl: profile.avatarUrl ?? '/avatars/default_avatar.png'
 				}
 			})
 		} else {

@@ -2,8 +2,9 @@ import type { Request, Response } from "express";
 import { asyncHandler } from "../utils/asyncHandlers.js";
 import prisma from "../lib/prisma.js";
 import { matchedData, validationResult } from "express-validator";
-import { hashPassword } from "../utils/helpers.js";
+import { getAllFriendIds, hashPassword } from "../utils/helpers.js";
 import type { UserRoles } from "../../generated/prisma/enums.js";
+import { getIO } from "../lib/socket.js";
 
 const sortableFields = ['createdAt', 'username', 'email', 'role', 'isOnline'] as const;
 type SortField = (typeof sortableFields)[number];
@@ -20,6 +21,8 @@ const baseUserSelect = {
 	role: true,
 	isOnline: true,
 	createdAt: true,
+	fortyTwoId: true,
+	discordId: true
 } as const;
 
 export const listAllUsers = asyncHandler(async (req: Request, res: Response) => {
@@ -177,6 +180,20 @@ export const updateUser = asyncHandler(async (req: Request, res: Response) => {
 		select: baseUserSelect,
 	});
 
+	try {
+		const io = getIO();
+		const friends = await getAllFriendIds(userId);
+
+		friends.forEach(friendsId => (
+			io.to(`user:${friendsId}`).emit('friend:profile_updated', {
+				userId: userId,
+				user: updatedUser
+			})
+		))
+	} catch (error) {
+		console.error('Socket broadcast error (non-blocking):', error);
+	}
+
 	return res.status(200).json({
 		success: true,
 		updatedUser
@@ -201,7 +218,7 @@ export const deleteUser = asyncHandler(async (req: Request, res: Response) => {
 		});		
 	}
 
-	const found = await prisma.user.findUnique({ where: { id: userId }, select: { id: true } });
+	const found = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, username: true, email: true } });
 	if (!found) {
 		return res.status(404).json({
 			success: false,
@@ -210,6 +227,22 @@ export const deleteUser = asyncHandler(async (req: Request, res: Response) => {
 	}
 
 	await prisma.user.delete({ where: { id: userId } });
+
+	try {
+		const io = getIO();
+		const friends = await getAllFriendIds(userId);
+
+		friends.forEach(friendsId => (
+			io.to(`user:${friendsId}`).emit('admin:user_deleted', {
+				userId: userId,
+				user: found
+			})
+		))
+
+		io.in(`user:${userId}`).disconnectSockets(true);
+	} catch (error) {
+		console.error('Socket broadcast error (non-blocking):', error);
+	}
 
 	return res.status(200).json({
 		success: true,

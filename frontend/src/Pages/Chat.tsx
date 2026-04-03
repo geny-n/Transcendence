@@ -73,7 +73,7 @@ export default function Chat ()
       senderId: string;
     }) => {
       // console.log('socket recu:', incoming, 'selectFriend:', selectFriend.username);
-      if (incoming.senderId !== selectFriend.id)
+      if (incoming.senderId !== selectFriend.id && incoming.senderId !== Myself?.id)
           return;
       setPrevMsg(prev => [...prev, {
         id: incoming.id ?? '',
@@ -81,7 +81,8 @@ export default function Chat ()
         time: incoming.time,
         senderId: incoming.senderId
       }]);
-      axios.patch(`/api/users/chat/${selectFriend.id}/read`, {}, {withCredentials:true});
+      if (incoming.senderId === selectFriend.id)
+        axios.patch(`/api/users/chat/${selectFriend.id}/read`, {}, {withCredentials:true});
     }
     socket.on("privMessage", handler);
     return () => {

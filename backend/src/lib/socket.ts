@@ -6,7 +6,7 @@ import prisma from "./prisma.js";
 import { getAllFriendIds } from "../utils/helpers.js";
 import { disconnectUser } from "../socket/disconnect.js";
 import { initPong } from "../socket/pong.js";
-// import { toxicityScale } from "./moderation.js";
+import { toxicityScale } from "./moderation.js";
 
 let io: Server;
 
@@ -47,12 +47,7 @@ const onConnection = async (socket:Socket) => {
 			//envoie du message dans la bdd
 			if (!text || text.length > 500)
 				return;
-			// const isToxic = await toxicityScale(text);
-			// if (isToxic)
-			// {
-			// 	socket.emit("MessageBlocked");
-			// 	return;
-			// }
+			
 			const message = await prisma.chatMessage.create ({
 				data: {
 					message: text,
@@ -60,10 +55,30 @@ const onConnection = async (socket:Socket) => {
 					senderId: socket.user.id,
 					receiverId: receivedId,
 					read: false,
+					status: "PENDING",
 				}
 			});
 			
-			socket.to(`user:${receivedId}`).emit("privMessage", {user, text, time, senderId: socket.user.id, read});
+			socket.emit("privMessage", { user, text, time, senderId: socket.user.id, id: message.id });
+			toxicityScale(text).then(async ({ flag }) => {
+				if (flag)
+				{//msg toxic supprime puis warning au sender
+					await prisma.chatMessage.delete({
+						where: { id: message.id }
+					}).catch(() => {});
+					socket.emit("MessageBlocked", { id: message.id });
+				}
+				else // pas toxic change status en SENT puis envoie a l ami
+				{
+					await prisma.chatMessage.update({
+						where: { id: message.id },
+						data: { status: 'SENT'}
+					}).catch(() => {});
+					socket.to(`user:${receivedId}`).emit("privMessage", { user, text, time, senderId: socket.user.id });
+				}
+			})
+			// const { flag } = await toxicityScale(text);
+			
 		});
 
 		// Gérer la déconnexion (met à jour la DB)

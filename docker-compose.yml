@@ -43,6 +43,7 @@ services:
 
   mariadb:
     image: mariadb:10.11
+    container_name: bd
     command: '--default-authentication-plugin=mysql_native_password'
     environment:
       MYSQL_ROOT_PASSWORD: ${BDD_ROOT_PWD}

@@ -185,7 +185,7 @@ i18n.use(initReactI18next).init({
                 'chat.send' : 'Envoyer',
                 'chat.yourMsg' : 'votre message',
                 'chat.longMsg' : 'Votre message est trop long',
-                
+                'chat.moderation' : 'Votre message n est pas approprie'
             }
         },
         en: {

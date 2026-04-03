@@ -19,11 +19,13 @@ export default function Chat ()
   const lstFriends = useUser (state => state.userFriends);
   const initSocket = useUser (state => state.initsocket);
 
-  const [selectFriend, setSelectFriend] = useState<{id: string, username: string, avatarUrl:string, isOnline: boolean} | null>(null);
+  const [selectFriendId, setSelectFriendId] = useState<string | null>(null);
+  const selectFriend = lstFriends.find(f => f.id === selectFriendId) ?? null;
+
   const { socket } = TheSocket();
   
   const [NewMsg, setNewMsg] = useState('');
-  const [prevMsg, setPrevMsg] = useState<{msg: string, time: string, sender: string, avatarUrl:string}[]>([]);
+  const [prevMsg, setPrevMsg] = useState<{id: string, msg: string, time: string, senderId: string}[]>([]);
   //permet de garder en memoire touts les messages (le 1er message n es pas ecraser par le 2eme)
   const [errMsg, setErrMsg] = useState('');
   const scrollAuto = useRef<HTMLDivElement>(null);
@@ -40,18 +42,17 @@ export default function Chat ()
  
  
   useEffect(() => {//recuperer mes informations
-        fetchMe().then(user => {
-            if (!user)
-                navigate('/login');
-        });
-        // fetchMe();
+      fetchMe().then(user => {
+        if (!user)
+          navigate('/login');
+      });
     }, []);
 
-    useEffect (() => {
-        if (!socket)
-            return;
-        initSocket(socket);
-    }, [socket]);
+  useEffect (() => {
+    if (!socket)
+        return;
+    initSocket(socket);
+  }, [socket]);
 
 
   const status = (isOnline: boolean) => {
@@ -65,6 +66,7 @@ export default function Chat ()
     if (!socket || !selectFriend)
         return;
     const handler = (incoming: {
+      id: string;
       user:string;
       text: string;
       time: string;
@@ -74,12 +76,11 @@ export default function Chat ()
       if (incoming.senderId !== selectFriend.id)
           return;
       setPrevMsg(prev => [...prev, {
+        id: incoming.id ?? '',
         msg: incoming.text,
         time: incoming.time,
-        sender: incoming.user,
-        avatarUrl: selectFriend.avatarUrl
-      }
-      ]);
+        senderId: incoming.senderId
+      }]);
       axios.patch(`/api/users/chat/${selectFriend.id}/read`, {}, {withCredentials:true});
     }
     socket.on("privMessage", handler);
@@ -96,15 +97,15 @@ export default function Chat ()
     axios.patch(`/api/users/chat/${selectFriend.id}/read`, {}, {withCredentials:true});
     axios.get(`/api/users/chat/${selectFriend.id}`, {withCredentials:true})
       .then(res => {
-        console.log('messages recu:', res.data);
+        // console.log('messages recu:', res.data);
         const loaded = res.data.messages.map((m:any) =>({
+          id: m.id,
           msg:m.message,
           time: new Date(m.time).toLocaleTimeString("fr-FR", { hour: '2-digit', minute: '2-digit' }),
 
           // Si senderId = mon id → c'est moi qui ai envoyé → affiche mon username
           // Sinon → c'est mon ami qui a envoyé → affiche son username
-          sender: m.senderId === Myself.id ? Myself.username : selectFriend.username,
-          avatarUrl: m.senderId === Myself.id ? Myself.avatarUrl : selectFriend.avatarUrl, 
+          senderId: m.senderId
         }));
         setPrevMsg(loaded);
       })
@@ -125,22 +126,27 @@ export default function Chat ()
       receivedId: selectFriend.id,
     });
 
-    setPrevMsg([...prevMsg, {msg:NewMsg, time:theTime, sender: Myself.username, avatarUrl:Myself.avatarUrl}]);
+    // setPrevMsg([...prevMsg, {msg:NewMsg, time:theTime, senderId: Myself.id}]);
     setNewMsg('');
     setErrMsg('');
   }
 
 
   //moderation
-  // useEffect (() => {
-  //   if (!socket)
-  //     return ;
-  //   //faire des trucs quand socket.emit appel handlerModo
-  //   const handlerModo = () => {
+  useEffect (() => {
+    if (!socket)
+      return ;
+    //faire des trucs quand socket.emit appel handlerSender
+    const handlerSender = (data: { id: string }) => {
+      setPrevMsg(prev => prev.filter(m => m.id !== data.id));
+      alert(t('chat.moderation'));
+    };
+    socket.on('MessageBlocked', handlerSender);
+    return() => {
+      socket.off('MessageBlocked', handlerSender);
+    };
 
-  //   }
-  //   socket.emit("MessageBlocked", handlerModo);
-  // }, [socket]);
+  }, [socket]);
 
   useEffect (() => {
     scrollAuto.current?.scrollIntoView({ behavior: 'auto'});
@@ -151,7 +157,7 @@ export default function Chat ()
         return;
     const friend = lstFriends.find(f => f.id === location.state.friendId);
     if (friend)
-      setSelectFriend(friend);
+      setSelectFriendId(friend.id);
   }, [location.state, lstFriends]);
   
   return (
@@ -194,7 +200,7 @@ export default function Chat ()
             return (
               <div className={`display_lst ${isSelected}`} 
                 key={idx} onClick={() => {
-                  setSelectFriend(theFriend);
+                  setSelectFriendId(theFriend.id);
                   //change le status read en true quand le user click sur le sender
                   axios.patch(`/api/users/chat/${theFriend.id}/read`, {}, {withCredentials:true});
                 }}
@@ -212,16 +218,21 @@ export default function Chat ()
         <div className="w-2/3 flex flex-col ">
           <div className="box_message">
             {/* permet de mapper chaque message envoyer en leur donnant un index pour les affichiers dans l ordre d envoie */}
-            {prevMsg.map((theMsg, idx) =>
-              <div className="display_Msg" key={idx}>
-                <div className="flex gap-3">
-                  <img className="rounded-full w-12 h-12" src={theMsg.avatarUrl}></img>
-                  <span className="text-sm font-semibold">{theMsg.sender}</span>
-                  <span className="text-sm text-body">{theMsg.time}</span>
+            {prevMsg.map((theMsg, idx) => {
+              const isMe = theMsg.senderId === Myself?.id;
+              const senderName = isMe ? Myself?.username : selectFriend?.username;
+              const senderAvatar = isMe ? Myself?.avatarUrl : selectFriend?.avatarUrl;
+              return (
+                <div className="display_Msg" key={idx}>
+                  <div className="flex gap-3">
+                    <img className="rounded-full w-12 h-12" src={senderAvatar}></img>
+                    <span className="text-sm font-semibold">{senderName}</span>
+                    <span className="text-sm text-body">{theMsg.time}</span>
+                  </div>
+                  <span className="flex items-left pt-1 text-left whitespace-pre-wrap">{theMsg.msg}</span>
                 </div>
-                <span className="flex items-left pt-1 text-left whitespace-pre-wrap">{theMsg.msg}</span>
-              </div>
-            )}
+              )
+            })}
             {errMsg && <p className='err'>{errMsg}</p>}
             <div ref={scrollAuto}></div>
           </div>

@@ -1,5 +1,6 @@
 import {create} from 'zustand';
 import axios from "axios";
+import React from 'react';
 // import { mockMyself } from './fictif';
 
 export type Myself = {
@@ -11,7 +12,9 @@ export type Myself = {
     password: string,
     createdAt: string,
     level?: number,
-    experience?: number
+    experience?: number,
+    matchWins: Match[],
+	matchLosses: Match[],
 };
 
 export type Friends = {
@@ -21,6 +24,25 @@ export type Friends = {
     isOnline: boolean,
     email: string,
     createdAt: string
+};
+
+export type Match = {
+	id: String,
+	startedAt: Date,
+	endedAt: Date,
+	durationSec: number,
+	isOvertime: Boolean,
+	winnerId: String | null,
+	loserId: String | null,
+	winnerLabel: String,
+	loserLabel: String,
+	scoreWinner: number,
+	scoreLoser: number,
+};
+
+export const defaultAvatar = "/avatars/default_avatar.png";
+export const AvatarErrorLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    e.currentTarget.src = defaultAvatar;
 };
 
 interface UserStore {

@@ -123,7 +123,13 @@ model ChatMessage {
 	senderId	String
 	receiverId	String
 	read		Boolean @default(false)
-
+	status		StatusMsg @default(PENDING)
 	sender		User	@relation("sender", fields: [senderId], references: [id], onDelete: Cascade)
 	receiver	User	@relation("receiver", fields: [receiverId], references: [id], onDelete: Cascade)
+}
+
+enum StatusMsg {
+	PENDING
+	SENT
+	BLOCKED
 }

@@ -1,5 +1,9 @@
 import i18n from "i18next";
 import { initReactI18next} from "react-i18next";
+import frJson from "../public/language/fr.json"
+import enJson from "../public/language/en.json"
+import esJson from "../public/language/es.json"
+import arJson from "../public/language/ar.json"
 
 i18n.use(initReactI18next).init({
     debug:true,
@@ -126,7 +130,8 @@ i18n.use(initReactI18next).init({
                 'chat.send' : 'Envoyer',
                 'chat.yourMsg' : 'votre message',
                 'chat.longMsg' : 'Votre message est trop long',
-                
+
+                ...frJson
             }
         },
         en: {
@@ -249,6 +254,8 @@ i18n.use(initReactI18next).init({
                 'chat.send' : 'Send',
                 'chat.yourMsg' : 'Your message',
                 'chat.longMsg' : 'Your message is too long',
+
+                ...enJson
             }
         },
         es : {
@@ -371,6 +378,8 @@ i18n.use(initReactI18next).init({
                 'chat.send' : 'Enviar',
                 'chat.yourMsg' : 'Tu mensaje',
                 'chat.longMsg' : 'Tu mensaje es dmasiado largo',
+
+                ...esJson
             }
         },
 
@@ -495,6 +504,8 @@ i18n.use(initReactI18next).init({
                 'chat.send' : 'إرسال',
                 'chat.yourMsg' : 'رسالتك',
                 'chat.longMsg' : 'رسالتك طويلة جداً',
+
+                ...arJson
             }
         }
     }

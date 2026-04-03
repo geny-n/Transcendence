@@ -1,0 +1,34 @@
+{
+	"about": {
+		"privacy"		: "Politique de confidentialité",
+		"terms"     	: "Termes et conditions",
+		"faq"			: "FAQ",
+		"terms-txt"		: "/content/terms.fr.md", 
+		"privacy-txt"	: "/content/privacy.fr.md",
+		"faq-txt"		: ""
+	},
+
+	"login": {
+		"to-play"		: "Connecte-toi pour jouer",
+		"accountless"	: "Pas de compte ?",
+		"register"		: "S'inscrire",
+		"email"			: "Adresse mail",
+		"pwd"			: "Mot de passe",
+		"connexion"		: "Connexion",
+		"err-input"		: "Email ou mot de passe incorrecte",
+		"err-server"	: "Serveur indisponible"
+	},
+
+	"register": {
+		"to-play"		: "S'inscrire pour jouer",
+		"has-account"	: "Déjà un compte ?",
+		"to-login"		: "Se connecter",
+		"username"		: "Nom d'utilisateur",
+		"mail"			: "Email",
+		"pwd"			: "Mot de passe",
+		"confirm-pwd"	: "Confirmer mot de passe",
+		"to-register"	: "S'inscrire",
+		"err-used"		: "Nom d'utilisateur ou email déjà utilisé",
+		"err-server"	: "Serveur indisponible"
+	}
+}

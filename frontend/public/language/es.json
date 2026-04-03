@@ -1,0 +1,34 @@
+{
+	"about": {
+		"privacy"		: "Política de privacidad",
+		"terms"     	: "Términos y condiciones",
+		"faq"			: "P&R",
+		"terms-txt"		: "/content/terms.es.md", 
+		"privacy-txt"	: "/content/privacy.es.md",
+		"faq-txt"		: ""
+	},
+
+	"login": {
+		"to-play"		: "Inicia sesión para jugar",
+		"accountless"	: "¿Aún no tienes cuenta?",
+		"register"		: "Registrarse",
+		"email"			: "Correo electrónico",
+		"pwd"			: "Contraseña",
+		"connexion"		: "Iniciar sesión",
+		"err-input"		: "Correo electrónico o contraseña incorrectos",
+		"err-server"	: "Servidor no disponible"
+	},
+
+	"register": {
+		"to-play"		: "Registrarse para jugar",
+		"has-account"	: "¿Ya tienes una cuenta?",
+		"to-login"		: "Iniciar sesión",
+		"username"		: "Nombre de usuario",
+		"mail"			: "Correo electrónico",
+		"pwd"			: "Contraseña",
+		"confirm-pwd"	: "Confirmar contraseña",
+		"to-register"	: "Registrarse",
+		"err-used"		: "Nombre de usuario o correo electrónico ya utilizado",
+		"err-server"	: "Servidor no disponible"
+	}
+}

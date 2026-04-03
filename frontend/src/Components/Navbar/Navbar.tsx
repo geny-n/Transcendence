@@ -1,13 +1,13 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import './Navbar.css'
-import { NavLink } from 'react-router-dom'
+import { NavLink, type HtmlLinkDescriptor } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../main'
 
 const Navbar: React.FC = () => {
 	const { t, i18n } = useTranslation()
 	const { user } = useAuth();
-  const [menuOpen, setMenuOpen] = useState(false)
+	const [menuOpen, setMenuOpen] = useState(false)
 
 	const listItems = [
 		{label: t('navbar.home'), path: "/"},
@@ -27,14 +27,33 @@ const Navbar: React.FC = () => {
 			document.documentElement.dir = "ltl";
 		i18n.changeLanguage(lng);
 	}
+
+	const dropdownRef = useRef<HTMLUListElement | null>(null);
+	const buttonRef = useRef<HTMLButtonElement | null>(null);
+
+	useEffect(() => {
+		function handleClickOut(event: MouseEvent) {
+			if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node) &&
+				buttonRef.current && !buttonRef.current.contains(event.target as Node)) {
+				setMenuOpen(false);
+			}
+		}
+
+		document.addEventListener("mousedown", handleClickOut);
+
+		 return () => {
+			document.removeEventListener("mousedown", handleClickOut);
+		 };
+	}, []);
+
 	return (
 		<div className="nav-style">
-			<button className="dropdown-icon" onClick={() => setMenuOpen(!menuOpen)}>
+			<button ref={buttonRef} className="dropdown-icon" onClick={() => setMenuOpen((prev) => !prev)}>
 				☰
 			</button>
 
 			{menuOpen && (
-				<ul className="dropdown-menu">
+				<ul ref={dropdownRef} className="dropdown-menu inset-e-5">
 					{listItems.map(({ label, path }) => (
 						<NavLink className="text-white hover:bg-orange-600" onClick={() => setMenuOpen(false)} key={label} to={path}>
 							{label}

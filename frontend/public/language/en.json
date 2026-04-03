@@ -1,0 +1,34 @@
+{
+	"about": {
+		"privacy"		: "Privacy policy",
+		"terms"     	: "Terms and conditions",
+		"faq"			: "Q&A",
+		"terms-txt"		: "/content/terms.en.md", 
+		"privacy-txt"	: "/content/privacy.en.md",
+		"faq-txt"		: ""
+	},
+
+	"login": {
+		"to-play"		: "Log in to play",
+		"accountless"	: "No account yet ?",
+		"register"		: "Register",
+		"email"			: "Mail",
+		"pwd"			: "Password",
+		"connexion"		: "Connexion",
+		"err-input"		: "Incorrect mail or password",
+		"err-server"	: "Serveur unavailable"
+	},
+
+	"register": {
+		"to-play"		: "Register to play",
+		"has-account"	: "Already have an account ?",
+		"to-login"		: "Login",
+		"username"		: "Username",
+		"mail"			: "Mail",
+		"pwd"			: "Password",
+		"confirm-pwd"	: "Confirm password",
+		"to-register"	: "Register",
+		"err-used"		: "Username or mail already used",
+		"err-server"	: "Server unavailable"
+	}
+}

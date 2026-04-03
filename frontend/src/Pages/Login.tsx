@@ -26,6 +26,7 @@ const Login = () => {
 	const login_url = '/api/login';
 
 	const { t } = useTranslation();
+
 	const {
 		register,
 		handleSubmit,
@@ -63,9 +64,9 @@ const Login = () => {
 					console.log("Backend error: ", err.response.data);
 					console.log("Status: ", err.response.status);
 					if (err.response.status == 401)
-						setErrMsg("Incorrect email ou mot de passe");
+						setErrMsg(t('login.err-input'));
 					else
-						setErrMsg("Serveur Indisponible");
+						setErrMsg(t('login.err-server'));
 				}
 			}
 		}
@@ -76,10 +77,10 @@ const Login = () => {
 			<div className="form-box">
 
 				<img src={logo} alt="Logo" className="w-50 md:70" />
-				<h1 className="text-lg md:text-xl font-semibold">Connecte-toi pour jouer</h1>
+				<h1 className="text-lg md:text-xl font-semibold">{t('login.to-play')}</h1>
 
-				<p className="text-xs md:text-sm text-gray-500 text-center">Pas de compte ?
-				<NavLink className="btn-txt" to="/Register">S'inscrire</NavLink>
+				<p className="text-xs md:text-sm text-gray-500 text-center">{t('login.accountless')}
+				<NavLink className="btn-txt" to="/Register">{t('login.register')}</NavLink>
 				</p>
 
 				<div className="w-full flex flex-col gap-3">
@@ -87,7 +88,7 @@ const Login = () => {
 						<CiMail />
 						<input {...(register("email"))}
 						type="email"
-						placeholder="Adresse mail"
+						placeholder={t('login.email')}
 						className="input-field w-full"
 						autoComplete='email'/>
 					</div>
@@ -97,7 +98,7 @@ const Login = () => {
 						<CiLock />
 						<input {...register("password")}
 						type={showPassword ? "text" : "password"}
-						placeholder="Mot de passe"
+						placeholder={t('login.pwd')}
 						className="input-field w-5/6"
 						autoComplete='current-password'/>
 
@@ -114,7 +115,7 @@ const Login = () => {
 
 				{errMsg && <p className="text-center text-red-500 text-xs"> {`${errMsg}`} </p>}
 
-				<button disabled={isSubmitting} type="submit" className="btn-sign">Connexion</button>
+				<button disabled={isSubmitting} type="submit" className="btn-sign">{t('login.connexion')}</button>
 
 				<div className="relative w-full flex items-center justify-between py-3">
 					<div className="icon-btn">

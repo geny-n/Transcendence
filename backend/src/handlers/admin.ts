@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import { asyncHandler } from "../utils/asyncHandlers.js";
 import prisma from "../lib/prisma.js";
 import { matchedData, validationResult } from "express-validator";
-import { getAllFriendIds, hashPassword } from "../utils/helpers.js";
+import { getAllUsersIds, hashPassword } from "../utils/helpers.js";
 import type { UserRoles } from "../../generated/prisma/enums.js";
 import { getIO } from "../lib/socket.js";
 
@@ -122,7 +122,6 @@ export const listAllUsers = asyncHandler(async (req: Request, res: Response) => 
 
 export const updateUser = asyncHandler(async (req: Request, res: Response) => {
 	const userId = req.params.id;
-	console.log("Inside updateUser: userId:", userId);
 
 	if (!userId || Array.isArray(userId)) {
 		return res.status(401).json({
@@ -132,7 +131,6 @@ export const updateUser = asyncHandler(async (req: Request, res: Response) => {
 	}
 
 	const result = validationResult(req);
-	console.log("result:", result);
 
 	if (!result.isEmpty()) {
 		return res.status(400).json({
@@ -182,14 +180,20 @@ export const updateUser = asyncHandler(async (req: Request, res: Response) => {
 
 	try {
 		const io = getIO();
-		const friends = await getAllFriendIds(userId);
+		const users = await getAllUsersIds();
 
-		friends.forEach(friendsId => (
-			io.to(`user:${friendsId}`).emit('friend:profile_updated', {
+		users.forEach(usersId => {
+			io.to(`user:${usersId}`).emit('friend:profile_updated', {
 				userId: userId,
 				user: updatedUser
 			})
-		))
+			if (data.avatarUrl) {
+				io.to(`user:${usersId}`).emit('friend:avatar_updated', {
+					userId : userId,
+					avatarUrl: updatedUser.avatarUrl
+				})
+			}
+		})
 	} catch (error) {
 		console.error('Socket broadcast error (non-blocking):', error);
 	}
@@ -202,7 +206,6 @@ export const updateUser = asyncHandler(async (req: Request, res: Response) => {
 
 export const deleteUser = asyncHandler(async (req: Request, res: Response) => {
 	const userId = req.params.id;
-	console.log("Inside deleteUser: userId:", userId);
 
 	if (!userId || Array.isArray(userId)) {
 		return res.status(401).json({
@@ -215,7 +218,7 @@ export const deleteUser = asyncHandler(async (req: Request, res: Response) => {
 		return res.status(403).json({
 			success: false,
 			message: "backend.admin.delete.self.forbidden"
-		});		
+		});
 	}
 
 	const found = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, username: true, email: true } });
@@ -230,10 +233,10 @@ export const deleteUser = asyncHandler(async (req: Request, res: Response) => {
 
 	try {
 		const io = getIO();
-		const friends = await getAllFriendIds(userId);
+		const users = await getAllUsersIds();
 
-		friends.forEach(friendsId => (
-			io.to(`user:${friendsId}`).emit('admin:user_deleted', {
+		users.forEach(usersId => (
+			io.to(`user:${usersId}`).emit('friend:profile_updated', {
 				userId: userId,
 				user: found
 			})
@@ -252,7 +255,6 @@ export const deleteUser = asyncHandler(async (req: Request, res: Response) => {
 
 export const changeUserRole = asyncHandler(async (req: Request, res: Response) => {
 	const userId = req.params.id;
-	console.log("Inside changeUserRole: userId:", userId);
 
 	if (!userId || Array.isArray(userId)) {
 		return res.status(401).json({

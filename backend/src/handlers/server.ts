@@ -9,7 +9,6 @@ export const serverHealth = asyncHandler(async (request: Request, response: Resp
 
 export const refreshTokens = asyncHandler(async (request: Request, response: Response) => {
 	const refreshToken = request.cookies?.refresh_token;
-	console.log("Inside refreshTokens: token:", refreshToken);
 
 	if (!refreshToken) {
 		return response.status(401).json({
@@ -20,7 +19,6 @@ export const refreshTokens = asyncHandler(async (request: Request, response: Res
 
 	// Verifier la validiter du token
 	const decoded = verifyToken(refreshToken, true);
-	console.log("decoded:", decoded);
 
 	if (!decoded) {
 		return response.status(403).json({
@@ -33,7 +31,6 @@ export const refreshTokens = asyncHandler(async (request: Request, response: Res
 	const user = await prisma.user.findUnique({
 		where: { id: decoded.userId }
 	});
-	console.log("user:", user);
 
 	if (!user) {
 		return response.status(404).json({
@@ -55,10 +52,8 @@ export const refreshTokens = asyncHandler(async (request: Request, response: Res
 
 	// Generer un NOUVEL access token et refresh token
 	const newAccessToken = generateAccessToken(user.id);
-	console.log("newAccessToken:", newAccessToken);
 
 	const newRefreshToken = generateRefreshToken(user.id);
-	console.log("newAccessToken:", newAccessToken);
 
 	await prisma.user.update({
 		where : { id: user.id },

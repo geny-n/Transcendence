@@ -42,10 +42,8 @@ initSocket(server);
 
 const PORT = process.env.PORT;
 const __filename = fileURLToPath(import.meta.url);
-console.log("Inside ../src/index.ts __filename:", __filename);
 
 const __dirname = path.dirname(__filename);
-console.log("__dirname:", __dirname);
 
 // Middlewares
 app.use(helmet());
@@ -92,7 +90,7 @@ try {
 	}
 
 	server.listen(PORT, () => {
-		console.log(`Server is running on http://localhost:${PORT} or https://localhost:${PORT}`);
+		console.log(`Server is running on https://localhost:${PORT}`);
 	});
 } catch (error) {
 	console.log('Failed to start server:', error);

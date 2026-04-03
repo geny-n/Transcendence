@@ -14,7 +14,6 @@ export const sendFriendRequest = asyncHandler(async (request:Request, response:R
 	}
 
 	const result = validationResult(request);
-	console.log("Inside sendFriendRequest: Result:", result);
 
 	if (!result.isEmpty()) {
 		return response.status(400).json({
@@ -24,10 +23,8 @@ export const sendFriendRequest = asyncHandler(async (request:Request, response:R
 	}
 
 	const { receiverId } = matchedData(request) as { receiverId: string };
-	console.log("receiverId:", receiverId);
 
 	const senderId = request.user.id; // Depuis le token JWT
-	console.log("senderId:", senderId);
 
 	// Validation
 	if (senderId === receiverId) {
@@ -46,7 +43,6 @@ export const sendFriendRequest = asyncHandler(async (request:Request, response:R
 			]
 		}
 	});
-	console.log("existing:", existing);
 
 	if (existing) {
 		switch (existing.status) {
@@ -107,7 +103,6 @@ export const sendFriendRequest = asyncHandler(async (request:Request, response:R
 			receiver: { select : { id: true, username: true } }
 		}
 	});
-	console.log("req:", newRequest);
 
 	// Evenement Websocket pour notifier le receveur
 	io.to(`user:${receiverId}`).emit("friend:request_received", {
@@ -129,10 +124,8 @@ export const friendRequestAction = asyncHandler(async (request:Request, response
 	}
 
 	const userId = request.user.id;
-	console.log("Inside friendRequestAction: userId:", userId);
 
 	const result = validationResult(request);
-	console.log("Result:", result);
 
 	if (!result.isEmpty()) {
 		return response.status(400).json({
@@ -142,7 +135,6 @@ export const friendRequestAction = asyncHandler(async (request:Request, response
 	}
 
 	const requestId = request.params.id;
-	console.log("requestId:", requestId);
 
 	if (!requestId || Array.isArray(requestId)) {
 		return response.status(401).json({
@@ -152,13 +144,11 @@ export const friendRequestAction = asyncHandler(async (request:Request, response
 	}
 
 	const { action } = matchedData(request) as { action: string };
-	console.log("action:", action);
 
 	const friendship = await prisma.friendship.findUnique({
 		where: { id: requestId },
 		include: { sender: true, receiver: true }
 	})
-	console.log("friendship:", friendship);
 
 	if (!friendship) {
 		return response.status(404).json({
@@ -168,9 +158,7 @@ export const friendRequestAction = asyncHandler(async (request:Request, response
 	}
 
 	const isSender = friendship.senderId === userId;
-	console.log("isSender:", isSender);
 	const isReceiver = friendship.receiverId === userId;
-	console.log("isReceiver:", isReceiver);
 
 	if (!isSender && !isReceiver) {
 		return response.status(403).json({
@@ -323,7 +311,6 @@ export const getFriendList = asyncHandler(async (request:Request, response:Respo
 		});
 	}
 	const userId = request.user.id;
-	console.log("Inside getFriendList: userId:", userId);
 
 	const friends = await prisma.friend.findMany({
 		where: {
@@ -334,7 +321,6 @@ export const getFriendList = asyncHandler(async (request:Request, response:Respo
 			user2: { select: { id: true, username: true, isOnline: true, avatarUrl: true } }
 		}
 	});
-	console.log("friends:", friends);
 
 	response.status(200).json({ success: true, friends });
 });
@@ -348,7 +334,6 @@ export const getPendingRequests = asyncHandler(async (request:Request, response:
 	}
 
 	const userId = request.user.id;
-	console.log("Inside getPendingRequestst: userId:", userId);
 
 	const pending = await prisma.friendship.findMany({
 		where: {
@@ -362,7 +347,6 @@ export const getPendingRequests = asyncHandler(async (request:Request, response:
 			sender: { select: { id: true, username: true , avatarUrl:true } }
 		}
 	});
-	console.log("pending:", pending);
 
 	response.status(200).json({ success: true, requests: pending });
 });
@@ -377,10 +361,8 @@ export const unfriend = asyncHandler(async (request:Request, response:Response) 
 
 	const io = getIO();
 	const userId = request.user.id;
-	console.log("Inside unfriend: userId:", userId);
 
 	const unfriendUserId = request.params.id;
-	console.log("unfriendUserId:", unfriendUserId);
 
 	if (!unfriendUserId || Array.isArray(unfriendUserId)) {
 		return response.status(401).json({

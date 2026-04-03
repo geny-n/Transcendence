@@ -34,7 +34,6 @@ export const generateRefreshToken = (userId: string) : string => {
 export const verifyToken = (token: string, isRefresh = false) : any => {
 	try {
 		const secret = isRefresh ? JWT_REFRESH_SECRET : JWT_ACCESS_SECRET;
-		console.log("Inside verifyToken: secret:", secret);
 		return jwt.verify(token, secret);
 	} catch (error) {
 		return null;
@@ -48,9 +47,21 @@ export const getAllFriendIds = async ( userId: string ): Promise<string[]> => {
 		},
 		select: { user1Id: true, user2Id: true }
 	})
-	console.log("Inside getAllFriendIds:", friend);
 
 	return friend.map((f: { user1Id: string; user2Id: string; }) =>
 		f.user1Id === userId ? f.user2Id : f.user1Id
+	);
+}
+
+export const getAllUsersIds = async (): Promise<string[]> => {
+	const users = await prisma.user.findMany({
+		where: {
+			isOnline: true
+		},
+		select: { id: true }
+	})
+
+	return users.map((f: { id: string }) =>
+		f.id
 	);
 }

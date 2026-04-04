@@ -54,7 +54,11 @@ const Login = () => {
 			const me = await axios.get('/api/users/me', { withCredentials: true });
 			setUser(me.data.user);
 			setErrMsg("");
-			navigate("/");
+			
+			// Check for unfinished games and auto-join if exists
+			// The Socket.io connection will handle checking for incomplete games
+			// by emitting a query to the backend after connection
+			navigate("/matchmaking");
 		}catch(err){
 			if (axios.isAxiosError(err))
 			{

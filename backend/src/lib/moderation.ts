@@ -31,8 +31,8 @@ export async function toxicityScale(msg:string): Promise<{flag:boolean}>{
 				body: JSON.stringify({inputs: msg}),
 			}
 		);
-		const result = await response.json();
-		const score = result[0][0]?.score ?? 0;
+		const result = await response.json() as Array<Array<{score: number}>> | undefined;
+		const score = result?.[0]?.[0]?.score ?? 0;
 		console.log("score = ", score);
 		const flag = score > 0.8;
 		return {flag};

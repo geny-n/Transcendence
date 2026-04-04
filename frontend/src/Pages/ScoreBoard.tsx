@@ -130,6 +130,15 @@ export default function ScoreBoard() {
 
 	useEffect(() => { fetchPage(page); }, [page, fetchPage]);
 
+	// ── Auto-refresh every 5 seconds ──────────────────────────────────────────
+	useEffect(() => {
+		const interval = setInterval(() => {
+			fetchPage(page);
+		}, 5000); // 5000ms = 5 seconds
+
+		return () => clearInterval(interval);
+	}, [page, fetchPage]);
+
 	// ── Live updates via socket /scoreboard namespace ───────────────────────
 	useEffect(() => {
 		const socket = io(`${window.location.origin}/scoreboard`, {

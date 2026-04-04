@@ -14,8 +14,9 @@ const MAX_SPEED            = 20;
 const PADDLE_SPEED         = 7;
 const WIN_SCORE            = 5;
 const TICK_MS              = Math.floor(1000 / 60); // ~60 fps
-const RECONNECT_TIMEOUT_GUEST = 15; // secondes
-const RECONNECT_TIMEOUT_AUTH  = 30; // secondes
+const RECONNECT_TIMEOUT_AUTH  = 60; // secondes pour attendre reconnexion
+const QUIT_AVAILABLE_AFTER_MS = 30 * 1000; // 30 secondes avant qu'on peut quitter
+const RECONNECT_COUNTDOWN     = 5; // secondes de countdown après reconnexion
 
 // ─── Timer Constants ──────────────────────────────────────────────────────────
 const GAME_DURATION_MS  = 5 * 60 * 1000;   // 5 min
@@ -43,6 +44,7 @@ interface DisconnectTimer {
 	timer:        ReturnType<typeof setTimeout>;
 	remaining:    number; // secondes restantes
 	tickInterval: ReturnType<typeof setInterval>;
+	startedAt:    number; // timestamp when disconnect started
 }
 
 interface Room {
@@ -61,6 +63,7 @@ interface Room {
 	countdownTimer:   ReturnType<typeof setInterval> | null;
 	disconnectTimers: Map<1 | 2, DisconnectTimer>;
 	endgameCalled:    boolean; // Guard to prevent multiple endGame calls
+	firstPlayerDisconnected: 1 | 2 | undefined; // qui s'est déconnecté en premier (tracker pour la forfeit)
 
 	// ── Timer de partie ───────────────────────────────────────────────────────
 	startedAt:         Date | null;          // timestamp de début de la vraie partie
@@ -143,6 +146,7 @@ function createRoom(
 		countdownTimer:    null,
 		disconnectTimers:  new Map(),
 		endgameCalled:     false,
+		firstPlayerDisconnected: undefined,
 		startedAt:         null,
 		gameTimerMs:       GAME_DURATION_MS,
 		gameTimerStartMs:  null,
@@ -461,11 +465,11 @@ function tick(room: Room, io: Server): void {
 }
 
 // ─── Countdown then start ─────────────────────────────────────────────────────────────────────────
-function startCountdown(room: Room, io: Server, resuming = false): void {
+function startCountdown(room: Room, io: Server, resuming = false, seconds = 3): void {
 	if (room.interval) { clearInterval(room.interval); room.interval = null; }
 
 	room.state.status = "countdown";
-	let count = 3;
+	let count = seconds;
 	io.to(room.id).emit("pong:countdown", { count, resuming });
 
 	room.countdownTimer = setInterval(() => {
@@ -524,6 +528,27 @@ function startDisconnectTimer(
 	isGuest: boolean,
 	io:      Server
 ): void {
+	// CRITICAL: Guests are not allowed to reconnect - they lose immediately
+	if (isGuest) {
+		const winner: 1 | 2 = player === 1 ? 2 : 1;
+		console.log(`[startDisconnectTimer] Guest player ${player} disconnected, ${player === 1 ? 'player 2' : 'player 1'} wins immediately`);
+		endGame(room, winner, io);
+		return;
+	}
+
+	// Track the first player to disconnect (for forfeit logic)
+	if (!room.firstPlayerDisconnected) {
+		room.firstPlayerDisconnected = player;
+		console.log(`[startDisconnectTimer] Player ${player} marked as first disconnected`);
+	} else {
+		// Deuxième joueur à se déconnecter → le premier qui s'est déconnecté perd
+		const winner: 1 | 2 = room.firstPlayerDisconnected === 1 ? 2 : 1;
+		console.log(`[startDisconnectTimer] Both players disconnected! firstPlayerDisconnected=${room.firstPlayerDisconnected}, winner=${winner}`);
+		cleanupUserToRoom(room);
+		endGame(room, winner, io);
+		return;
+	}
+
 	if (room.interval)       { clearInterval(room.interval);       room.interval       = null; }
 	if (room.countdownTimer) { clearInterval(room.countdownTimer); room.countdownTimer = null; }
 	room.state.status = "paused";
@@ -531,25 +556,36 @@ function startDisconnectTimer(
 	// Pauser le timer de partie pendant l'attente
 	pauseGameTimer(room);
 
-	const seconds = isGuest ? RECONNECT_TIMEOUT_GUEST : RECONNECT_TIMEOUT_AUTH;
+	const seconds = 60; // RECONNECT_TIMEOUT_AUTH = 60 secondes max
 	let remaining = seconds;
 
-	io.to(room.id).emit("pong:opponent_reconnecting", { player, remaining });
+	// Emit initial event with full details
+	io.to(room.id).emit("pong:opponent_reconnecting", { 
+		player, 
+		remaining,
+		canQuitAfter: 30 // le bouton quitter devient actif après 30s
+	});
 
 	const tickInterval = setInterval(() => {
 		remaining--;
-		io.to(room.id).emit("pong:opponent_reconnecting", { player, remaining });
+		io.to(room.id).emit("pong:opponent_reconnecting", { 
+			player, 
+			remaining,
+			canQuitAfter: 30
+		});
 	}, 1000);
 
 	const timer = setTimeout(() => {
 		clearInterval(tickInterval);
 		room.disconnectTimers.delete(player);
-		const winner: 1 | 2 = player === 1 ? 2 : 1;
+		// Le premier joueur à se déconnecter perd
+		const winner: 1 | 2 = room.firstPlayerDisconnected === 1 ? 2 : 1;
+		console.log(`[startDisconnectTimer] Timeout: firstPlayerDisconnected=${room.firstPlayerDisconnected}, winner=${winner}`);
 		cleanupUserToRoom(room);
 		endGame(room, winner, io);
 	}, seconds * 1000);
 
-	room.disconnectTimers.set(player, { timer, remaining, tickInterval });
+	room.disconnectTimers.set(player, { timer, remaining, tickInterval, startedAt: Date.now() });
 }
 
 function cancelDisconnectTimer(room: Room, player: 1 | 2): void {
@@ -668,7 +704,7 @@ function handlePlayerLeave(socket: Socket, io: Server): void {
 	}
 }
 
-// Déconnexion réseau → timer d'attente
+// Déconnexion réseau → timer d'attente (seulement pour utilisateurs authentifiés)
 function handlePlayerDisconnect(socket: Socket, io: Server): void {
 	const roomId = socketToRoom.get(socket.id);
 	if (!roomId) return;
@@ -680,11 +716,10 @@ function handlePlayerDisconnect(socket: Socket, io: Server): void {
 	const isGuest: boolean = player === 1 ? room.player1IsGuest : room.player2IsGuest;
 	const userId: string = player === 1 ? room.player1UserId : room.player2UserId;
 
-	// CRITICAL: Remove from BOTH maps immediately on disconnect
-	// This prevents stale entries when player reconnects with new socket
+	// CRITICAL: Remove from socketToRoom ONLY
+	// Keep userToRoom so player can reconnect and find their room
 	socketToRoom.delete(socket.id);
-	userToRoom.delete(userId);
-	console.log(`[handlePlayerDisconnect] Removed player ${userId} from userToRoom on socket disconnect`);
+	console.log(`[handlePlayerDisconnect] Removed socket ${socket.id.substring(0,8)} from socketToRoom, but kept userToRoom entry for player ${userId.substring(0,8)}`);
 	
 	startDisconnectTimer(room, player, isGuest, io);
 }
@@ -698,6 +733,21 @@ export function initPong(io: Server, socket: Socket): void {
 	// Flag to prevent join_queue calls after leave_game
 	let isQuitting = false;
 
+	// ── Check for unfinished game on connection ──────────────────────────────────
+	if (!isGuest && userId) {
+		const roomId = userToRoom.get(userId);
+		if (roomId) {
+			const room = rooms.get(roomId);
+			if (room && room.state.status !== "ended") {
+				console.log(`[initPong] User ${label} has unfinished game in room ${roomId}, notifying client to auto-reconnect`);
+				socket.emit("pong:unfinished_game", { 
+					roomId,
+					hasUnfinishedGame: true
+				});
+			}
+		}
+	}
+
 	// ── Reconnexion en cours de partie ───────────────────────────────────────────
 	socket.on("pong:reconnect", () => {
 		const roomId = userToRoom.get(userId);
@@ -708,6 +758,8 @@ export function initPong(io: Server, socket: Socket): void {
 		const player: 1 | 2 = room.player1UserId === userId ? 1 : 2;
 
 		cancelDisconnectTimer(room, player);
+		// Reset disconnect tracking so if this player disconnects again, it's a fresh state
+		room.firstPlayerDisconnected = undefined;
 
 		if (player === 1) {
 			socketToRoom.delete(room.player1SocketId);
@@ -727,8 +779,8 @@ export function initPong(io: Server, socket: Socket): void {
 			player2Label: room.player2Label,
 		});
 
-		// Reprendre avec countdown → startCountdown relancera le gameTimer
-		startCountdown(room, io, true);
+		// Reprendre avec countdown de 5 secondes → startCountdown relancera le gameTimer
+		startCountdown(room, io, true, RECONNECT_COUNTDOWN);
 	});
 
 	// ── Token refresh (keep authenticated users logged in) ───────────────────────
@@ -1002,6 +1054,58 @@ export function initPong(io: Server, socket: Socket): void {
 			console.log(`[pong:leave_game] 🔌 Now disconnecting socket: ${socket.id.substring(0,8)}`);
 			socket.disconnect(true);  // immediate=true forces disconnect NOW
 		}, 500);  // 500ms to ensure complete cleanup before disconnect
+	});
+
+	// ── Quit while waiting for opponent to reconnect ────────────────────────────────────
+	socket.on("pong:quit_waiting", () => {
+		const roomId = socketToRoom.get(socket.id);
+		if (!roomId) {
+			console.log(`[pong:quit_waiting] Socket not in any room`);
+			return;
+		}
+
+		const room = rooms.get(roomId);
+		if (!room) {
+			console.log(`[pong:quit_waiting] Room not found`);
+			return;
+		}
+
+		if (room.state.status !== "paused") {
+			console.log(`[pong:quit_waiting] Game is not paused, cannot quit waiting`);
+			return;
+		}
+
+		// Find which player is currently waiting (still connected)
+		// and which is disconnected
+		const player: 1 | 2 = socket.id === room.player1SocketId ? 1 : 2;
+		const disconnectedPlayer: 1 | 2 = player === 1 ? 2 : 1;
+
+		// Verify opponent is actually disconnected
+		const dt = room.disconnectTimers.get(disconnectedPlayer);
+		if (!dt) {
+			console.log(`[pong:quit_waiting] No disconnect timer for player ${disconnectedPlayer}`);
+			return;
+		}
+
+		// Check if at least 30 seconds have passed since disconnect started
+		const elapsedMs = Date.now() - dt.startedAt;
+		if (elapsedMs < QUIT_AVAILABLE_AFTER_MS) {
+			console.log(`[pong:quit_waiting] Only ${Math.floor(elapsedMs / 1000)}s passed, need 30s`);
+			socket.emit("pong:quit_waiting_rejected", { 
+				reason: "wait_more",
+				secondsRemaining: Math.ceil((QUIT_AVAILABLE_AFTER_MS - elapsedMs) / 1000)
+			});
+			return;
+		}
+
+		console.log(`[pong:quit_waiting] Player ${player} quitting after ${Math.floor(elapsedMs / 1000)}s of waiting`);
+
+		// Player who quit waiting loses (they didn't wait for opponent)
+		// So the opponent (the one who was disconnected) wins!
+		const winner: 1 | 2 = disconnectedPlayer;
+		cancelDisconnectTimer(room, disconnectedPlayer);
+		cleanupUserToRoom(room);
+		endGame(room, winner, io);
 	});
 
 	// ── Revanche : envoi de la demande ───────────────────────────────────────────────────

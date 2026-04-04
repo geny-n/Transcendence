@@ -33,6 +33,7 @@ export default function Matchmaking() {
 		leaveGame,
 		requestRematch,
 		respondRematch,
+		quitWaiting,
 		socketCreatedTime,
 	} = usePongSocket(guestName, accessToken);
 
@@ -262,6 +263,7 @@ export default function Matchmaking() {
 				onLeave={handleLeaveGame}
 				onRematch={requestRematch}
 				onRematchRespond={respondRematch}
+				onQuitWaiting={quitWaiting}
 				isCleaningUp={isCleaningUp}
 			/>
 		);

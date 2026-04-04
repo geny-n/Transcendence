@@ -13,7 +13,7 @@ interface Props {
 	countdownResuming:    boolean;
 	winner:               1 | 2          | null;
 	opponentLeft:         boolean;
-	opponentReconnecting: { player: 1 | 2; remaining: number } | null;
+	opponentReconnecting: { player: 1 | 2; remaining: number; canQuitAfter: number } | null;
 	timerRemaining:       number | null;
 	overtimeMessage:      string | null;
 	rematchStatus:        RematchStatus;
@@ -22,6 +22,7 @@ interface Props {
 	onLeave:              () => void;
 	onRematch:            () => void;
 	onRematchRespond:     (accept: boolean) => void;
+	onQuitWaiting:        () => void;
 	isCleaningUp:         boolean;
 }
 
@@ -46,6 +47,7 @@ export default function PongGame({
 	onLeave,
 	onRematch,
 	onRematchRespond,
+	onQuitWaiting,
 	isCleaningUp,
 }: Props) {
 	const { playerNumber } = gameInfo;
@@ -97,11 +99,26 @@ export default function PongGame({
 	return (
 		<div className="pong-game-wrapper">
 
-			{/* ── Banniere reconnexion adversaire ─────────────────────────── */}
+			{/* ── Banniere reconnexion adversaire ──────────────────────────────────── */}
 			{opponentReconnecting && (
 				<div className="pong-reconnect-banner">
-					⏳ Adversaire déconnecté — attente&nbsp;
-					<strong>{opponentReconnecting.remaining}s</strong>
+					<div>
+						⏳ En attente de la reconnexion de l'adversaire...&nbsp;
+						<strong>{opponentReconnecting.remaining}s</strong>
+						<div style={{ fontSize: "0.85em", marginTop: "0.5rem", color: "#cbd5e1" }}>
+							Vous pouvez abandonner la partie apres&nbsp;
+							<strong>{opponentReconnecting.canQuitAfter}s</strong>
+							d'attente.
+						</div>
+					</div>
+					{opponentReconnecting.remaining <= opponentReconnecting.canQuitAfter && (
+						<button
+							className="pong-btn-quit-waiting"
+							onClick={onQuitWaiting}
+						>
+							Abandonner
+						</button>
+					)}
 				</div>
 			)}
 			{/* ── Timer de partie ──────────────────────────────────────── */}

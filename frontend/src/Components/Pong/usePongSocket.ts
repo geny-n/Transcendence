@@ -25,7 +25,7 @@ export interface PongSocketState {
 	countdownResuming:     boolean;
 	winner:                1 | 2          | null;
 	opponentLeft:          boolean;
-	opponentReconnecting:  { player: 1 | 2; remaining: number } | null;
+	opponentReconnecting:  { player: 1 | 2; remaining: number; canQuitAfter: number } | null;
 	error:                 string          | null;
 	// Timer de partie
 	timerRemaining:        number | null;
@@ -173,7 +173,15 @@ export function usePongSocket(guestName?: string, accessToken?: string | null) {
 				}
 			});
 
-				socket.on("pong:queue_joined", ({ position }: { position: number }) => {
+			// ── Auto-reconnect to unfinished game on login ────────────────────────
+			socket.on("pong:unfinished_game", ({ hasUnfinishedGame }: { hasUnfinishedGame: boolean }) => {
+				if (hasUnfinishedGame) {
+					console.log("[usePongSocket] Detected unfinished game, auto-reconnecting...");
+					socket.emit("pong:reconnect");
+				}
+			});
+
+			socket.on("pong:queue_joined", ({ position }: { position: number }) => {
 				setState((s: PongSocketState) => ({ ...s, queuePosition: position, error: null }));
 			});
 
@@ -206,9 +214,20 @@ export function usePongSocket(guestName?: string, accessToken?: string | null) {
 
 			socket.on("pong:countdown", ({ count, resuming }: { count: number; resuming?: boolean }) => {
 				if (count === 0) {
-					setState((s: PongSocketState) => ({ ...s, phase: "playing", countdown: null, countdownResuming: false }));
+					setState((s: PongSocketState) => ({ 
+						...s, 
+						phase: "playing", 
+						countdown: null, 
+						countdownResuming: false,
+						opponentReconnecting: null  // Clear waiting message when opponent reconnects
+					}));
 				} else {
-					setState((s: PongSocketState) => ({ ...s, countdown: count, countdownResuming: !!resuming }));
+					setState((s: PongSocketState) => ({ 
+						...s, 
+						countdown: count, 
+						countdownResuming: !!resuming,
+						opponentReconnecting: null  // Clear waiting message when countdown starts
+					}));
 				}
 			});
 
@@ -224,8 +243,8 @@ export function usePongSocket(guestName?: string, accessToken?: string | null) {
 				setState((s: PongSocketState) => ({ ...s, phase: "ended", opponentLeft: true }));
 			});
 
-			socket.on("pong:opponent_reconnecting", ({ player, remaining }: { player: 1 | 2; remaining: number }) => {
-				setState((s: PongSocketState) => ({ ...s, opponentReconnecting: { player, remaining } }));
+			socket.on("pong:opponent_reconnecting", ({ player, remaining, canQuitAfter }: { player: 1 | 2; remaining: number; canQuitAfter: number }) => {
+				setState((s: PongSocketState) => ({ ...s, opponentReconnecting: { player, remaining, canQuitAfter } }));
 			});
 
 			// Timer de partie (tick chaque seconde envoyé par le serveur)
@@ -421,5 +440,14 @@ export function usePongSocket(guestName?: string, accessToken?: string | null) {
 		if (!accept) setState((s: PongSocketState) => ({ ...s, rematchStatus: 'idle', rematchFromLabel: null }));
 	}, []);
 
-	return { state, joinQueue, leaveQueue, sendInput, leaveGame, resetState, requestRematch, respondRematch, socketCreatedTime };
+	const quitWaiting = useCallback(() => {
+		if (!socketRef.current?.connected) {
+			console.warn("[usePongSocket] Socket not connected, cannot quit waiting");
+			return;
+		}
+		console.log("[usePongSocket] Sending pong:quit_waiting");
+		socketRef.current.emit("pong:quit_waiting");
+	}, []);
+
+	return { state, joinQueue, leaveQueue, sendInput, leaveGame, resetState, requestRematch, respondRematch, quitWaiting, socketCreatedTime };
 }

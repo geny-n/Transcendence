@@ -29,7 +29,7 @@ export default function Pong()
 
         <button className="btn-play"
         onClick={() => setShowPong(true)}>
-        Jouer</button>
+        Jeu local</button>
 
         <button 
           className="btn-play"
@@ -38,8 +38,6 @@ export default function Pong()
           Jouer en ligne 🌐
         </button>
 
-        <button className="btn-play">
-        Parametres</button>
 
         {showPong && (
           <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black bg-opacity-80">

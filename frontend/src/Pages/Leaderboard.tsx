@@ -107,6 +107,15 @@ export default function Leaderboard() {
 		fetchLeaderboard();
 	}, [fetchLeaderboard]);
 
+	// ── Auto-refresh every 5 seconds ──────────────────────────────────────────
+	useEffect(() => {
+		const interval = setInterval(() => {
+			fetchLeaderboard();
+		}, 5000); // 5000ms = 5 seconds
+
+		return () => clearInterval(interval);
+	}, [fetchLeaderboard]);
+
 	// ── Live updates via socket /leaderboard namespace ───────────────────────
 	useEffect(() => {
 		const socket = io(`${window.location.origin}/leaderboard`, {

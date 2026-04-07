@@ -32,6 +32,11 @@ const onConnection = async (socket:Socket) => {
 		// Rejoindre la room personnelle pour les notifications
 		socket.join(`user:${user.id}`);
 
+		void toxicityScale("1st ping");
+		const keepAlive = setInterval(() => {
+			toxicityScale("ping").catch(() => {});
+		}, 30 * 1000);
+		
 		// Notifier les amis
 		const friends = await getAllFriendIds(user.id);
 		friends.forEach(friendId => {
@@ -83,6 +88,9 @@ const onConnection = async (socket:Socket) => {
 
 		// Gérer la déconnexion (met à jour la DB)
 		disconnectUser(socket, io, friends);
+		socket.on("disconnect", () => {
+			clearInterval(keepAlive);
+		});
 	}
 
 	// Initialiser les événements Pong (invités inclus)

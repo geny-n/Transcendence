@@ -31,3 +31,4 @@ export async function toxicityScale(msg:string): Promise<{flag:boolean}>{
 		return {flag : false};
 	}
 }
+//toxicityScale("I want to kill you").then(console.log);

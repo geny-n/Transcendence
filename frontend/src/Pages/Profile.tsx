@@ -18,7 +18,7 @@ import { IoIosArrowBack } from "react-icons/io"; //return icon
 import { useAuth } from '../main';
 import useUser, { defaultAvatar, AvatarErrorLoad } from '../lib/user';
 import Cropper, { type Area } from 'react-easy-crop';
-
+// import { mockUsers } from './../lib/fictif';
 import './style/Profile.css';
 export default function Profile ()
 {
@@ -56,7 +56,7 @@ export default function Profile ()
     const logout_url = '/api/logout';
     const navigate = useNavigate();
 
-    
+  
     useEffect(() => {//recuperer mes informations
         fetchMe().then(user => {
             if (!user)
@@ -82,12 +82,16 @@ export default function Profile ()
         }
         const update = lstFriends.find(f => f.id === selectUser.id);
         if (update)
-            setSelectUser(update);  
+            setSelectUser(prev => prev ? { ...prev, isOnline: update.isOnline} : prev);  
     }, [lstFriends, Myself]);
 
     const handleSearch = async (event:React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
         setSearchVal(value);
+        if (value.length < 2) {
+            setGetSeachVal([]);
+            return;
+        }
         try {
             const result = await axios.get(`/api/users/search?q=${value}`, {withCredentials:true});
             setGetSeachVal(result.data.users);
@@ -195,10 +199,12 @@ export default function Profile ()
         {
             if (axios.isAxiosError(err)) 
             {
-                if (err.response?.status == 400)
-                    setErrMsgForm(t('profile.err.data'))
-                if (err.response?.status == 401)
-                    setErrMsgForm(t('profile.err.wrongPassword'))
+                const errMsg = err.response?.data?.message;
+                if (err)
+                if (errMsg)
+                    setErrMsgForm(t(errMsg));
+                else
+                    setErrMsgForm(t('backend.common.internal.server.error'));
             }
         }
     }
@@ -446,9 +452,8 @@ export default function Profile ()
                         {ActiveUpdate === 0 && ( // si il est pas en mode modifier
                             <>
                             {image && (
-                                <div className="fixed bg-gray-800/80 inset-0 z-50 flex flex-col justify-center items-center gap-5">
-                                    <div className="relative w-80 h-80">
-
+                                <div className="avatar_choose_box">
+                                    <div className="avatar_choose_crop">
                                         <Cropper
                                             image={image}
                                             crop={crop}
@@ -459,11 +464,10 @@ export default function Profile ()
                                             onCropComplete={imgCroppedComplete}
                                             onZoomChange={setZoom}
                                         />
-                            
                                     </div>
                                     <div className='flex gap-4'>
-                                        <button className="bg-green-500 rounded-lg p-2 w-[120px] hover:bg-green-700 transition" onClick={handleAvatar}>Save</button>
-                                        <button className="bg-red-500 rounded-lg p-2 w-[120px] hover:bg-red-700 transition" onClick={() => setImage("")}>Annuler</button>
+                                        <button className="avatar_choose_btn bg-green-500 hover:bg-green-700 transition" onClick={handleAvatar}>Save</button>
+                                        <button className="avatar_choose_btn bg-red-500 hover:bg-red-700 transition" onClick={() => setImage("")}>Annuler</button>
                                     </div>
                                 </div>
                             )}    
@@ -633,33 +637,43 @@ export default function Profile ()
                 </div>
                  {/* //////////////////////////notifications//////////////////////////////////// */}
                 <div className="box_notif">
-                    <div className="input_form">
-                        <input placeholder={t('profile.search')}
-                            value={searchVal}
-                            onChange={handleSearch}
-                            className="input"/>
-                            
-                            <CiSearch className="icon"/>
-                    </div>
-                    <ul>
-                        { searchVal && (
-                            //SearchResults.filter((user) => user.username.includes(searchVal))//filtre les donnes et va afficher que les valeurs qui correspondent a linput
-                            getSearchVal.map((user) =>
-                                <li key={user.id} onClick={() => {
-                                        setSearchVal('');
-                                        setSelectUser(user);
-                                        setGetSeachVal([]);
-                                        setResponsive(true); }}>
-                                    {user.username}
-                                </li>)//parcour le tableau filte et affiche dans li
-                        )}
-                    </ul> 
                     <button className="notif" onClick={ShowNotif}>
                         {t('profile.notification')}
                         {count_notif > 0 && (
                             <div className="indicator_notif"></div>
                         )}
                     </button>
+                    <div className="relative">
+                        <div className="input_form">
+                            <input placeholder={t('profile.search')}
+                                value={searchVal}
+                                onChange={handleSearch}
+                                className="search_input"
+                                />
+                                
+                                <CiSearch className="icon"/>
+                        </div>
+                        { searchVal && (
+                            <ul className="search_val_box">
+                                {/* SearchResults.filter((user) => user.username.includes(searchVal))//filtre les donnes et va afficher que les valeurs qui correspondent a linput */}
+                                {getSearchVal.map((user) =>
+                                    <li 
+                                        key={user.id}
+                                        className="search_val"
+                                        onClick={() => {
+                                            setSearchVal('');
+                                            setSelectUser(user);
+                                            setGetSeachVal([]);
+                                            setResponsive(true);
+                                        }}
+                                    >
+                                        {user.username}
+                                    </li>
+                                )}
+                            </ul>
+                        )}
+                    </div>
+                    
                 </div>
                 {/* //////////////////////////liste des amis//////////////////////////////////// */}
                 <div className="box_lst_friend">

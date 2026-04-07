@@ -150,12 +150,24 @@ const useUser = create<UserStore>((set, get) => ({
         })
 
         socket.on("friend:profile_updated", (data: { userId: string, user: {username: string, email:string}}) => {
+            if (data.userId === get().userMyself?.id)
+            {
+                set(state => ({
+                    userMyself: state.userMyself ? { ...state.userMyself, username:data.user.username, email:data.user.email} : null
+                }));
+            }
             set(state => ({
                 userFriends: state.userFriends.map(friend => friend.id === data.userId ? { ...friend, username:data.user.username, email:data.user.email} : friend)
             }))
         })
 
         socket.on("friend:avatar_updated", (data: { userId: string, avatarUrl: string}) => {
+            if (data.userId === get().userMyself?.id)
+            {
+                set(state => ({
+                    userMyself: state.userMyself ? { ...state.userMyself, avatarUrl:data.avatarUrl} : null
+                }));
+            }
             set(state => ({
                 userFriends: state.userFriends.map(friend => friend.id === data.userId ? { ...friend, avatarUrl:data.avatarUrl} : friend)
             }))

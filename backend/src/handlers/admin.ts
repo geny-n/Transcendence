@@ -2,8 +2,9 @@ import type { Request, Response } from "express";
 import { asyncHandler } from "../utils/asyncHandlers.js";
 import prisma from "../lib/prisma.js";
 import { matchedData, validationResult } from "express-validator";
-import { hashPassword } from "../utils/helpers.js";
+import { getAllUsersIds, hashPassword } from "../utils/helpers.js";
 import type { UserRoles } from "../../generated/prisma/enums.js";
+import { getIO } from "../lib/socket.js";
 
 const sortableFields = ['createdAt', 'username', 'email', 'role', 'isOnline'] as const;
 type SortField = (typeof sortableFields)[number];
@@ -20,6 +21,8 @@ const baseUserSelect = {
 	role: true,
 	isOnline: true,
 	createdAt: true,
+	fortyTwoId: true,
+	discordId: true
 } as const;
 
 export const listAllUsers = asyncHandler(async (req: Request, res: Response) => {
@@ -119,7 +122,6 @@ export const listAllUsers = asyncHandler(async (req: Request, res: Response) => 
 
 export const updateUser = asyncHandler(async (req: Request, res: Response) => {
 	const userId = req.params.id;
-	console.log("Inside updateUser: userId:", userId);
 
 	if (!userId || Array.isArray(userId)) {
 		return res.status(401).json({
@@ -129,7 +131,6 @@ export const updateUser = asyncHandler(async (req: Request, res: Response) => {
 	}
 
 	const result = validationResult(req);
-	console.log("result:", result);
 
 	if (!result.isEmpty()) {
 		return res.status(400).json({
@@ -177,6 +178,26 @@ export const updateUser = asyncHandler(async (req: Request, res: Response) => {
 		select: baseUserSelect,
 	});
 
+	try {
+		const io = getIO();
+		const users = await getAllUsersIds();
+
+		users.forEach(usersId => {
+			io.to(`user:${usersId}`).emit('friend:profile_updated', {
+				userId: userId,
+				user: updatedUser
+			})
+			if (data.avatarUrl) {
+				io.to(`user:${usersId}`).emit('friend:avatar_updated', {
+					userId : userId,
+					avatarUrl: updatedUser.avatarUrl
+				})
+			}
+		})
+	} catch (error) {
+		console.error('Socket broadcast error (non-blocking):', error);
+	}
+
 	return res.status(200).json({
 		success: true,
 		updatedUser
@@ -185,7 +206,6 @@ export const updateUser = asyncHandler(async (req: Request, res: Response) => {
 
 export const deleteUser = asyncHandler(async (req: Request, res: Response) => {
 	const userId = req.params.id;
-	console.log("Inside deleteUser: userId:", userId);
 
 	if (!userId || Array.isArray(userId)) {
 		return res.status(401).json({
@@ -198,10 +218,10 @@ export const deleteUser = asyncHandler(async (req: Request, res: Response) => {
 		return res.status(403).json({
 			success: false,
 			message: "backend.admin.delete.self.forbidden"
-		});		
+		});
 	}
 
-	const found = await prisma.user.findUnique({ where: { id: userId }, select: { id: true } });
+	const found = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, username: true, email: true } });
 	if (!found) {
 		return res.status(404).json({
 			success: false,
@@ -211,6 +231,22 @@ export const deleteUser = asyncHandler(async (req: Request, res: Response) => {
 
 	await prisma.user.delete({ where: { id: userId } });
 
+	try {
+		const io = getIO();
+		const users = await getAllUsersIds();
+
+		users.forEach(usersId => (
+			io.to(`user:${usersId}`).emit('friend:profile_updated', {
+				userId: userId,
+				user: found
+			})
+		))
+
+		io.in(`user:${userId}`).disconnectSockets(true);
+	} catch (error) {
+		console.error('Socket broadcast error (non-blocking):', error);
+	}
+
 	return res.status(200).json({
 		success: true,
 		message: "backend.admin.delete.success"
@@ -219,7 +255,6 @@ export const deleteUser = asyncHandler(async (req: Request, res: Response) => {
 
 export const changeUserRole = asyncHandler(async (req: Request, res: Response) => {
 	const userId = req.params.id;
-	console.log("Inside changeUserRole: userId:", userId);
 
 	if (!userId || Array.isArray(userId)) {
 		return res.status(401).json({

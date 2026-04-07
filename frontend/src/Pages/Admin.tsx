@@ -8,6 +8,7 @@ import z from 'zod';
 import { ForbidenRegex, PasswordRegex, UserNameRegex } from '../lib/regex';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { TheSocket } from '../socket'
 
 type AdminUser = {
 	id: string;
@@ -17,6 +18,8 @@ type AdminUser = {
 	role: UserRoles;
 	isOnline: boolean;
 	createdAt: string;
+	fortyTwoId:	string | null;
+	discordId:	string | null
 };
 
 type AdminUserResponse = {
@@ -94,6 +97,7 @@ const createAdminCreateForm = (t: (key: string) => string) => z.object({
 const admin = () => {
 	const { t } = useTranslation()
 	const { user } = useAuth()
+	const { socket } = TheSocket()
 	const navigate = useNavigate()
 
 	const [users, setUsers] = useState<AdminUser[]>([])
@@ -229,6 +233,20 @@ const admin = () => {
 		await fetchUsers()
 	}
 
+	useEffect(() => {
+		if (!socket) return;
+
+		socket.on('friend:profile_updated', fetchUsers)
+		socket.on('friend:avatar_updated', fetchUsers)
+		socket.on('friend:status_changed', fetchUsers)
+
+		return () => {
+			socket.off('friend:profile_updated', fetchUsers)
+			socket.off('friend:avatar_updated', fetchUsers)
+			socket.off('friend:status_changed', fetchUsers)
+		}
+	}, [socket])
+
 	const onSelectUser = (target : AdminUser) => {
 		setSelectedUserId(target.id)
 		resetForm(target)
@@ -351,7 +369,7 @@ const admin = () => {
 	if (!user) {
 		return <div className='admin-page'><p>{t('admin.common.loading')}</p></div>
 	}
-	
+
 	if (user.role !== 'ADMIN') {
 		return null;
 	}
@@ -432,7 +450,7 @@ const admin = () => {
 						<button type='button' key={entry.id} onClick={() => onSelectUser(entry)} className={`admin-user-item ${selectedUserId === entry.id ? 'active' : ''}`}>
 							<div className='admin-user-item-avatar'>
 								{entry.avatarUrl ? (
-									<img className='avatar' src={`/api/${entry.avatarUrl}`} alt={entry.username} />
+									<img className='avatar' src={`${entry.avatarUrl}`} alt={entry.username} />
 								) : (
 									<span className='avatar-fallback'>{entry.username.charAt(0).toUpperCase()}</span>
 								)}

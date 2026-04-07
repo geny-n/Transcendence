@@ -2,17 +2,15 @@ services:
   frontend:
     build: ./frontend
     volumes:
-      - frontend-build:/app/dist 
+      - frontend-build:/app/dist
     depends_on:
       - backend
     networks:
       - app-network
-  
+
   backend:
     build: ./backend
     env_file: .env
-    ports:
-      - 3100:3100
     volumes:
       - ./backend/src:/code/src
       - ./backend/prisma:/code/prisma

@@ -1,10 +1,11 @@
 import type { Server, Socket } from "socket.io";
 import prisma from "../lib/prisma.js";
+import { errorHandler } from "../utils/asyncHandlers.js";
 
 export const disconnectUser = async (socket:Socket, io:Server, friends: string[]) => {
 	const { user } = socket
 
-	socket.on("disconnect", async () => {
+	socket.on("disconnect", errorHandler( async () => {
 		// Ne pas mettre à jour la DB pour les invités
 		if (!socket.isGuest) {
 			await prisma.user.update({
@@ -22,5 +23,5 @@ export const disconnectUser = async (socket:Socket, io:Server, friends: string[]
 		}
 		
 		console.log(`User ${user.username} déconnecté${socket.isGuest ? " (invité)" : ""}.`);
-	});
+	}));
 }

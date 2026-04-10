@@ -340,11 +340,27 @@ export default function Profile ()
                     setlstFriendship(requests);
             })
         }
+        const handleProfile = async (data: { userId: string }) => {
+            if (!selectUser || selectUser.id === Myself.id || data.userId !== selectUser.id)
+                return;
+            try
+            {
+                await axios.get(`/api/users/${data.userId}`, {withCredentials: true});
+            }
+            catch (err)
+            {
+                if (axios.isAxiosError(err) && err.response?.status === 404)
+                    setSelectUser(Myself);
+            }
+        }
+
         socket.on("friend:request_received", handleRequest);
+        socket.on("friend:profile_updated", handleProfile);
         return () => {
             socket.off("friend:request_received", handleRequest);
+            socket.off("friend:profile_updated", handleProfile);
         }
-    }, [socket, Myself]);
+    }, [socket, Myself, selectUser]);
 
     useEffect(() => {//recuperer la liste des demandes d amis depuis le back
         if (!Myself)

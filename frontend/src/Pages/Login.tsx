@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import type { FieldValues } from 'react-hook-form';
@@ -70,6 +70,15 @@ const Login = () => {
 			}
 		}
 	}
+
+	useEffect(() => {
+		if (sessionStorage.getItem('User deleted'))
+		{
+			sessionStorage.removeItem('User deleted');
+			setErrMsg(t('login.delete.user'));
+		}
+	}, []);
+
 	return (
 		<form onSubmit={handleSubmit(onSubmit)}
 			className="w-full h-screen flex items-center justify-center">

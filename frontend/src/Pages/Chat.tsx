@@ -147,7 +147,7 @@ export default function Chat ()
       socket.off('MessageBlocked', handlerSender);
     };
 
-  }, [socket]);
+  }, [socket, t]);
 
   useEffect (() => {
     scrollAuto.current?.scrollIntoView({ behavior: 'auto'});

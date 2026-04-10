@@ -185,7 +185,10 @@ i18n.use(initReactI18next).init({
                 'chat.send' : 'Envoyer',
                 'chat.yourMsg' : 'votre message',
                 'chat.longMsg' : 'Votre message est trop long',
-                'chat.moderation' : 'Votre message n est pas approprie'
+                'chat.moderation' : 'Votre message n est pas approprie',
+                
+                //login 
+                'login.delete.user' : 'votre compte a ete supprimer',
             }
         },
         en: {
@@ -367,6 +370,10 @@ i18n.use(initReactI18next).init({
                 'chat.send' : 'Send',
                 'chat.yourMsg' : 'Your message',
                 'chat.longMsg' : 'Your message is too long',
+                'chat.moderation' : 'Your message is not appropriate',
+
+                //login 
+                'login.delete.user' : 'your account has benn deleted',
             }
         },
         es : {
@@ -548,6 +555,10 @@ i18n.use(initReactI18next).init({
                 'chat.send' : 'Enviar',
                 'chat.yourMsg' : 'Tu mensaje',
                 'chat.longMsg' : 'Tu mensaje es dmasiado largo',
+                'chat.moderation' : 'Tu mensaje no es apropiado',
+
+                //login 
+                'login.delete.user' : 'Tu cuenta ha sido eliminada',
             }
         },
 
@@ -617,13 +628,12 @@ i18n.use(initReactI18next).init({
                 'navbar.scoreboard' : 'النتائج',
                 'navbar.chat' : 'الدردشة',
                 'navbar.profile' : 'الملف الشخصي',
-                // 'navbar.admin' : 'Admin',
                 'navbar.admin' : 'Admin',
                 'navbar.login' : 'تسجيل الدخول',
                 'navbar.register' : 'التسجيل',
 
-                //HomePage
-                // 'homepage.home' : 'Bienvenido a nuestra transcendence',
+                // HomePage
+                'homepage.home': 'مرحباً بك في transcendence الخاص بنا',
 
                 //types
                 'types.connexion.email' : 'البريد الإلكتروني غير صالح',
@@ -731,6 +741,10 @@ i18n.use(initReactI18next).init({
                 'chat.send' : 'إرسال',
                 'chat.yourMsg' : 'رسالتك',
                 'chat.longMsg' : 'رسالتك طويلة جداً',
+                'chat.moderation': 'رسالتك غير مناسبة',
+                
+                //login 
+                'login.delete.user' : 'تم حذف حسابك',
             }
         }
     }

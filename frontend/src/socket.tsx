@@ -2,6 +2,9 @@ import React, {createContext, useState, useEffect, useContext} from 'react';
 import { io } from 'socket.io-client';
 import { Socket } from 'socket.io-client';
 import { useAuth } from './main';
+import useUser from './lib/user';
+import { useNavigate } from 'react-router-dom';
+
 import type { DefaultEventsMap } from '@socket.io/component-emitter';
 
 const context = createContext<{socket: Socket | null}>({socket: null});
@@ -15,7 +18,9 @@ export const TheSocket = () => {
 export const SocketProvider = ({children}:{children: React.ReactNode}) => {
 	const [socket, setSocket] = useState<Socket | null>(null);
 	const [isConnected, setIsConnected] = useState<boolean>(false);
-	const { user } = useAuth();
+	const { user, setUser } = useAuth();
+	const navigate = useNavigate();
+
 
 	useEffect(() => {
 		let NewSocket : Socket<DefaultEventsMap, DefaultEventsMap> | null = null;
@@ -29,17 +34,28 @@ export const SocketProvider = ({children}:{children: React.ReactNode}) => {
 			setIsConnected(true);
 		};
 
-		const handleDisconnect = () => {
-			setIsConnected(false);
-		};
+		// const handleDisconnect = () => {
+		// 	setIsConnected(false);
+		// };
 
 		NewSocket = io({
 			path: "/socket.io",
-			withCredentials: true
+			withCredentials: true,
+			reconnection: false,
 		});
 
 		NewSocket.on('connect', handleConfirmation);
-		NewSocket.on('disconnect', handleDisconnect);
+		NewSocket.on('disconnect', (reason: string) => {
+			setIsConnected(false);
+			if (reason === "io server disconnect" && useUser.getState().userMyself !== null)
+			{
+				useUser.setState({ userMyself: null, userFriends: []});
+				setUser(null);
+				sessionStorage.setItem('User deleted', '1');
+				navigate('/login');
+			}
+		});
+
 		NewSocket.on('connect_error', (err: Error) => {
 			console.error(err.message);
 		});
@@ -51,9 +67,9 @@ export const SocketProvider = ({children}:{children: React.ReactNode}) => {
 		return () => {
 			if (NewSocket) {
 				NewSocket.off('connect', handleConfirmation);
-				NewSocket.off('disconnect', handleDisconnect);
+				// NewSocket.off('disconnect', handleDisconnect);
 				NewSocket.off('connect_error', handleConfirmation);
-				NewSocket.off('error', handleDisconnect);
+				// NewSocket.off('error', handleDisconnect);
 				NewSocket.disconnect();
 			}
 		};
@@ -68,23 +84,3 @@ export const SocketProvider = ({children}:{children: React.ReactNode}) => {
 		</context.Provider>
 	)
 }
-
-// export const TheSocket = () => {
-//     const [socket, setSocket] = useState<Socket | null>(null);
-
-//     useEffect(() => {
-//         const NewSocket = io({
-//             path: "/socket.io",
-//             withCredentials: true
-//         });
-//         NewSocket.on("connect", () => {
-//             console.log("connecte au server");
-//         })
-//         setSocket(NewSocket);
-//         return () => {
-//             NewSocket.disconnect();
-//         };
-//     }, []);
-
-//     return socket;
-// }

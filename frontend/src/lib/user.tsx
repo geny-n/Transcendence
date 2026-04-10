@@ -159,6 +159,7 @@ const useUser = create<UserStore>((set, get) => ({
             set(state => ({
                 userFriends: state.userFriends.map(friend => friend.id === data.userId ? { ...friend, username:data.user.username, email:data.user.email} : friend)
             }))
+            get().fetchFriends();
         })
 
         socket.on("friend:avatar_updated", (data: { userId: string, avatarUrl: string}) => {

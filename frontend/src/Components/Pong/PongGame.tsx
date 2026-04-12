@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import type { GameFoundPayload, PaddleDirection, PongGameState } from "./pongTypes";
 import type { RematchStatus } from "./usePongSocket";
 import PongCanvas    from "./PongCanvas";
@@ -49,8 +50,7 @@ export default function PongGame({
 	onRematchRespond,
 	onQuitWaiting,
 	isCleaningUp,
-}: Props) {
-	const { playerNumber } = gameInfo;
+}: Props) {	const { t } = useTranslation();	const { playerNumber } = gameInfo;
 
 	// ── Keyboard controls ────────────────────────────────────────────────────
 	useEffect(() => {
@@ -103,12 +103,10 @@ export default function PongGame({
 			{opponentReconnecting && (
 				<div className="pong-reconnect-banner">
 					<div>
-						⏳ En attente de la reconnexion de l'adversaire...&nbsp;
+						{t('pong.opponent.reconnecting')}&nbsp;
 						<strong>{opponentReconnecting.remaining}s</strong>
 						<div style={{ fontSize: "0.85em", marginTop: "0.5rem", color: "#cbd5e1" }}>
-							Vous pouvez abandonner la partie apres&nbsp;
-							<strong>{opponentReconnecting.canQuitAfter}s</strong>
-							d'attente.
+							{t('pong.opponent.canQuitAfter', { time: opponentReconnecting.canQuitAfter })}
 						</div>
 					</div>
 					{opponentReconnecting.remaining <= opponentReconnecting.canQuitAfter && (
@@ -116,7 +114,7 @@ export default function PongGame({
 							className="pong-btn-quit-waiting"
 							onClick={onQuitWaiting}
 						>
-							Abandonner
+							{t('pong.opponent.abandon')}
 						</button>
 					)}
 				</div>
@@ -166,11 +164,8 @@ export default function PongGame({
 
 			{/* ── Player indicator + keyboard hint ──────────────────────── */}
 			<p className="pong-controls-hint">
-				Vous êtes&nbsp;
-				<strong>
-					{playerNumber === 1 ? "le joueur gauche 🔵" : "le joueur droite 🟣"}
-				</strong>
-				&nbsp;—&nbsp;↑&nbsp;↓&nbsp;ou&nbsp;W&nbsp;S&nbsp;pour déplacer votre raquette
+				{t('pong.game.youAre', { side: t(`pong.direction.${playerNumber === 1 ? 'left' : 'right'}`) })}
+				{t('pong.game.controls')}
 			</p>
 
 			{/* ── Touch controls (mobile) ───────────────────────────────── */}
@@ -198,7 +193,7 @@ export default function PongGame({
 			{/* ── Quit button ───────────────────────────────────────────── */}
 			{!showOverlay && (
 				<button className="pong-btn-quit" onClick={onLeave}>
-					Quitter
+					{t('pong.game.quit')}
 				</button>
 			)}
 		</div>

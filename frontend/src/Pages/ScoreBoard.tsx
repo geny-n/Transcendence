@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
+import { useTranslation } from "react-i18next";
 import "./style/ScoreBoard.css";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -42,7 +43,7 @@ function isGuest(label: string): boolean {
 }
 
 // ─── Match Card ───────────────────────────────────────────────────────────────
-function MatchCard({ match }: { match: MatchEntry }) {
+function MatchCard({ match, t }: { match: MatchEntry; t: (key: string) => string }) {
 	const { winner, loser } = match;
 
 	return (
@@ -53,13 +54,13 @@ function MatchCard({ match }: { match: MatchEntry }) {
 					<span className="badge-winner">🏆</span>
 					<strong>{winner.label}</strong>
 					{isGuest(winner.label) && (
-						<span className="badge-guest">invité</span>
+						<span className="badge-guest">{t('scoreboard.guest')}</span>
 					)}
 				</span>
 				{winner.wins !== null ? (
 					<span className="match-player__stats">
-						V&nbsp;<span>{winner.wins}</span>&nbsp;/
-						D&nbsp;<span>{winner.losses ?? 0}</span>
+						{t('scoreboard.wins')}&nbsp;<span>{winner.wins}</span>&nbsp;/
+						{t('scoreboard.losses')}&nbsp;<span>{winner.losses ?? 0}</span>
 					</span>
 				) : (
 					<span className="match-player__stats">—</span>
@@ -75,7 +76,7 @@ function MatchCard({ match }: { match: MatchEntry }) {
 				</span>
 				<span className="match-duration">{formatDuration(match.durationSec)}</span>
 				{match.isOvertime && (
-					<span className="match-overtime-badge">Overtime</span>
+					<span className="match-overtime-badge">{t('scoreboard.overtime')}</span>
 				)}
 			</div>
 
@@ -83,15 +84,15 @@ function MatchCard({ match }: { match: MatchEntry }) {
 			<div className="match-player match-player--right">
 				<span className="match-player__name">
 					{isGuest(loser.label) && (
-						<span className="badge-guest">invité</span>
+						<span className="badge-guest">{t('scoreboard.guest')}</span>
 					)}
 					<strong>{loser.label}</strong>
 					<span className="badge-loser">💀</span>
 				</span>
 				{loser.wins !== null ? (
 					<span className="match-player__stats">
-						V&nbsp;<span>{loser.wins}</span>&nbsp;/
-						D&nbsp;<span>{loser.losses ?? 0}</span>
+						{t('scoreboard.wins')}&nbsp;<span>{loser.wins}</span>&nbsp;/
+						{t('scoreboard.losses')}&nbsp;<span>{loser.losses ?? 0}</span>
 					</span>
 				) : (
 					<span className="match-player__stats">—</span>
@@ -105,6 +106,7 @@ function MatchCard({ match }: { match: MatchEntry }) {
 const LIMIT = 10; // matches par page
 
 export default function ScoreBoard() {
+	const { t } = useTranslation();
 	const [data,        setData]        = useState<ScoreboardResponse | null>(null);
 	const [page,        setPage]        = useState(1);
 	const [loading,     setLoading]     = useState(false);
@@ -176,27 +178,27 @@ export default function ScoreBoard() {
 
 	return (
 		<div className="scoreboard-page">
-			<h1 className="scoreboard-title">{/* ??????????????????????? */}
-				Scoreboard 
-				{liveConnected && <span className="scoreboard-live-dot" title="Mise à jour en temps réel" />}
+			<h1 className="scoreboard-title">
+				Scoreboard
+				{liveConnected && <span className="scoreboard-live-dot" title={t('scoreboard.liveUpdate')} />}
 			</h1>
 
 			<div className="scoreboard-frame">
 				{/* ── List ───────────────────────────────────────────────── */}
 				<div className="scoreboard-list" ref={listRef}>
 					{loading && (
-						<div className="scoreboard-state">Chargement…</div>
+						<div className="scoreboard-state">{t('scoreboard.loading')}</div>
 					)}
 					{!loading && error && (
 						<div className="scoreboard-state">❌ {error}</div>
 					)}
 					{!loading && !error && data && data.matches.length === 0 && (
 						<div className="scoreboard-state">
-							Aucune partie jouée pour l'instant.
+						{t('scoreboard.noMatches')}
 						</div>
 					)}
 					{!loading && !error && data && data.matches.map(m => (
-						<MatchCard key={m.id} match={m} />
+						<MatchCard key={m.id} match={m} t={t} />
 					))}
 				</div>
 
@@ -214,11 +216,11 @@ export default function ScoreBoard() {
 						onClick={() => setPage(p => Math.max(1, p - 1))}
 						disabled={page === 1 || loading}
 					>
-						‹ Précédent
+						‹ {t('scoreboard.previous')}
 					</button>
 
 					<span className="pager-info">
-						{data ? `${page} / ${totalPages} (${data.total} parties)` : "—"}
+						{data ? t('scoreboard.pagination', { page, totalPages, total: data.total }) : "—"}
 					</span>
 
 					<button
@@ -226,7 +228,7 @@ export default function ScoreBoard() {
 						onClick={() => setPage(p => Math.min(totalPages, p + 1))}
 						disabled={page >= totalPages || loading}
 					>
-						Suivant ›
+						{t('scoreboard.next')} ›
 					</button>
 					<button
 						className="pager-btn"

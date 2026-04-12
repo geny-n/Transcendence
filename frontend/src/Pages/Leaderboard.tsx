@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
+import { useTranslation } from "react-i18next";
 import "./style/Leaderboard.css";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -81,6 +82,7 @@ function PlayerEntry({ player }: { player: LeaderboardPlayer }) {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function Leaderboard() {
+	const { t } = useTranslation();
 	const [data, setData] = useState<LeaderboardResponse | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -97,11 +99,11 @@ export default function Leaderboard() {
 			const json: LeaderboardResponse = await res.json();
 			setData(json);
 		} catch (e) {
-			setError(e instanceof Error ? e.message : "Erreur inconnue");
+			setError(e instanceof Error ? e.message : t('leaderboard.unknownError'));
 		} finally {
 			setLoading(false);
 		}
-	}, []);
+	}, [t]);
 
 	useEffect(() => {
 		fetchLeaderboard();
@@ -143,7 +145,7 @@ export default function Leaderboard() {
 		<div className="leaderboard-page">
 			{/* Title */}
 			<h1 className="leaderboard-title">
-				Classement
+				{t('leaderboard.title')}
 				{liveConnected && <span className="leaderboard-live-dot" />}
 			</h1>
 
@@ -151,10 +153,10 @@ export default function Leaderboard() {
 			<div className="leaderboard-frame">
 				{/* Header */}
 				<div className="leaderboard-header">
-					<div className="leaderboard-header__rank">Rang</div>
-					<div className="leaderboard-header__name">Joueur</div>
-					<div className="leaderboard-header__level">Niveau</div>
-					<div className="leaderboard-header__xp">Expérience</div>
+					<div className="leaderboard-header__rank">{t('leaderboard.rank')}</div>
+					<div className="leaderboard-header__name">{t('leaderboard.player')}</div>
+					<div className="leaderboard-header__level">{t('leaderboard.level')}</div>
+					<div className="leaderboard-header__xp">{t('leaderboard.experience')}</div>
 				</div>
 
 				{/* List */}
@@ -167,7 +169,7 @@ export default function Leaderboard() {
 						<div className="leaderboard-empty">{error}</div>
 					) : !data || data.players.length === 0 ? (
 						<div className="leaderboard-empty">
-							Aucun joueur trouvé
+							{t('leaderboard.noPlayers')}
 						</div>
 					) : (
 						data.players.map((player) => (
@@ -180,7 +182,7 @@ export default function Leaderboard() {
 			{/* Info */}
 			{data && (
 				<p className="mt-4 text-xs text-slate-500">
-					Affichage de {data.players.length} / {data.total} joueurs
+					{t('leaderboard.showing', { count: data.players.length, total: data.total })}
 				</p>
 			)}
 		</div>

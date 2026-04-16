@@ -78,10 +78,10 @@ export const loginUser = asyncHandler(async (request: Request, response: Respons
 	if (user?.isOnline) {
 		console.log("[login] User already online, allowing re-login");
 		// Allow re-login even if already online - will be handled by socket disconnect
-		// return response.status(200).json({
-		// 	success: true,
-		// 	message: "already logged in"
-		// });
+		return response.status(409).json({
+			success: true,
+			message: "already logged in"
+		});
 	}
 
 	if (!user || !user.password) {

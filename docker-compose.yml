@@ -9,7 +9,11 @@ services:
       - app-network
 
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        BUILDKIT_INLINE_CACHE: 1
     env_file: .env
     volumes:
       - ./backend/src:/code/src

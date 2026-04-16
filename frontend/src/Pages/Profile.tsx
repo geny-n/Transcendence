@@ -516,8 +516,8 @@ export default function Profile ()
                                         <p className="data_txt_email">{selectUser?.email}</p>
                                         {selectUser?.level !== undefined && (
                                             <div className="flex gap-4 text-sm text-slate-400 mt-2">
-                                                <span>Niveau: <span className="font-bold text-purple-300">{selectUser.level}</span></span>
-                                                <span>XP: <span className="font-bold text-indigo-300">{selectUser.experience}</span></span>
+                                                <span>{t('profile.levelText')}: <span className="font-bold text-purple-300">{selectUser.level}</span></span>
+                                                <span>{t('profile.xpText')}: <span className="font-bold text-indigo-300">{selectUser.experience}</span></span>
                                             </div>
                                         )}
                                     </div>
@@ -621,8 +621,8 @@ export default function Profile ()
                                 <p className="data_txt_email">{selectUser?.email}</p>
                                 {selectUser?.level !== undefined && (
                                     <div className="flex gap-4 text-sm text-slate-400 mt-2">
-                                        <span>Niveau: <span className="font-bold text-purple-300">{selectUser.level}</span></span>
-                                        <span>XP: <span className="font-bold text-indigo-300">{selectUser.experience}</span></span>
+                                        <span>{t('profile.levelText')}: <span className="font-bold text-purple-300">{selectUser.level}</span></span>
+                                        <span>{t('profile.xpText')}: <span className="font-bold text-indigo-300">{selectUser.experience}</span></span>
                                     </div>
                                 )}
                             </div>

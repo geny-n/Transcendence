@@ -54,7 +54,11 @@ const Login = () => {
 			const me = await axios.get('/api/users/me', { withCredentials: true });
 			setUser(me.data.user);
 			setErrMsg("");
-			navigate("/");
+			
+			// Check for unfinished games and auto-join if exists
+			// The Socket.io connection will handle checking for incomplete games
+			// by emitting a query to the backend after connection
+			navigate("/matchmaking");
 		}catch(err){
 			if (axios.isAxiosError(err))
 			{
@@ -63,9 +67,9 @@ const Login = () => {
 					console.log("Backend error: ", err.response.data);
 					console.log("Status: ", err.response.status);
 					if (err.response.status == 401)
-						setErrMsg("Incorrect email ou mot de passe");
+						setErrMsg(t('login.errorIncorrect'));
 					else
-						setErrMsg("Serveur Indisponible");
+						setErrMsg(t('login.serverError'));
 				}
 			}
 		}
@@ -85,10 +89,10 @@ const Login = () => {
 			<div className="form-box">
 
 				<img src={logo} alt="Logo" className="w-50 md:70" />
-				<h1 className="text-lg md:text-xl font-semibold">Connecte-toi pour jouer</h1>
+				<h1 className="text-lg md:text-xl font-semibold">{t('login.title')}</h1>
 
-				<p className="text-xs md:text-sm text-gray-500 text-center">Pas de compte ?
-				<NavLink className="btn-txt" to="/Register">S'inscrire</NavLink>
+				<p className="text-xs md:text-sm text-gray-500 text-center">{t('login.noAccount')}
+				<NavLink className="btn-txt" to="/Register">{t('register.registerBtn')}</NavLink>
 				</p>
 
 				<div className="w-full flex flex-col gap-3">
@@ -96,7 +100,7 @@ const Login = () => {
 						<CiMail />
 						<input {...(register("email"))}
 						type="email"
-						placeholder="Adresse mail"
+						placeholder={t('register.emailPlaceholder')}
 						className="input-field w-full"
 						autoComplete='email'/>
 					</div>
@@ -106,7 +110,7 @@ const Login = () => {
 						<CiLock />
 						<input {...register("password")}
 						type={showPassword ? "text" : "password"}
-						placeholder="Mot de passe"
+						placeholder={t('register.passwordPlaceholder')}
 						className="input-field w-5/6"
 						autoComplete='current-password'/>
 
@@ -123,7 +127,7 @@ const Login = () => {
 
 				{errMsg && <p className="text-center text-red-500 text-xs"> {`${errMsg}`} </p>}
 
-				<button disabled={isSubmitting} type="submit" className="btn-sign">Connexion</button>
+				<button disabled={isSubmitting} type="submit" className="btn-sign">{t('login.loginBtn')}</button>
 
 				<div className="relative w-full flex items-center justify-between py-3">
 					<div className="icon-btn">

@@ -188,7 +188,113 @@ i18n.use(initReactI18next).init({
                 'chat.moderation' : 'Votre message n est pas approprie',
                 
                 //login 
-                'login.delete.user' : 'votre compte a ete supprimer',
+                'login.delete.user' : 'votre compte a ete supprime',
+                'login.title': 'Connecte-toi pour jouer',
+                'login.noAccount': 'Pas de compte ?',
+                'login.loginBtn': 'Connexion',
+                'login.errorIncorrect': 'Email ou mot de passe incorrect',
+                'login.serverError': 'Serveur indisponible',
+
+                //register
+                'register.title': 'Inscris-toi pour Jouer',
+                'register.haveAccount': 'Déjà un compte ?',
+                'register.linkLogin': 'Se connecter',
+                'register.registerBtn': 'S\'inscrire',
+                'register.usernamePlaceholder': 'Nom d\'utilisateur',
+                'register.emailPlaceholder': 'Adresse mail',
+                'register.passwordPlaceholder': 'Mot de passe',
+                'register.confirmPasswordPlaceholder': 'Confirmer le mot de passe',
+                'register.errorDuplicate': 'Nom d\'utilisateur ou email déjà utilisé',
+                'register.serverError': 'Serveur indisponible',
+
+                //pong
+                'pong.localGame': 'Jeu local',
+                'pong.onlineGame': 'Jouer en ligne 🌐',
+                'pong.backBtn': 'Retour',
+
+                //leaderboard
+                'leaderboard.title': 'Classement',
+                'leaderboard.rank': 'Rang',
+                'leaderboard.player': 'Joueur',
+                'leaderboard.level': 'Niveau',
+                'leaderboard.experience': 'Expérience',
+                'leaderboard.noPlayers': 'Aucun joueur trouvé',
+                'leaderboard.showing': 'Affichage de {{count}} / {{total}} joueurs',
+                'leaderboard.unknownError': 'Erreur inconnue',
+
+                //matchmaking
+                'matchmaking.connectionError': '❌ Connexion impossible',
+                'matchmaking.notConnected': 'Vous n\'êtes pas connecté(e) ou votre session a expiré.',
+                'matchmaking.playAsGuest': 'Jouer en tant qu\'invité',
+                'matchmaking.joinQueue': 'Rejoindre la file',
+                'matchmaking.preparingQueue': 'Rejoindre la file (préparation)',
+                'matchmaking.searching': 'Recherche d\'adversaire…',
+                'matchmaking.queuePosition': 'Position dans la file : {{position}}',
+                'matchmaking.cancel': 'Annuler',
+                'matchmaking.guestPrefix': 'Invité',
+                'matchmaking.queueError': '⚠️ Impossible de rejoindre',
+                'matchmaking.queueErrorMsg': 'Attendez quelques secondes avant de réessayer.',
+                'matchmaking.connecting': 'Connexion…',
+                'matchmaking.readyPrompt': 'Prêt à chercher un adversaire ?',
+                'matchmaking.cleaningUp': '🔄 Fermeture du match précédent…',
+                'matchmaking.preparing': '⏳ Préparation du serveur…',
+                'matchmaking.joinClick': '✅ Cliquez pour rejoindre la file',
+                'matchmaking.serverPreparing': '⏳ Préparation du serveur…',
+
+                //pong game overlay & components
+                'pong.overlay.resuming': 'Reprise !',
+                'pong.overlay.ready': 'Prêt ?',
+                'pong.overlay.rematchRequested': 'Demande envoyée…',
+                'pong.overlay.rematchRejected': 'Revanche refusée',
+                'pong.overlay.victory': '🏆 Victoire !',
+                'pong.overlay.defeat': '💀 Défaite',
+                'pong.overlay.wellPlayed': 'Bien joué !',
+                'pong.overlay.nextTime': 'On l\'aura la prochaine fois.',
+                'pong.overlay.rematchChallenge': '{{player}} vous défie en revanche !',
+                'pong.overlay.rematch': 'Revanche ?',
+                'pong.game.youAre': 'Vous êtes à {{side}}',
+                'pong.game.controls': '— ↑ ↓ ou W S pour déplacer votre raquette',
+                'pong.score.firstTo': 'Premier à {{maxScore}} points',
+                'pong.multi.ready': 'Prêt à jouer',
+                'pong.multi.instructions': 'Utilisez les flèches ↑ et ↓ pour déplacer votre raquette',
+                'pong.multi.firstToFive': 'Premier à 5 points gagne la partie',
+                'pong.direction.left': 'gauche',
+                'pong.direction.right': 'droite',
+                'pong.game.quit': 'Quitter',
+                'pong.opponent.reconnecting': '⏳ En attente de la reconnexion de l\'adversaire...',
+                'pong.opponent.canQuitAfter': 'Vous pouvez abandonner la partie après {{time}}s d\'attente.',
+                'pong.opponent.abandon': 'Abandonner',
+
+                //scoreboard
+                'scoreboard.loading': 'Chargement…',
+                'scoreboard.noMatches': 'Aucune partie jouée pour l\'instant.',
+                'scoreboard.error': 'Erreur {{status}}',
+                'scoreboard.pagination': '{{page}} / {{totalPages}} ({{total}} parties)',
+                'scoreboard.liveUpdate': 'Mise à jour en temps réel',
+                'scoreboard.guest': 'invité',
+                'scoreboard.overtime': 'Prolongation',
+                'scoreboard.previous': 'Précédent',
+                'scoreboard.next': 'Suivant',
+                'scoreboard.wins': 'V',
+                'scoreboard.losses': 'D',
+
+                //pong overlay
+                'pong.overlay.opponentLeft': 'Adversaire parti',
+                'pong.overlay.defaultVictory': 'Victoire par forfait !',
+                'pong.overlay.closing': 'Fermeture en cours...',
+                'pong.overlay.backToMenu': 'Retour au menu',
+                'pong.overlay.accept': 'Accepter',
+                'pong.overlay.decline': 'Refuser',
+
+                //error page
+                'error.back': 'Retour',
+
+                //teams page
+                'teams.title': 'Équipes',
+
+                //profile level display
+                'profile.levelText': 'Niveau',
+                'profile.xpText': 'XP',
             }
         },
         en: {
@@ -374,6 +480,112 @@ i18n.use(initReactI18next).init({
 
                 //login 
                 'login.delete.user' : 'your account has benn deleted',
+                'login.title': 'Login to play',
+                'login.noAccount': 'Don\'t have an account?',
+                'login.loginBtn': 'Login',
+                'login.errorIncorrect': 'Incorrect email or password',
+                'login.serverError': 'Server unavailable',
+
+                //register
+                'register.title': 'Sign up to Play',
+                'register.haveAccount': 'Already have an account?',
+                'register.linkLogin': 'Login',
+                'register.registerBtn': 'Sign up',
+                'register.usernamePlaceholder': 'Username',
+                'register.emailPlaceholder': 'Email address',
+                'register.passwordPlaceholder': 'Password',
+                'register.confirmPasswordPlaceholder': 'Confirm password',
+                'register.errorDuplicate': 'Username or email already in use',
+                'register.serverError': 'Server unavailable',
+
+                //pong
+                'pong.localGame': 'Local game',
+                'pong.onlineGame': 'Play online 🌐',
+                'pong.backBtn': 'Back',
+
+                //leaderboard
+                'leaderboard.title': 'Leaderboard',
+                'leaderboard.rank': 'Rank',
+                'leaderboard.player': 'Player',
+                'leaderboard.level': 'Level',
+                'leaderboard.experience': 'Experience',
+                'leaderboard.noPlayers': 'No players found',
+                'leaderboard.showing': 'Showing {{count}} / {{total}} players',
+                'leaderboard.unknownError': 'Unknown error',
+
+                //matchmaking
+                'matchmaking.connectionError': '❌ Connection failed',
+                'matchmaking.notConnected': 'You are not logged in or your session has expired.',
+                'matchmaking.playAsGuest': 'Play as guest',
+                'matchmaking.joinQueue': 'Join queue',
+                'matchmaking.preparingQueue': 'Join queue (preparing)',
+                'matchmaking.searching': 'Searching for opponent…',
+                'matchmaking.queuePosition': 'Queue position: {{position}}',
+                'matchmaking.cancel': 'Cancel',
+                'matchmaking.guestPrefix': 'Guest',
+                'matchmaking.queueError': '⚠️ Failed to join queue',
+                'matchmaking.queueErrorMsg': 'Wait a few seconds before trying again.',
+                'matchmaking.connecting': 'Connecting…',
+                'matchmaking.readyPrompt': 'Ready to find an opponent?',
+                'matchmaking.cleaningUp': '🔄 Closing previous match…',
+                'matchmaking.preparing': '⏳ Preparing server…',
+                'matchmaking.joinClick': '✅ Click to join queue',
+                'matchmaking.serverPreparing': '⏳ Preparing server…',
+
+                //pong game overlay & components
+                'pong.overlay.resuming': 'Resuming!',
+                'pong.overlay.ready': 'Ready?',
+                'pong.overlay.rematchRequested': 'Request sent…',
+                'pong.overlay.rematchRejected': 'Rematch rejected',
+                'pong.overlay.victory': '🏆 Victory!',
+                'pong.overlay.defeat': '💀 Defeat',
+                'pong.overlay.wellPlayed': 'Well played!',
+                'pong.overlay.nextTime': 'We\'ll get them next time.',
+                'pong.overlay.rematchChallenge': '{{player}} challenges you for a rematch!',
+                'pong.overlay.rematch': 'Rematch?',
+                'pong.game.youAre': 'You are the {{side}} player',
+                'pong.game.controls': '— ↑ ↓ or W S to move your paddle',
+                'pong.score.firstTo': 'First to {{maxScore}} points',
+                'pong.multi.ready': 'Ready to play',
+                'pong.multi.instructions': 'Use arrow keys ↑ and ↓ to move your paddle',
+                'pong.multi.firstToFive': 'First to 5 points wins the game',
+                'pong.direction.left': 'left',
+                'pong.direction.right': 'right',
+                'pong.game.quit': 'Quit',
+                'pong.opponent.reconnecting': '⏳ Waiting for opponent to reconnect...',
+                'pong.opponent.canQuitAfter': 'You can abandon the match after {{time}}s of waiting.',
+                'pong.opponent.abandon': 'Abandon',
+
+                //scoreboard
+                'scoreboard.loading': 'Loading…',
+                'scoreboard.noMatches': 'No matches played yet.',
+                'scoreboard.error': 'Error {{status}}',
+                'scoreboard.pagination': '{{page}} / {{totalPages}} ({{total}} matches)',
+                'scoreboard.liveUpdate': 'Real-time update',
+                'scoreboard.guest': 'guest',
+                'scoreboard.overtime': 'Overtime',
+                'scoreboard.previous': 'Previous',
+                'scoreboard.next': 'Next',
+                'scoreboard.wins': 'W',
+                'scoreboard.losses': 'L',
+
+                //pong overlay
+                'pong.overlay.opponentLeft': 'Opponent left',
+                'pong.overlay.defaultVictory': 'Victory by default!',
+                'pong.overlay.closing': 'Closing...',
+                'pong.overlay.backToMenu': 'Back to menu',
+                'pong.overlay.accept': 'Accept',
+                'pong.overlay.decline': 'Decline',
+
+                //error page
+                'error.back': 'Back',
+
+                //teams page
+                'teams.title': 'Teams',
+
+                //profile level display
+                'profile.levelText': 'Level',
+                'profile.xpText': 'XP',
             }
         },
         es : {
@@ -554,11 +766,117 @@ i18n.use(initReactI18next).init({
                 //chat
                 'chat.send' : 'Enviar',
                 'chat.yourMsg' : 'Tu mensaje',
-                'chat.longMsg' : 'Tu mensaje es dmasiado largo',
+                'chat.longMsg' : 'Tu mensaje es demasiado largo',
                 'chat.moderation' : 'Tu mensaje no es apropiado',
 
                 //login 
                 'login.delete.user' : 'Tu cuenta ha sido eliminada',
+                'login.title': 'Inicia sesión para jugar',
+                'login.noAccount': '¿No tienes cuenta?',
+                'login.loginBtn': 'Inicia sesión',
+                'login.errorIncorrect': 'Correo o contraseña incorrectos',
+                'login.serverError': 'Servidor no disponible',
+
+                //register
+                'register.title': 'Regístrate para Jugar',
+                'register.haveAccount': '¿Ya tienes una cuenta?',
+                'register.linkLogin': 'Inicia sesión',
+                'register.registerBtn': 'Regístrate',
+                'register.usernamePlaceholder': 'Nombre de usuario',
+                'register.emailPlaceholder': 'Correo electrónico',
+                'register.passwordPlaceholder': 'Contraseña',
+                'register.confirmPasswordPlaceholder': 'Confirmar contraseña',
+                'register.errorDuplicate': 'Nombre de usuario o correo ya en uso',
+                'register.serverError': 'Servidor no disponible',
+
+                //pong
+                'pong.localGame': 'Juego local',
+                'pong.onlineGame': 'Jugar en línea 🌐',
+                'pong.backBtn': 'Volver',
+
+                //leaderboard
+                'leaderboard.title': 'Tabla de clasificación',
+                'leaderboard.rank': 'Posición',
+                'leaderboard.player': 'Jugador',
+                'leaderboard.level': 'Nivel',
+                'leaderboard.experience': 'Experiencia',
+                'leaderboard.noPlayers': 'No se encontraron jugadores',
+                'leaderboard.showing': 'Mostrando {{count}} / {{total}} jugadores',
+                'leaderboard.unknownError': 'Error desconocido',
+
+                //matchmaking
+                'matchmaking.connectionError': '❌ Fallo en la conexión',
+                'matchmaking.notConnected': 'No has iniciado sesión o tu sesión ha expirado.',
+                'matchmaking.playAsGuest': 'Jugar como invitado',
+                'matchmaking.joinQueue': 'Unirse a la cola',
+                'matchmaking.preparingQueue': 'Unirse a la cola (preparando)',
+                'matchmaking.searching': 'Buscando oponente…',
+                'matchmaking.queuePosition': 'Posición en la cola: {{position}}',
+                'matchmaking.cancel': 'Cancelar',
+                'matchmaking.guestPrefix': 'Invitado',
+                'matchmaking.queueError': '⚠️ No se pudo unir a la cola',
+                'matchmaking.queueErrorMsg': 'Espera unos segundos antes de intentar de nuevo.',
+                'matchmaking.connecting': 'Conectando…',
+                'matchmaking.readyPrompt': '¿Listo para encontrar un oponente?',
+                'matchmaking.cleaningUp': '🔄 Cerrando la partida anterior…',
+                'matchmaking.preparing': '⏳ Preparando servidor…',
+                'matchmaking.joinClick': '✅ Haz clic para unirte a la cola',
+                'matchmaking.serverPreparing': '⏳ Preparando servidor…',
+
+                //pong game overlay & components
+                'pong.overlay.resuming': '¡Reanudando!',
+                'pong.overlay.ready': '¿Listo?',
+                'pong.overlay.rematchRequested': 'Solicitud enviada…',
+                'pong.overlay.rematchRejected': 'Revancha rechazada',
+                'pong.overlay.victory': '🏆 ¡Victoria!',
+                'pong.overlay.defeat': '💀 Derrota',
+                'pong.overlay.wellPlayed': '¡Bien jugado!',
+                'pong.overlay.nextTime': 'La próxima vez los venceremos.',
+                'pong.overlay.rematchChallenge': '¡{{player}} te desafia para una revancha!',
+                'pong.overlay.rematch': '¿Revancha?',
+                'pong.game.youAre': 'Eres el jugador de la {{side}}',
+                'pong.game.controls': '— ↑ ↓ o W S para mover tu raqueta',
+                'pong.score.firstTo': 'Primero a {{maxScore}} puntos',
+                'pong.multi.ready': 'Listo para jugar',
+                'pong.multi.instructions': 'Usa las flechas ↑ y ↓ para mover tu raqueta',
+                'pong.multi.firstToFive': 'Primero a 5 puntos gana el juego',
+                'pong.direction.left': 'izquierda',
+                'pong.direction.right': 'derecha',
+                'pong.game.quit': 'Salir',
+                'pong.opponent.reconnecting': '⏳ Esperando a que el oponente se reconecte...',
+                'pong.opponent.canQuitAfter': 'Puedes abandonar la partida después de {{time}}s de espera.',
+                'pong.opponent.abandon': 'Abandonar',
+
+                //scoreboard
+                'scoreboard.loading': 'Cargando…',
+                'scoreboard.noMatches': 'No hay partidas jugadas todavía.',
+                'scoreboard.error': 'Error {{status}}',
+                'scoreboard.pagination': '{{page}} / {{totalPages}} ({{total}} partidas)',
+                'scoreboard.liveUpdate': 'Actualización en tiempo real',
+                'scoreboard.guest': 'invitado',
+                'scoreboard.overtime': 'Prórroga',
+                'scoreboard.previous': 'Anterior',
+                'scoreboard.next': 'Siguiente',
+                'scoreboard.wins': 'G',
+                'scoreboard.losses': 'P',
+
+                //pong overlay
+                'pong.overlay.opponentLeft': 'El oponente se fue',
+                'pong.overlay.defaultVictory': '¡Victoria por defecto!',
+                'pong.overlay.closing': 'Cerrando...',
+                'pong.overlay.backToMenu': 'Volver al menú',
+                'pong.overlay.accept': 'Aceptar',
+                'pong.overlay.decline': 'Rechazar',
+
+                //error page
+                'error.back': 'Atrás',
+
+                //teams page
+                'teams.title': 'Equipos',
+
+                //profile level display
+                'profile.levelText': 'Nivel',
+                'profile.xpText': 'XP',
             }
         },
 
@@ -745,6 +1063,114 @@ i18n.use(initReactI18next).init({
                 
                 //login 
                 'login.delete.user' : 'تم حذف حسابك',
+
+                //login
+                'login.title': 'تسجيل الدخول للعب',
+                'login.noAccount': 'ليس لديك حساب؟',
+                'login.loginBtn': 'تسجيل الدخول',
+                'login.errorIncorrect': 'البريد الإلكتروني أو كلمة المرور غير صحيحة',
+                'login.serverError': 'الخادم غير متاح',
+
+                //register
+                'register.title': 'إنشاء حساب للعب',
+                'register.haveAccount': 'هل لديك حساب بالفعل؟',
+                'register.linkLogin': 'تسجيل الدخول',
+                'register.registerBtn': 'إنشاء حساب',
+                'register.usernamePlaceholder': 'اسم المستخدم',
+                'register.emailPlaceholder': 'عنوان البريد الإلكتروني',
+                'register.passwordPlaceholder': 'كلمة المرور',
+                'register.confirmPasswordPlaceholder': 'تأكيد كلمة المرور',
+                'register.errorDuplicate': 'اسم المستخدم أو البريد الإلكتروني قيد الاستخدام بالفعل',
+                'register.serverError': 'الخادم غير متاح',
+
+                //pong
+                'pong.localGame': 'لعبة محلية',
+                'pong.onlineGame': 'العب أونلاين 🌐',
+                'pong.backBtn': 'عودة',
+
+                //leaderboard
+                'leaderboard.title': 'جدول المتصدرين',
+                'leaderboard.rank': 'المرتبة',
+                'leaderboard.player': 'اللاعب',
+                'leaderboard.level': 'المستوى',
+                'leaderboard.experience': 'الخبرة',
+                'leaderboard.noPlayers': 'لم يتم العثور على لاعبين',
+                'leaderboard.showing': 'عرض {{count}} من أصل {{total}} لاعب',
+                'leaderboard.unknownError': 'خطأ غير معروف',
+
+                //matchmaking
+                'matchmaking.connectionError': '❌ فشل الاتصال',
+                'matchmaking.notConnected': 'أنت لم تسجل الدخول أو انتهت جلستك.',
+                'matchmaking.playAsGuest': 'العب كضيف',
+                'matchmaking.joinQueue': 'انضم إلى الطابور',
+                'matchmaking.preparingQueue': 'انضم إلى الطابور (التحضير)',
+                'matchmaking.searching': 'البحث عن خصم…',
+                'matchmaking.queuePosition': 'موضعك في الطابور: {{position}}',
+                'matchmaking.cancel': 'إلغاء',
+                'matchmaking.guestPrefix': 'ضيف',
+                'matchmaking.queueError': '⚠️ فشل الانضمام إلى الطابور',
+                'matchmaking.queueErrorMsg': 'انتظر بضع ثوان قبل إعادة المحاولة.',
+                'matchmaking.connecting': 'جاري الاتصال…',
+                'matchmaking.readyPrompt': 'هل أنت مستعد للبحث عن خصم؟',
+                'matchmaking.cleaningUp': '🔄 إغلاق المباراة السابقة…',
+                'matchmaking.preparing': '⏳ جاري تحضير الخادم…',
+                'matchmaking.joinClick': '✅ انقر للانضمام إلى الطابور',
+                'matchmaking.serverPreparing': '⏳ جاري تحضير الخادم…',
+
+                //pong game overlay & components
+                'pong.overlay.resuming': 'استئناف!',
+                'pong.overlay.ready': 'مستعد؟',
+                'pong.overlay.rematchRequested': 'تم إرسال الطلب…',
+                'pong.overlay.rematchRejected': 'تم رفض المباراة الحتمية',
+                'pong.overlay.victory': '🏆 انتصار!',
+                'pong.overlay.defeat': '💀 هزيمة',
+                'pong.overlay.wellPlayed': 'لعبت بشكل جيد!',
+                'pong.overlay.nextTime': 'سنفوز بهم في المرة القادمة.',
+                'pong.overlay.rematchChallenge': '{{player}} يتحداك للعب مرة أخرى!',
+                'pong.overlay.rematch': 'مباراة إعادة؟',
+                'pong.game.youAre': 'أنت اللاعب في {{side}}',
+                'pong.game.controls': '— ↑ ↓ أو W S لتحريك مضربك',
+                'pong.score.firstTo': 'الأول الذي يصل إلى {{maxScore}} نقطة',
+                'pong.multi.ready': 'جاهز للعب',
+                'pong.multi.instructions': 'استخدم الأسهم ↑ و ↓ لتحريك مضربك',
+                'pong.multi.firstToFive': 'الأول الذي يصل إلى 5 نقاط يفوز باللعبة',
+                'pong.direction.left': 'الجانب الأيسر',
+                'pong.direction.right': 'الجانب الأيمن',
+                'pong.game.quit': 'خروج',
+                'pong.opponent.reconnecting': '⏳ في انتظار إعادة اتصال الخصم...',
+                'pong.opponent.canQuitAfter': 'يمكنك التخلي عن المباراة بعد {{time}}s من الانتظار.',
+                'pong.opponent.abandon': 'التخلي',
+
+                //scoreboard
+                'scoreboard.loading': 'جاري التحميل…',
+                'scoreboard.noMatches': 'لم يتم لعب أي مباريات حتى الآن.',
+                'scoreboard.error': 'خطأ {{status}}',
+                'scoreboard.pagination': '{{page}} / {{totalPages}} ({{total}} مباراة)',
+                'scoreboard.liveUpdate': 'تحديث فوري',
+                'scoreboard.guest': 'ضيف',
+                'scoreboard.overtime': 'وقت إضافي',
+                'scoreboard.previous': 'السابق',
+                'scoreboard.next': 'التالي',
+                'scoreboard.wins': 'ف',
+                'scoreboard.losses': 'خ',
+
+                //pong overlay
+                'pong.overlay.opponentLeft': 'غادر الخصم',
+                'pong.overlay.defaultVictory': 'انتصار افتراضي!',
+                'pong.overlay.closing': 'جاري الإغلاق...',
+                'pong.overlay.backToMenu': 'العودة للقائمة الرئيسية',
+                'pong.overlay.accept': 'قبول',
+                'pong.overlay.decline': 'رفض',
+
+                //error page
+                'error.back': 'رجوع',
+
+                //teams page
+                'teams.title': 'الفريق',
+
+                //profile level display
+                'profile.levelText': 'المستوى',
+                'profile.xpText': 'XP',
             }
         }
     }

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { usePongSocket } from "../Components/Pong/usePongSocket";
 import { useAuth } from "../main";
 import PongGame from "../Components/Pong/PongGame";
@@ -14,6 +15,7 @@ import "../Components/Pong/pong.css";
  */
 export default function Matchmaking() {
 	const navigate = useNavigate();
+	const { t } = useTranslation();
 	const { accessToken } = useAuth();
 	
 	// CRITICAL: Persist guestName in sessionStorage to survive component unmount
@@ -33,6 +35,7 @@ export default function Matchmaking() {
 		leaveGame,
 		requestRematch,
 		respondRematch,
+		quitWaiting,
 		socketCreatedTime,
 	} = usePongSocket(guestName, accessToken);
 
@@ -41,11 +44,11 @@ export default function Matchmaking() {
 		// This prevents phantom queue issues when user quit+rejoin multiple times
 		if (!guestName) {
 			const suffix = Math.random().toString(36).slice(2, 8).toUpperCase();
-			const newGuestName = `Invité_${suffix}`;
+			const newGuestName = `${t('matchmaking.guestPrefix')}_${suffix}`;
 			sessionStorage.setItem('pong_guest_name', newGuestName);
 			setGuestName(newGuestName);
 		}
-	}, [guestName]);
+	}, [guestName, t]);
 
 	const { phase, queuePosition, gameInfo, gameState, countdown, countdownResuming, winner, opponentLeft, opponentReconnecting, timerRemaining, overtimeMessage, rematchStatus, rematchFromLabel, error, isCleaningUp } = state;
 
@@ -126,17 +129,17 @@ export default function Matchmaking() {
 		return (
 			<div className="matchmaking-page">
 				<div className="matchmaking-box">
-					<p className="matchmaking-title">❌ Connexion impossible</p>
+					<p className="matchmaking-title">{t('matchmaking.connectionError')}</p>
 					<p className="matchmaking-sub">
-						Vous n'êtes pas connecté(e) ou votre session a expiré.
+						{t('matchmaking.notConnected')}
 					</p>
 
 					<button className="btn-play" onClick={handlePlayAsGuest}>
-						Jouer en tant qu'invité
+						{t('matchmaking.playAsGuest')}
 					</button>
 
 					<button className="btn-play btn-play-secondary" onClick={() => navigate("/pong")}>
-						Retour
+						{t('pong.backBtn')}
 					</button>
 				</div>
 			</div>
@@ -182,13 +185,13 @@ export default function Matchmaking() {
 		return (
 			<div className="matchmaking-page">
 				<div className="matchmaking-box">
-					<p className="matchmaking-title">Prêt à chercher un adversaire?</p>
+					<p className="matchmaking-title">{t('matchmaking.readyPrompt')}</p>
 					<p className="matchmaking-sub" style={{ marginBottom: "2rem" }}>
 						{isCleaningUp
-							? "🔄 Fermeture du match précédent…"
+							? t('matchmaking.cleaningUp')
 							: !isReadyForQueue
-								? "⏳ Préparation du serveur… (socket age: " + (socketCreatedTime?.current ? Date.now() - socketCreatedTime.current : 0) + "ms)"
-								: "✅ Cliquez pour rejoindre la file"}
+								? t('matchmaking.serverPreparing')
+								: t('matchmaking.joinClick')}
 					</p>
 
 					<button
@@ -200,11 +203,11 @@ export default function Matchmaking() {
 							cursor: isReadyForQueue && !isCleaningUp ? 'pointer' : 'not-allowed',
 						}}
 					>
-						{isReadyForQueue && !isCleaningUp ? "Rejoindre la file" : "Rejoindre la file (préparation)"}
+						{isReadyForQueue && !isCleaningUp ? t('matchmaking.joinQueue') : t('matchmaking.preparingQueue')}
 					</button>
 
 					<button className="btn-play btn-play-secondary" onClick={() => navigate("/pong")}>
-						Retour
+					{t('pong.backBtn')}
 					</button>
 				</div>
 			</div>
@@ -230,13 +233,13 @@ export default function Matchmaking() {
 						<div className="matchmaking-radar-dot" />
 					</div>
 
-					<p className="matchmaking-title">Recherche d'adversaire…</p>
-					<p className="matchmaking-sub">
-						Position dans la file : {queuePosition}
+				<p className="matchmaking-title">{t('matchmaking.searching')}</p>
+				<p className="matchmaking-sub">
+					{t('matchmaking.queuePosition', { position: queuePosition })}
 					</p>
 
 					<button className="btn-play" onClick={handleCancelQueue}>
-						Annuler
+					{t('matchmaking.cancel')}
 					</button>
 				</div>
 			</div>
@@ -262,6 +265,7 @@ export default function Matchmaking() {
 				onLeave={handleLeaveGame}
 				onRematch={requestRematch}
 				onRematchRespond={respondRematch}
+				onQuitWaiting={quitWaiting}
 				isCleaningUp={isCleaningUp}
 			/>
 		);

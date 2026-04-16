@@ -308,6 +308,29 @@
 	background: rgba(239, 68, 68, 0.28);
 }
 
+/* ── Quit waiting button (in reconnection banner) ───────────────────────────── */
+.pong-btn-quit-waiting {
+	background: rgba(239, 68, 68, 0.2);
+	border: 1px solid rgba(239, 68, 68, 0.5);
+	color: #fca5a5;
+	padding: 0.4rem 1rem;
+	border-radius: 6px;
+	font-size: 0.8rem;
+	cursor: pointer;
+	transition: all 0.15s;
+	margin-top: 0.5rem;
+	white-space: nowrap;
+}
+
+.pong-btn-quit-waiting:hover {
+	background: rgba(239, 68, 68, 0.35);
+	border-color: rgba(239, 68, 68, 0.7);
+}
+
+.pong-btn-quit-waiting:active {
+	transform: scale(0.98);
+}
+
 /* ── Timer de partie ────────────────────────────────────────────── */
 .pong-timer-banner {
 	background: rgba(99, 102, 241, 0.12);

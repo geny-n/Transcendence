@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import './style/Pong.css'
 
 export default function Pong()
 {
+  const { t } = useTranslation();
   const [showPong, setShowPong] = useState(false);
   const navigate = useNavigate();
   // Bloque le scroll du body uniquement quand le jeu est affiché
@@ -29,17 +31,15 @@ export default function Pong()
 
         <button className="btn-play"
         onClick={() => setShowPong(true)}>
-        Jouer</button>
+        {t('pong.localGame')}</button>
 
         <button 
           className="btn-play"
           onClick={() => navigate('/matchmaking')}
         >
-          Jouer en ligne 🌐
+          {t('pong.onlineGame')}
         </button>
 
-        <button className="btn-play">
-        Parametres</button>
 
         {showPong && (
           <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black bg-opacity-80">
@@ -56,7 +56,7 @@ export default function Pong()
                 className="btn-play"
                 onClick={() => setShowPong(false)}
               >
-                Retour
+                {t('pong.backBtn')}
               </button>
             </div>
           </div>

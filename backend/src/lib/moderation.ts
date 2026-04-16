@@ -24,7 +24,7 @@ export async function toxicityScale(msg:string): Promise<{flag:boolean}>{
 			throw new Error(`HuggingFace error ${response.status}`);
 		const result = await response.json() as Res;
 		const score = result[0]?.find(s => s.label === 'toxic')?.score ?? 0;
-		const flag = score > 0.8;
+		const flag = score >= 0.5;
 		return {flag};
 	}
 	catch {

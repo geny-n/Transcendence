@@ -1,6 +1,8 @@
 NAME = transcendence
 DOC_COMP = docker compose
 
+export BUILDAH_FORMAT=docker
+
 #colors
 GREEN = \033[0;32m
 RESET = \033[0m
@@ -46,7 +48,7 @@ logs:
 fclean:
 	$(DOC_COMP) down -v --rmi all --remove-orphans 2>/dev/null || true
 	docker system prune -af
-	docker volume prune -af
+	docker volume prune -f
 	@echo "$(GREEN)Tout est nettoyé !$(RESET)"
 
 re: fclean all

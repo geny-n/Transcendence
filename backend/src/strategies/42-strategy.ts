@@ -3,9 +3,9 @@ import Strategy from "passport-42";
 import prisma from "../lib/prisma.js";
 
 const options = {
-	clientID: process.env["42_APP_ID"] || "u-s4t2ud-e002018159131e4059b031968d41954251050765695dcd3ed86d50e43a8d7629",
-	clientSecret: process.env["42_APP_SECRET"] || "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",
-	callbackURL: "http://localhost:3100/auth/42/callback",
+	clientID: process.env["APP_42_ID"]!,
+	clientSecret: process.env["APP_42_SECRET"]!,
+	callbackURL: process.env["APP_42_CALLBACK"]!,
 }
 
 export default passport.use(

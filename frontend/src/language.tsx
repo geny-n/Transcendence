@@ -1,9 +1,9 @@
 import i18n from "i18next";
 import { initReactI18next} from "react-i18next";
-import frJson from "../public/language/fr.json"
-import enJson from "../public/language/en.json"
-import esJson from "../public/language/es.json"
-import arJson from "../public/language/ar.json"
+import frJson from "./language/fr.json"
+import enJson from "./language/en.json"
+import esJson from "./language/es.json"
+import arJson from "./language/ar.json"
 
 i18n.use(initReactI18next).init({
     debug:true,
@@ -20,6 +20,7 @@ i18n.use(initReactI18next).init({
                 'navbar.admin' : 'Admin',
                 'navbar.login' : 'Connexion',
                 'navbar.register' : 'Inscription',
+                'navbar.about' : 'À propos',
 
                 //HomePage
                 'homepage.home' : 'Bienvenue sur notre transcendence',
@@ -145,6 +146,7 @@ i18n.use(initReactI18next).init({
                 'navbar.admin' : 'Admin',
                 'navbar.login' : 'Login',
                 'navbar.register' : 'Register',
+                'navbar.about' : 'About',
 
                 //HomePage
                 'homepage.home' : 'Welcome to our transcendence',
@@ -269,6 +271,7 @@ i18n.use(initReactI18next).init({
                 'navbar.admin' : 'Admin',
                 'navbar.login' : 'Iniciar sesion',
                 'navbar.register' : 'Registarse',
+                'navbar.about' : 'Sobre',
 
                 //HomePage
                 'homepage.home' : 'Bienvenido a nuestra transcendence',
@@ -395,6 +398,7 @@ i18n.use(initReactI18next).init({
                 'navbar.admin' : 'Admin',
                 'navbar.login' : 'تسجيل الدخول',
                 'navbar.register' : 'التسجيل',
+                'navbar.about' : 'حول',
 
                 //HomePage
                 // 'homepage.home' : 'Bienvenido a nuestra transcendence',

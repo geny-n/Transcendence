@@ -6,8 +6,7 @@ import { CgProfile } from "react-icons/cg";
 import { CiMail, CiLock } from "react-icons/ci"; // mail && lock icon
 import { LuEye, LuEyeClosed } from "react-icons/lu"; //eyes icon
 import { Si42 } from "react-icons/si"; //42 icon
-import { FaGithub } from "react-icons/fa"; // github icon
-import { FcGoogle } from "react-icons/fc"; //google icon
+import { FaDiscord } from "react-icons/fa"; // github icon
 import logo from '../assets/logo.png';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type T_inscriptionForm, inscriptionForm } from '../lib/types';
@@ -26,6 +25,8 @@ const Register = () => {
 
 	const navigate = useNavigate();
 	const register_url = '/api/register';
+	const fortyAuth_url = 'api/auth/42';
+	// const dicordAuth_url = 'api/auth/discord';
 
 	const { t } = useTranslation();
 
@@ -36,6 +37,14 @@ const Register = () => {
 	} = useForm<T_inscriptionForm>({
 		resolver: zodResolver(inscriptionForm(t)),
 	});
+
+	const fortyAuth = () => {
+		window.location.href = fortyAuth_url;
+    }
+
+	// const discordAuth = () => {
+	// 	window.location.href = discordAuth_url;
+	// }
 
 	const onSubmit = async (data: FieldValues) => {
 		console.log("Inscription data :", data);
@@ -133,21 +142,16 @@ const Register = () => {
 					{errors.confirmPass && <p className="text-left text-red-500 text-xs">{`${errors.confirmPass.message}`}</p>}
 				</div>
 
-
 				{errMsg && <p className="text-center text-red-500 text-xs"> {errMsg} </p>}
 
 				<button disabled={isSubmitting} type="submit" className="btn-sign">{t('register.to-register')}</button>
 
-
-				<div className="relative w-full flex items-center justify-between py-3">
+				<div className="icon-btn-overall" /*onClick={discordAuth}*/ >
 					<div className="icon-btn">
-						<FaGithub className="text-lg md:text-xl" />
+						<FaDiscord className="text-lg md:text-xl" />
 					</div>
-					<div className="icon-btn">
+					<div className="icon-btn" onClick={fortyAuth}>
 						<Si42 className="text-lg md:text-xl" />
-					</div>
-					<div className="icon-btn">
-						<FcGoogle className="text-lg md:text-xl" />
 					</div>
 				</div>
 			</div>

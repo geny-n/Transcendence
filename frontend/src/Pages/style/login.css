@@ -6,7 +6,7 @@
         @apply w-[90%] max-w-sm md:max-w-md
         lg:max-w-md p-5 bg-gray-900 flex-col
         flex items-center gap-3 rounded-xl shadow-slate-500
-        shadow-lg;
+        shadow-lg mx-auto;
     }
 
     .btn-txt{
@@ -31,10 +31,29 @@
         @apply bg-blue-600
     }
 
+    .icon-btn-overall{
+        @apply flex justify-center items-center gap-4 py-3 w-full max-w-xs mx-auto;
+    }
+
     .icon-btn{
         @apply p-2 md:px-10 bg-slate-700 cursor-pointer rounded-xl;
     }
     .icon-btn:hover{
         @apply bg-slate-800;
+    }
+
+    .modal-win{
+        @apply absolute w-1/2 max-h-[80vh] top-1/2 left-1/2 
+        -translate-x-1/2 -translate-y-1/2 
+        p-6 rounded-xl border-0 
+        overflow-y-auto;
+    }
+
+    .modal-txt{
+        @apply flex flex-col;
+    }
+
+    .modal-btn{
+        @apply mt-4 px-4 py-2 bg-black text-white rounded sticky bottom-0;
     }
 }

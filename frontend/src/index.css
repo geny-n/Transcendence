@@ -8,7 +8,7 @@
     font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
     @apply leading-relaxed font-normal;
 
-    @apply text-white/87 bg-gray-900;
+    /* @apply text-white/87 bg-gray-900; */
 
     font-synthesis: none;
     text-rendering: optimizeLegibility;
@@ -28,9 +28,28 @@
   }
 }
 
-@layer components {
+/* @layer components {
   .centerd-page {
     @apply flex place-items-center min-h-screen;
   }
-}
+
+  .markdown-p {
+    @apply mb-4 leading-relaxed break-words;
+  }
+  
+  .markdown-ul {
+    @apply list-disc pl-5 mb-4;
+  }
+  
+  .markdown-h1 {
+    @apply text-xl font-bold mb-4;
+  }
+  
+  .markdown-h2 {
+    @apply text-lg font-semibold mb-3;
+  }
+  
+  .markdown-h3 {
+    @apply text-base font-semibold mb-2;
+  } */
 

@@ -5,8 +5,7 @@ import type { FieldValues } from 'react-hook-form';
 import { CiMail, CiLock } from "react-icons/ci"; // mail && lock icon
 import { LuEye,LuEyeClosed } from "react-icons/lu"; //eyes icon
 import { Si42 } from "react-icons/si"; //42 icon
-import { FaGithub } from "react-icons/fa"; // github icon
-import { FcGoogle } from "react-icons/fc"; //google icon
+import { FaDiscord } from "react-icons/fa"; // github icon
 import logo from '../assets/logo.png';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type T_connexionForm, connexionForm } from '../lib/types';
@@ -24,6 +23,8 @@ const Login = () => {
 
 	const navigate = useNavigate();
 	const login_url = '/api/login';
+	const fortyAuth_url = 'api/auth/42';
+	// const dicordAuth_url = 'api/auth/discord';
 
 	const { t } = useTranslation();
 
@@ -34,6 +35,14 @@ const Login = () => {
 	} = useForm<T_connexionForm>({
 		resolver: zodResolver(connexionForm(t)),
 	});
+
+	const fortyAuth = () => {
+		window.location.href = fortyAuth_url;
+    }
+
+	// const discordAuth = () => {
+	// 	window.location.href = discordAuth_url;
+	// }
 
 	const onSubmit = async (data: FieldValues) => {
 		console.log("Connexion data: ", data);
@@ -117,15 +126,12 @@ const Login = () => {
 
 				<button disabled={isSubmitting} type="submit" className="btn-sign">{t('login.connexion')}</button>
 
-				<div className="relative w-full flex items-center justify-between py-3">
+				<div className="icon-btn-overall" /*onClick={discordAuth}*/ >
 					<div className="icon-btn">
-						<FaGithub className="text-lg md:text-xl"/>
+						<FaDiscord className="text-lg md:text-xl" />
 					</div>
-					<div className="icon-btn">
-						<Si42 className="text-lg md:text-xl"/>
-					</div>
-					<div className="icon-btn">
-						<FcGoogle className="text-lg md:text-xl"/>
+					<div className="icon-btn" onClick={fortyAuth}>
+						<Si42 className="text-lg md:text-xl" />
 					</div>
 				</div>
 			</div>

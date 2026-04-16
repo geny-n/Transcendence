@@ -19,8 +19,6 @@ We use Your Personal Data to provide and improve the Service. By using the Servi
 The words whose initial letters are capitalized have meanings defined under the following conditions.  
 The following definitions shall have the same meaning regardless of whether they appear in singular or in plural.
 
----
-
 ### Definitions
 
 For the purposes of this Privacy Policy:

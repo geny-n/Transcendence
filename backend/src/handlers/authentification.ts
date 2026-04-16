@@ -8,7 +8,6 @@ import { asyncHandler } from "../utils/asyncHandlers.js";
 
 export const registerUsers = asyncHandler(async (request: Request, response: Response) => {
 	const result = validationResult(request);
-	console.log("Inside registerUsers: Result:", result);
 
 	if (!result.isEmpty()) {
 		return response.status(400).json({
@@ -17,7 +16,6 @@ export const registerUsers = asyncHandler(async (request: Request, response: Res
 		});
 	}
 	const data = matchedData(request) as CreateUserDto;
-	console.log('data:', data);
 
 	// Verifier si l'utilisateur existe deja
 	const existingUser = await prisma.user.findFirst({
@@ -28,18 +26,16 @@ export const registerUsers = asyncHandler(async (request: Request, response: Res
 			]
 		}
 	});
-	console.log('existingUser:', existingUser);
 
 	if (existingUser) {
 		return response.status(409).json({
 			success: false,
-			message: "A user with this email address or username already exists."
+			message: "backend.auth.duplicate.user"
 		});
 	}
 
 	// Hasher le mot de passe
 	data.password = hashPassword(data.password);
-	console.log('data.password:', data.password);
 
 	// Creer l'utilsateur
 	const newUser = await prisma.user.create({
@@ -55,7 +51,6 @@ export const registerUsers = asyncHandler(async (request: Request, response: Res
 			createdAt: true,
 		}
 	});
-	console.log('Created user:', newUser);
 
 	return response.status(201).json({
 		success: true,
@@ -65,7 +60,6 @@ export const registerUsers = asyncHandler(async (request: Request, response: Res
 
 export const loginUser = asyncHandler(async (request: Request, response: Response) => {
 	const result = validationResult(request);
-	console.log("Inside loginUser: Result:", result);
 
 	if (!result.isEmpty()) {
 		return response.status(400).json({
@@ -75,19 +69,16 @@ export const loginUser = asyncHandler(async (request: Request, response: Respons
 	}
 
 	const { email, password } = matchedData(request) as { email: string, password: string};
-	console.log("email:", email);
-	console.log("password:", password);
 
 	// chercher l'utilisateur
 	const user = await prisma.user.findUnique({
 		where: { email: email },
 	});
-	console.log("user:", user);
 
 	if (user?.isOnline) {
-		console.log("[login] User already online, allowing re-login");
+		console.log("[login] User already online, allowing re-login :", user.isOnline);
 		// Allow re-login even if already online - will be handled by socket disconnect
-		// return response.status(200).json({
+		// return response.status(409).json({
 		// 	success: true,
 		// 	message: "already logged in"
 		// });
@@ -96,25 +87,22 @@ export const loginUser = asyncHandler(async (request: Request, response: Respons
 	if (!user || !user.password) {
 		return response.status(401).json({
 			success: false,
-			message: "Incorrect credentials"
+			message: "backend.auth.invalid.credentials"
 		});
 	}
 
 	const isPasswordValid = comparePassword(password, user.password);
-	console.log("isPasswordValid:", isPasswordValid);
 
 	if (!isPasswordValid) {
 		return response.status(401).json({
 			success: false,
-			message: "Incorrect credentials"
+			message: "backend.auth.invalid.credentials"
 		});
 	}
 
 	// Generer les tokens
 	const accessToken = generateAccessToken(user.id);
-	console.log('accessToken:', accessToken);
 	const refreshToken = generateRefreshToken(user.id);
-	console.log('refreshToken:', refreshToken);
 
 	// Mettre a jour le refresh token en base
 	await prisma.user.update({
@@ -128,7 +116,7 @@ export const loginUser = asyncHandler(async (request: Request, response: Respons
 	// Configurer les cookies
 	const isSecure = process.env.NODE_ENV === "production" || process.env.FRONTEND_URL?.startsWith("https");
 	console.log(`[login] Setting cookies: isSecure=${isSecure}, NODE_ENV=${process.env.NODE_ENV}, FRONTEND_URL=${process.env.FRONTEND_URL}`);
-	
+
 	response.cookie("access_token", accessToken, {
 		httpOnly: true,
 		secure: isSecure,
@@ -153,7 +141,6 @@ export const loginUser = asyncHandler(async (request: Request, response: Respons
 		role: user.role,
 		createdAt: user.createdAt,
 	};
-	console.log('userWithoutPassword:', userWithoutPassword);
 
 	return response.status(200).json({
 		success: true,
@@ -165,10 +152,8 @@ export const loginUser = asyncHandler(async (request: Request, response: Respons
 export const logoutUser = asyncHandler(async (request: Request, response: Response) => {
 	const io = getIO();
 	const user = request.user!;
-	console.log("Inside logoutUser: user:", user);
 
 	const friendsIds = await getAllFriendIds(user.id);
-	console.log("friendsIds:", friendsIds);
 
 	await prisma.user.update({
 		where : { id: user.id },
@@ -200,7 +185,7 @@ export const logoutUser = asyncHandler(async (request: Request, response: Respon
 
 	return response.status(200).json({
 		success: true,
-		message: 'Logged out successfully',
+		message: 'backend.auth.logout.success',
 	});
 });
 
@@ -210,18 +195,16 @@ export const authHandler = asyncHandler(async (request: Request, response: Respo
 	// console.log('Type of req.user:', typeof request.user);
 	// console.log('Keys:', request.user ? Object.keys(request.user) : 'null');
 	if (!request.user) {
-		throw new Error("No user found after authentication");
+		throw new Error("backend.auth.no.user.after.authentication");
 	}
 
 	// Maintenant que TypeScript connais la structure
 	const { id, username } = request.user;
-	console.log(`Inside authHandler: User ${username} (${id}) authenticated via 42`);
+	console.log(`User ${username} (${id}) authenticated via 42`);
 
 	// Generer les tokens
 	const accessToken = generateAccessToken(id);
-	console.log('accessToken:', accessToken);
 	const refreshToken = generateRefreshToken(id);
-	console.log('refreshToken:', refreshToken);
 
 	// Mettre a jour le refresh token en BDD
 	await prisma.user.update({
@@ -234,7 +217,7 @@ export const authHandler = asyncHandler(async (request: Request, response: Respo
 
 	// Set cookies et rediriger
 	const isSecure = process.env.NODE_ENV === "production" || process.env.FRONTEND_URL?.startsWith("https");
-	
+
 	response.cookie("access_token", accessToken, {
 		httpOnly: true,
 		secure: isSecure,
@@ -260,11 +243,11 @@ export const authHandler = asyncHandler(async (request: Request, response: Respo
  */
 export const getSocketToken = asyncHandler(async (request: Request, response: Response) => {
 	const token = request.cookies?.access_token;
-	
+
 	if (!token) {
 		return response.status(401).json({
 			success: false,
-			message: "No valid token"
+			message: "backend.auth.no.valid.token"
 		});
 	}
 

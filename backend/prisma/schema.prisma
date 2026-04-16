@@ -21,6 +21,7 @@ model User {
 	password		String?		// Nullable pour OAuth users rajouter ? a la fin pour ca
 	username		String		@unique
 	fortyTwoId		String?		@unique
+	discordId		String?		@unique
 	avatarUrl		String?		@default("/avatars/default_avatar.png")
 	role			UserRoles	@default(USER)
 	createdAt		DateTime	@default(now())
@@ -123,7 +124,13 @@ model ChatMessage {
 	senderId	String
 	receiverId	String
 	read		Boolean @default(false)
-
+	status		StatusMsg @default(PENDING)
 	sender		User	@relation("sender", fields: [senderId], references: [id], onDelete: Cascade)
 	receiver	User	@relation("receiver", fields: [receiverId], references: [id], onDelete: Cascade)
+}
+
+enum StatusMsg {
+	PENDING
+	SENT
+	BLOCKED
 }

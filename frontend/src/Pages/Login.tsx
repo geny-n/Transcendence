@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import type { FieldValues } from 'react-hook-form';
@@ -64,7 +64,11 @@ const Login = () => {
 			const me = await axios.get('/api/users/me', { withCredentials: true });
 			setUser(me.data.user);
 			setErrMsg("");
-			navigate("/");
+			
+			// Check for unfinished games and auto-join if exists
+			// The Socket.io connection will handle checking for incomplete games
+			// by emitting a query to the backend after connection
+			navigate("/matchmaking");
 		}catch(err){
 			if (axios.isAxiosError(err))
 			{
@@ -80,6 +84,15 @@ const Login = () => {
 			}
 		}
 	}
+
+	useEffect(() => {
+		if (sessionStorage.getItem('User deleted'))
+		{
+			sessionStorage.removeItem('User deleted');
+			setErrMsg(t('login.delete.user'));
+		}
+	}, []);
+
 	return (
 		<form onSubmit={handleSubmit(onSubmit)}
 			className="w-full h-screen flex items-center justify-center">

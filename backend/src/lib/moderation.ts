@@ -1,22 +1,11 @@
 // import { InferenceClient  } from "@huggingface/inference";
+
 import * as dotenv from 'dotenv';
 
-// export async function toxicityScale(msg:string) {
+dotenv.config({path: '../.env'});
 
 
-    dotenv.config({ path: '../.env' });
-
-//     const inference = new InferenceClient(process.env.HUGGING_TOKEN);
-//     const output = await inference.textClassification({
-//         model: "unitary/multilingual-toxic-xlm-roberta",
-//         provider: "hf-inference",
-//         inputs : msg,
-//     });
-
-//     console.log(msg, " : ", output);
-// }
-// toxicityScale("salut");
-
+type Res = {label: string; score: number}[][];
 export async function toxicityScale(msg:string): Promise<{flag:boolean}>{
 	try {
 		const response = await fetch
@@ -31,15 +20,15 @@ export async function toxicityScale(msg:string): Promise<{flag:boolean}>{
 				body: JSON.stringify({inputs: msg}),
 			}
 		);
-		const result = await response.json();
-		const score = result[0][0]?.score ?? 0;
-		console.log("score = ", score);
-		const flag = score > 0.8;
+		if (!response.ok)
+			throw new Error(`HuggingFace error ${response.status}`);
+		const result = await response.json() as Res;
+		const score = result[0]?.find(s => s.label === 'toxic')?.score ?? 0;
+		const flag = score >= 0.5;
 		return {flag};
 	}
 	catch {
 		return {flag : false};
 	}
 }
-
-// toxicityScale("salope a toi").then(console.log);
+//toxicityScale("I want to kill you").then(console.log);

@@ -8,6 +8,7 @@ import z from 'zod';
 import { ForbidenRegex, PasswordRegex, UserNameRegex } from '../lib/regex';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { TheSocket } from '../socket'
 
 type AdminUser = {
 	id: string;
@@ -17,6 +18,8 @@ type AdminUser = {
 	role: UserRoles;
 	isOnline: boolean;
 	createdAt: string;
+	fortyTwoId:	string | null;
+	discordId:	string | null
 };
 
 type AdminUserResponse = {
@@ -45,7 +48,7 @@ const createAdminUpdateForm = (t: (key: string) => string) => z.object({
 	username: z.preprocess(
 		emptyStringToUndefined,
 		z
-			.string()
+			.string({error: (issue) => issue.input === undefined ? t('admin.validation.string') : ''})
 			.trim()
 			.min(3, t('admin.validation.usernameMin'))
 			.max(24, t('admin.validation.usernameMax'))
@@ -55,7 +58,7 @@ const createAdminUpdateForm = (t: (key: string) => string) => z.object({
 	password: z.preprocess(
 		emptyStringToUndefined,
 		z
-			.string()
+			.string({error: (issue) => issue.input === undefined ? t('admin.validation.string') : ''})
 			.trim()
 			.min(8, t('admin.validation.passwordMin'))
 			.regex(PasswordRegex, t('admin.validation.passwordPattern'))
@@ -74,7 +77,7 @@ const createAdminCreateForm = (t: (key: string) => string) => z.object({
 	username: z.preprocess(
 		emptyStringToUndefined,
 		z
-			.string()
+			.string({error: (issue) => issue.input === undefined ? t('admin.validation.string') : ''})
 			.trim()
 			.min(3, t('admin.validation.usernameMin'))
 			.max(24, t('admin.validation.usernameMax'))
@@ -83,7 +86,7 @@ const createAdminCreateForm = (t: (key: string) => string) => z.object({
 	password: z.preprocess(
 		emptyStringToUndefined,
 		z
-			.string()
+			.string({error: (issue) => issue.input === undefined ? t('admin.validation.string') : ''})
 			.trim()
 			.min(8, t('admin.validation.passwordMin'))
 			.regex(PasswordRegex, t('admin.validation.passwordPattern'))
@@ -94,6 +97,7 @@ const createAdminCreateForm = (t: (key: string) => string) => z.object({
 const admin = () => {
 	const { t } = useTranslation()
 	const { user } = useAuth()
+	const { socket } = TheSocket()
 	const navigate = useNavigate()
 
 	const [users, setUsers] = useState<AdminUser[]>([])
@@ -201,7 +205,8 @@ const admin = () => {
 			}
 		} catch (error) {
 			if (axios.isAxiosError(error)) {
-				setError(error.response?.data?.message ?? t('admin.feedback.loadError'))
+				const backendMessage = error.response?.data?.message
+				setError(typeof backendMessage === 'string' ? t(backendMessage) : t('admin.feedback.loadError'))
 			} else {
 				setError(t('admin.feedback.unexpectedLoadError'))
 			}
@@ -228,6 +233,20 @@ const admin = () => {
 		await fetchUsers()
 	}
 
+	useEffect(() => {
+		if (!socket) return;
+
+		socket.on('friend:profile_updated', fetchUsers)
+		socket.on('friend:avatar_updated', fetchUsers)
+		socket.on('friend:status_changed', fetchUsers)
+
+		return () => {
+			socket.off('friend:profile_updated', fetchUsers)
+			socket.off('friend:avatar_updated', fetchUsers)
+			socket.off('friend:status_changed', fetchUsers)
+		}
+	}, [socket])
+
 	const onSelectUser = (target : AdminUser) => {
 		setSelectedUserId(target.id)
 		resetForm(target)
@@ -250,7 +269,8 @@ const admin = () => {
 			await fetchUsers()
 		} catch (error) {
 			if (axios.isAxiosError(error)) {
-				setError(error.response?.data?.message ?? t('admin.feedback.createError'))
+				const backendMessage = error.response?.data?.message
+				setError(typeof backendMessage === 'string' ? t(backendMessage) : t('admin.feedback.createError'))
 			} else {
 				setError(t('admin.feedback.unexpectedCreateError'))
 			}
@@ -282,7 +302,8 @@ const admin = () => {
 			await fetchUsers()
 		} catch (error) {
 			if (axios.isAxiosError(error)) {
-				setError(error.response?.data?.message ?? t('admin.feedback.updateError'))
+				const backendMessage = error.response?.data?.message
+				setError(typeof backendMessage === 'string' ? t(backendMessage) : t('admin.feedback.updateError'))
 			} else {
 				setError(t('admin.feedback.unexpectedUpdateError'))
 			}
@@ -308,7 +329,8 @@ const admin = () => {
 			await fetchUsers()
 		} catch (error) {
 			if (axios.isAxiosError(error)) {
-				setError(error.response?.data?.message ?? t('admin.feedback.roleUpdateError'))
+				const backendMessage = error.response?.data?.message
+				setError(typeof backendMessage === 'string' ? t(backendMessage) : t('admin.feedback.roleUpdateError'))
 			} else {
 				setError(t('admin.feedback.unexpectedRoleUpdateError'))
 			}
@@ -334,7 +356,8 @@ const admin = () => {
 			await fetchUsers()
 		} catch (error) {
 			if (axios.isAxiosError(error)) {
-				setError(error.response?.data?.message ?? t('admin.feedback.deleteError'))
+				const backendMessage = error.response?.data?.message
+				setError(typeof backendMessage === 'string' ? t(backendMessage) : t('admin.feedback.deleteError'))
 			} else {
 				setError(t('admin.feedback.unexpectedDeleteError'))
 			}
@@ -346,7 +369,7 @@ const admin = () => {
 	if (!user) {
 		return <div className='admin-page'><p>{t('admin.common.loading')}</p></div>
 	}
-	
+
 	if (user.role !== 'ADMIN') {
 		return null;
 	}
@@ -427,7 +450,7 @@ const admin = () => {
 						<button type='button' key={entry.id} onClick={() => onSelectUser(entry)} className={`admin-user-item ${selectedUserId === entry.id ? 'active' : ''}`}>
 							<div className='admin-user-item-avatar'>
 								{entry.avatarUrl ? (
-									<img className='avatar' src={`/api/${entry.avatarUrl}`} alt={entry.username} />
+									<img className='avatar' src={`${entry.avatarUrl}`} alt={entry.username} />
 								) : (
 									<span className='avatar-fallback'>{entry.username.charAt(0).toUpperCase()}</span>
 								)}

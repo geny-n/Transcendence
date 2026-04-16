@@ -9,12 +9,11 @@ export const sendFriendRequest = asyncHandler(async (request:Request, response:R
 	if (!request.user) {
 		return response.status(401).json({
 			success: false,
-			message: "No user found after authentication"
+			message: "backend.friends.no.user.after.authentication"
 		});
 	}
 
 	const result = validationResult(request);
-	console.log("Inside sendFriendRequest: Result:", result);
 
 	if (!result.isEmpty()) {
 		return response.status(400).json({
@@ -24,16 +23,14 @@ export const sendFriendRequest = asyncHandler(async (request:Request, response:R
 	}
 
 	const { receiverId } = matchedData(request) as { receiverId: string };
-	console.log("receiverId:", receiverId);
 
 	const senderId = request.user.id; // Depuis le token JWT
-	console.log("senderId:", senderId);
 
 	// Validation
 	if (senderId === receiverId) {
 		return response.status(400).json({
 			success: false,
-			message: "Cannot add yourself"
+			message: "backend.friends.cannot.add.yourself"
 		});
 	}
 
@@ -46,15 +43,14 @@ export const sendFriendRequest = asyncHandler(async (request:Request, response:R
 			]
 		}
 	});
-	console.log("existing:", existing);
 
 	if (existing) {
 		switch (existing.status) {
 			case 'ACCEPTED':
-				return response.status(400).json({ success: false, message: 'You are already friends.' });
+				return response.status(400).json({ success: false, message: 'backend.friends.already.friends' });
 
 			case 'PENDING':
-				return response.status(400).json({ success: false, message: 'A friend request is already pending' });
+				return response.status(400).json({ success: false, message: 'backend.friends.request.already.pending' });
 
 			case 'REJECTED': case 'UNFRIENDED':
 				if (existing.senderId === receiverId && existing.receiverId === senderId) {
@@ -87,12 +83,12 @@ export const sendFriendRequest = asyncHandler(async (request:Request, response:R
 
 			case 'BLOCKED':
 				if (existing.senderId === senderId) {
-					return response.status(403).json({ success: false, message: 'You have blocked this user.' });
+					return response.status(403).json({ success: false, message: 'backend.friends.blocked.by.you' });
 				} else {
-					return response.status(403).json({ success: false, message: 'You are blocked by this user.' });
+					return response.status(403).json({ success: false, message: 'backend.friends.blocked.you' });
 				}
 			default:
-				return response.status(400).json({ success: false, message: 'Unable to send request.' });
+				return response.status(400).json({ success: false, message: 'backend.friends.unable.to.send.request' });
 		}
 	}
 
@@ -107,7 +103,6 @@ export const sendFriendRequest = asyncHandler(async (request:Request, response:R
 			receiver: { select : { id: true, username: true } }
 		}
 	});
-	console.log("req:", newRequest);
 
 	// Evenement Websocket pour notifier le receveur
 	io.to(`user:${receiverId}`).emit("friend:request_received", {
@@ -124,15 +119,13 @@ export const friendRequestAction = asyncHandler(async (request:Request, response
 	if (!request.user) {
 		return response.status(401).json({
 			success: false,
-			message: "No user found after authentication"
+			message: "backend.friends.no.user.after.authentication"
 		});
 	}
 
 	const userId = request.user.id;
-	console.log("Inside friendRequestAction: userId:", userId);
 
 	const result = validationResult(request);
-	console.log("Result:", result);
 
 	if (!result.isEmpty()) {
 		return response.status(400).json({
@@ -142,40 +135,35 @@ export const friendRequestAction = asyncHandler(async (request:Request, response
 	}
 
 	const requestId = request.params.id;
-	console.log("requestId:", requestId);
 
 	if (!requestId || Array.isArray(requestId)) {
 		return response.status(401).json({
 			success: false,
-			message: "Multiple ID not allowed"
+			message: "backend.friends.invalid.request.id"
 		});
 	}
 
 	const { action } = matchedData(request) as { action: string };
-	console.log("action:", action);
 
 	const friendship = await prisma.friendship.findUnique({
 		where: { id: requestId },
 		include: { sender: true, receiver: true }
 	})
-	console.log("friendship:", friendship);
 
 	if (!friendship) {
 		return response.status(404).json({
 			success: false,
-			message: "Friend request not found"
+			message: "backend.friends.request.not.found"
 		});
 	}
 
 	const isSender = friendship.senderId === userId;
-	console.log("isSender:", isSender);
 	const isReceiver = friendship.receiverId === userId;
-	console.log("isReceiver:", isReceiver);
 
 	if (!isSender && !isReceiver) {
 		return response.status(403).json({
 			success: false,
-			message: "Not authorized"
+			message: "backend.friends.not.authorized"
 		});
 	}
 
@@ -184,7 +172,7 @@ export const friendRequestAction = asyncHandler(async (request:Request, response
 	if (!minId || !maxId) {
 		return response.status(500).json({
 			success: false,
-			message: "Internal Error"
+			message: "backend.friends.internal.error"
 		});
 	}
 
@@ -193,14 +181,14 @@ export const friendRequestAction = asyncHandler(async (request:Request, response
 			if (!isReceiver) {
 				return response.status(403).json({
 					success: false,
-					message: "Only the receiver can accept"
+					message: "backend.friends.only.receiver.can.accept"
 				});
 			}
 
 			if (friendship.status !== "PENDING") {
 				return response.status(400).json({
 					success: false,
-					message: "Request is not pending"
+					message: "backend.friends.request.not.pending"
 				});
 			}
 
@@ -236,14 +224,14 @@ export const friendRequestAction = asyncHandler(async (request:Request, response
 			if (!isReceiver) {
 				return response.status(403).json({
 					success: false,
-					message: "Only the receiver can reject"
+					message: "backend.friends.only.receiver.can.reject"
 				});
 			}
 
 			if (friendship.status !== "PENDING") {
 				return response.status(400).json({
 					success: false,
-					message: "Request is not pending"
+					message: "backend.friends.request.not.pending"
 				});
 			}
 
@@ -262,14 +250,14 @@ export const friendRequestAction = asyncHandler(async (request:Request, response
 			if (!isSender) {
 				return response.status(403).json({
 					success: false,
-					message: "Only the sender can cancel"
+					message: "backend.friends.only.sender.can.cancel"
 				});
 			}
 
 			if (friendship.status !== "PENDING") {
 				return response.status(400).json({
 					success: false,
-					message: "Request is not pending"
+					message: "backend.friends.request.not.pending"
 				});
 			}
 
@@ -309,7 +297,7 @@ export const friendRequestAction = asyncHandler(async (request:Request, response
 			});
 			break;
 		default:
-			return response.status(400).json({ success: false, message: "Invalid action" });
+			return response.status(400).json({ success: false, message: "backend.friends.invalid.action" });
 	}
 
 	return response.status(200).json({ success: true, action, requestId, });
@@ -319,11 +307,10 @@ export const getFriendList = asyncHandler(async (request:Request, response:Respo
 	if (!request.user) {
 		return response.status(401).json({
 			success: false,
-			message: "No user found after authentication"
+			message: "backend.friends.no.user.after.authentication"
 		});
 	}
 	const userId = request.user.id;
-	console.log("Inside getFriendList: userId:", userId);
 
 	const friends = await prisma.friend.findMany({
 		where: {
@@ -334,7 +321,6 @@ export const getFriendList = asyncHandler(async (request:Request, response:Respo
 			user2: { select: { id: true, username: true, isOnline: true, avatarUrl: true } }
 		}
 	});
-	console.log("friends:", friends);
 
 	response.status(200).json({ success: true, friends });
 });
@@ -343,12 +329,11 @@ export const getPendingRequests = asyncHandler(async (request:Request, response:
 	if (!request.user) {
 		return response.status(401).json({
 			success: false,
-			message: "No user found after authentication"
+			message: "backend.friends.no.user.after.authentication"
 		});
 	}
 
 	const userId = request.user.id;
-	console.log("Inside getPendingRequestst: userId:", userId);
 
 	const pending = await prisma.friendship.findMany({
 		where: {
@@ -362,7 +347,6 @@ export const getPendingRequests = asyncHandler(async (request:Request, response:
 			sender: { select: { id: true, username: true , avatarUrl:true } }
 		}
 	});
-	console.log("pending:", pending);
 
 	response.status(200).json({ success: true, requests: pending });
 });
@@ -371,21 +355,19 @@ export const unfriend = asyncHandler(async (request:Request, response:Response) 
 	if (!request.user) {
 		return response.status(401).json({
 			success: false,
-			message: "No user found after authentication"
+			message: "backend.friends.no.user.after.authentication"
 		});
 	}
 
 	const io = getIO();
 	const userId = request.user.id;
-	console.log("Inside unfriend: userId:", userId);
 
 	const unfriendUserId = request.params.id;
-	console.log("unfriendUserId:", unfriendUserId);
 
 	if (!unfriendUserId || Array.isArray(unfriendUserId)) {
 		return response.status(401).json({
 			success: false,
-			message: "Multiple ID not allowed"
+			message: "backend.friends.invalid.request.id"
 		});
 	}
 
@@ -394,7 +376,7 @@ export const unfriend = asyncHandler(async (request:Request, response:Response) 
 	if (!minId || !maxId) {
 		return response.status(500).json({
 			success: false,
-			message: "Internal Error"
+			message: "backend.friends.internal.error"
 		});
 	}
 
@@ -408,7 +390,7 @@ export const unfriend = asyncHandler(async (request:Request, response:Response) 
 	})
 
 	if (!friendRecord) {
-		return response.status(404).json({ success: false, message: 'Not friends.' });
+		return response.status(404).json({ success: false, message: 'backend.friends.not.friends' });
 	}
 
 	await prisma.friend.delete({ where: { id: friendRecord.id } });
@@ -433,5 +415,5 @@ export const unfriend = asyncHandler(async (request:Request, response:Response) 
 	io.to(`user:${userId}`).emit('friend:unfriended', { unfriendedUserId: unfriendUserId });
 	io.to(`user:${unfriendUserId}`).emit('friend:unfriended', { unfriendBy: userId, });
 
-	response.status(200).json({ success: true, message: 'Unfriended' });
+	response.status(200).json({ success: true, message: 'backend.friends.unfriended' });
 });

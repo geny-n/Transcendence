@@ -31,6 +31,7 @@
         items-center
         bg-blue-400
         relative
+        hover:bg-blue-500 transition
     }
 
     .box_search {
@@ -41,10 +42,32 @@
         rounded-lg
     }
 
-    .input {
+    .search_input {
        @apply w-full
        /* focus:border focus:rounded-lg focus:border-gray-800 */
        outline-none
+    }
+
+    .search_val_box {
+        @apply bg-gray-800/90
+        z-50 w-full left-0 mt-1
+        absolute
+        rounded-lg
+    }
+
+    .search_val {
+        @apply px-3 pt-1
+        hover:bg-gray-700 transition
+        rounded-lg
+    }
+
+    .indicator_notif {
+        @apply absolute
+        right-1 bottom-1
+        bg-green-500
+        w-3 h-3
+        rounded-full
+        flex items-center justify-center
     }
 
     .show_notif {
@@ -135,6 +158,12 @@
         gap-3
     }
 
+    .responsive_backBtn {
+        @apply md:hidden
+        bg-indigo-500
+        rounded-full
+        items-center mr-auto p-2 
+    }
     .profile_banner {
         @apply 
         bg-gray-900
@@ -150,20 +179,13 @@
         @apply 
         relative
         flex-none
-        /* bg-red-400 */
-        md:w-40 md:h-auto
+        md:w-40 md:h-40
         w-32 h-32 
-        /* rounded-full */
         self-center
-        /* w-32 */
         p-2
-        /* shrink-0 justify-self-start */
     }
     .avatar {
        @apply rounded-full
-       /* w-30 md:h-30 */
-       /* w-10 h-10 */
-       /* shrink-0  */
     }
 
     .avatar_btn {
@@ -173,6 +195,24 @@
         left-24 top-27
         md:left-30 md:top-34
         flex items-center justify-center
+    }
+
+    .avatar_choose_box {
+        @apply fixed
+        bg-gray-800/80
+        inset-0 z-50
+        flex flex-col
+        justify-center
+        items-center
+        gap-5
+    }
+
+    .avatar_choose_crop {
+        @apply relative w-80 h-80
+    }
+
+    .avatar_choose_btn {
+        @apply rounded-lg p-2 w-[120px]
     }
 
     .box_data {

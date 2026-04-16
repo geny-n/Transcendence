@@ -2,12 +2,12 @@ services:
   frontend:
     build: ./frontend
     volumes:
-      - frontend-build:/app/dist 
+      - frontend-build:/app/dist
     depends_on:
       - backend
     networks:
       - app-network
-  
+
   backend:
     build:
       context: ./backend
@@ -15,8 +15,6 @@ services:
       args:
         BUILDKIT_INLINE_CACHE: 1
     env_file: .env
-    ports:
-      - 3100:3100
     volumes:
       - ./backend/src:/code/src
       - ./backend/prisma:/code/prisma
@@ -41,12 +39,13 @@ services:
       backend:
         condition: service_healthy
       #frontend:
-        #condition: service_healthy
+       # condition: service_healthy
     networks:
       - app-network
 
   mariadb:
     image: mariadb:10.11
+    container_name: bd
     command: '--default-authentication-plugin=mysql_native_password'
     environment:
       MYSQL_ROOT_PASSWORD: ${BDD_ROOT_PWD}

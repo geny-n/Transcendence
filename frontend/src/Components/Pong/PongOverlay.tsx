@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { RematchStatus } from "./usePongSocket";
 
 interface Props {
@@ -39,6 +40,7 @@ export default function PongOverlay({
 	onRematchRespond,
 	isCleaningUp,
 }: Props) {
+	const { t } = useTranslation();
 
 	// ── Local 20s cooldown for the "Revanche?" button ─────────────────────────
 	const [cooldown, setCooldown] = useState(0);
@@ -92,7 +94,7 @@ export default function PongOverlay({
 			<div className="pong-overlay">
 				<div className="pong-overlay-box">
 					<p className="pong-overlay-title">
-						{countdownResuming ? "Reprise !" : "Prêt ?"}
+						{countdownResuming ? t('pong.overlay.resuming') : t('pong.overlay.ready')}
 					</p>
 					<p className="pong-overlay-countdown">{countdown}</p>
 				</div>
@@ -105,10 +107,10 @@ export default function PongOverlay({
 		return (
 			<div className="pong-overlay">
 				<div className="pong-overlay-box">
-					<p className="pong-overlay-title">Adversaire parti</p>
-					<p className="pong-overlay-sub">Victoire par forfait !</p>
+					<p className="pong-overlay-title">{t('pong.overlay.opponentLeft')}</p>
+					<p className="pong-overlay-sub">{t('pong.overlay.defaultVictory')}</p>
 					<button className="btn-play" onClick={onLeave} disabled={isCleaningUp}>
-						{isCleaningUp ? "Fermeture en cours..." : "Retour au menu"}
+						{isCleaningUp ? t('pong.overlay.closing') : t('pong.overlay.backToMenu')}
 					</button>
 				</div>
 			</div>
@@ -124,14 +126,14 @@ export default function PongOverlay({
 				return (
 					<button className="btn-rematch btn-rematch--pending" disabled>
 						<span className="rematch-spinner" />
-						Demande envoyée…
+					{t('pong.overlay.rematchRequested')}
 					</button>
 				);
 			}
 			if (rematchStatus === 'declined') {
 				return (
 					<button className="btn-rematch btn-rematch--declined" disabled>
-						Revanche refusée
+					{t('pong.overlay.rematchRejected')}
 					</button>
 				);
 			}
@@ -142,7 +144,7 @@ export default function PongOverlay({
 					onClick={handleRematch}
 					disabled={disabled}
 				>
-					{disabled ? `Revanche ? (${cooldown}s)` : "Revanche ?"}
+					{disabled ? `${t('pong.overlay.rematch')} (${cooldown}s)` : t('pong.overlay.rematch')}
 				</button>
 			);
 		};
@@ -150,36 +152,36 @@ export default function PongOverlay({
 		return (
 			<div className="pong-overlay">
 				<div className="pong-overlay-box">
-					<p className="pong-overlay-title">{won ? "🏆 Victoire !" : "💀 Défaite"}</p>
+					<p className="pong-overlay-title">{won ? t('pong.overlay.victory') : t('pong.overlay.defeat')}</p>
 					<p className="pong-overlay-sub">
-						{won ? "Bien joué !" : "On l'aura la prochaine fois."}
-					</p>
+					{won ? t('pong.overlay.wellPlayed') : t('pong.overlay.nextTime')}
+				</p>
 
 					<button className="btn-play" onClick={onLeave} disabled={isCleaningUp}>
-						{isCleaningUp ? "Fermeture en cours..." : "Retour au menu"}
-					</button>
+					{isCleaningUp ? t('pong.overlay.closing') : t('pong.overlay.backToMenu')}
+				</button>
 
-					{/* Rematch button — never shown for "opponent left" */}
-					{rematchBtn()}
+				{/* Rematch button — never shown for "opponent left" */}
+				{rematchBtn()}
 
 					{/* Incoming rematch notification */}
 					{rematchStatus === 'incoming' && rematchFromLabel && (
 						<div className="rematch-incoming">
 							<p className="rematch-incoming__text">
-								<strong>{rematchFromLabel}</strong> vous défie en revanche !
+							{t('pong.overlay.rematchChallenge', { player: rematchFromLabel })}
 							</p>
 							<div className="rematch-incoming__actions">
 								<button
 									className="rematch-incoming__btn rematch-incoming__btn--accept"
 									onClick={() => onRematchRespond(true)}
 								>
-									Accepter
+									{t('pong.overlay.accept')}
 								</button>
 								<button
 									className="rematch-incoming__btn rematch-incoming__btn--decline"
 									onClick={() => onRematchRespond(false)}
 								>
-									Refuser
+									{t('pong.overlay.decline')}
 								</button>
 							</div>
 						</div>

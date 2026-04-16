@@ -1,6 +1,7 @@
 import {create} from 'zustand';
 import axios from "axios";
-// import { mockMyself, mockFriends } from './fictif';
+import React from 'react';
+// import { mockMyself } from './fictif';
 
 export type Myself = {
     id: string,
@@ -11,7 +12,9 @@ export type Myself = {
     password: string,
     createdAt: string,
     level?: number,
-    experience?: number
+    experience?: number,
+    matchWins: Match[],
+	matchLosses: Match[],
 };
 
 export type Friends = {
@@ -21,6 +24,25 @@ export type Friends = {
     isOnline: boolean,
     email: string,
     createdAt: string
+};
+
+export type Match = {
+	id: String,
+	startedAt: Date,
+	endedAt: Date,
+	durationSec: number,
+	isOvertime: Boolean,
+	winnerId: String | null,
+	loserId: String | null,
+	winnerLabel: String,
+	loserLabel: String,
+	scoreWinner: number,
+	scoreLoser: number,
+};
+
+export const defaultAvatar = "/avatars/default_avatar.png";
+export const AvatarErrorLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    e.currentTarget.src = defaultAvatar;
 };
 
 interface UserStore {
@@ -128,12 +150,25 @@ const useUser = create<UserStore>((set, get) => ({
         })
 
         socket.on("friend:profile_updated", (data: { userId: string, user: {username: string, email:string}}) => {
+            if (data.userId === get().userMyself?.id)
+            {
+                set(state => ({
+                    userMyself: state.userMyself ? { ...state.userMyself, username:data.user.username, email:data.user.email} : null
+                }));
+            }
             set(state => ({
                 userFriends: state.userFriends.map(friend => friend.id === data.userId ? { ...friend, username:data.user.username, email:data.user.email} : friend)
             }))
+            get().fetchFriends();
         })
 
         socket.on("friend:avatar_updated", (data: { userId: string, avatarUrl: string}) => {
+            if (data.userId === get().userMyself?.id)
+            {
+                set(state => ({
+                    userMyself: state.userMyself ? { ...state.userMyself, avatarUrl:data.avatarUrl} : null
+                }));
+            }
             set(state => ({
                 userFriends: state.userFriends.map(friend => friend.id === data.userId ? { ...friend, avatarUrl:data.avatarUrl} : friend)
             }))

@@ -6,11 +6,69 @@ import esJson from "./language/es.json"
 import arJson from "./language/ar.json"
 
 i18n.use(initReactI18next).init({
-    debug:true,
+    debug:false,
     fallbackLng:'fr',
     resources:{
         fr: {
             translation: {
+                //Backend response
+                'backend.admin.incorect.query.params' : 'Paramètres de requête incorrects',
+                'backend.admin.invalid.page.size' : 'Page et taille invalides',
+                'backend.admin.invalid.sorting.params' : 'Parametres de tri invalides',
+                'backend.admin.invalid.user.id' : 'Identifiant utilisateur invalide',
+                'backend.admin.user.not.found' : 'Utilisateur introuvable',
+                'backend.admin.delete.self.forbidden' : 'Vous ne pouvez pas vous supprimer vous-meme',
+                'backend.admin.delete.success' : 'Utilisateur supprime avec succes',
+                'backend.admin.change.own.role.forbidden' : 'Vous ne pouvez pas modifier votre propre role',
+                'backend.admin.role.required' : 'Le role est requis',
+
+                'backend.auth.duplicate.user' : 'Un utilisateur avec cet email ou ce nom existe deja',
+                'backend.auth.invalid.credentials' : 'Identifiants incorrects',
+                'backend.auth.logout.success' : 'Deconnexion reussie',
+                'backend.auth.no.user.after.authentication' : 'Aucun utilisateur trouve apres authentification',
+                'backend.auth.no.valid.token' : 'Token invalide',
+                'backend.auth.token.missing' : 'Acces refuse: token manquant',
+                'backend.auth.token.invalid.or.expired' : 'Token invalide ou expire',
+                'backend.auth.user.not.found' : 'Utilisateur introuvable',
+                'backend.auth.server.error' : 'Erreur serveur pendant l authentification',
+                'backend.auth.refresh.token.invalid' : 'Refresh token invalide',
+                'backend.auth.refresh.token.revoked' : 'Refresh token revoque',
+
+                'backend.profile.no.user.after.authentication' : 'Aucun utilisateur trouve apres authentification',
+                'backend.profile.invalid.user.id' : 'Identifiant utilisateur invalide',
+                'backend.profile.user.not.found' : 'Utilisateur introuvable',
+                'backend.profile.incorrect.credentials' : 'Identifiants incorrects',
+                'backend.profile.password.updated' : 'Mot de passe mis a jour avec succes',
+                'backend.profile.no.file.uploaded' : 'Aucun fichier televerse',
+                'backend.profile.avatar.uploaded' : 'Avatar televerse avec succes',
+                'backend.profile.search.query.too.short' : 'La recherche doit contenir au moins 2 caracteres',
+
+                'backend.friends.no.user.after.authentication' : 'Aucun utilisateur trouve apres authentification',
+                'backend.friends.cannot.add.yourself' : 'Vous ne pouvez pas vous ajouter vous-meme',
+                'backend.friends.already.friends' : 'Vous etes deja amis',
+                'backend.friends.request.already.pending' : 'Une demande est deja en attente',
+                'backend.friends.blocked.by.you' : 'Vous avez bloque cet utilisateur',
+                'backend.friends.blocked.you' : 'Cet utilisateur vous a bloque',
+                'backend.friends.unable.to.send.request' : 'Impossible d envoyer la demande',
+                'backend.friends.invalid.request.id' : 'Identifiant de demande invalide',
+                'backend.friends.request.not.found' : 'Demande d ami introuvable',
+                'backend.friends.not.authorized' : 'Non autorise',
+                'backend.friends.internal.error' : 'Erreur interne',
+                'backend.friends.only.receiver.can.accept' : 'Seul le receveur peut accepter',
+                'backend.friends.only.receiver.can.reject' : 'Seul le receveur peut refuser',
+                'backend.friends.only.sender.can.cancel' : 'Seul l expediteur peut annuler',
+                'backend.friends.request.not.pending' : 'La demande n est pas en attente',
+                'backend.friends.invalid.action' : 'Action invalide',
+                'backend.friends.not.friends' : 'Vous n etes pas amis',
+                'backend.friends.unfriended' : 'Amitie supprimee',
+
+                'backend.middleware.role.unauthorized' : 'Non authentifie',
+                'backend.middleware.role.forbidden' : 'Acces interdit',
+                'backend.middleware.upload.not.image' : 'Fichier image requis',
+                'backend.middleware.upload.image.processing.error' : 'Erreur lors du traitement de l image',
+
+                'backend.common.internal.server.error' : 'Erreur interne du serveur',
+
                 //navbar
                 'navbar.home' : 'Accueil',
                 'navbar.pong' : 'PingPong',
@@ -99,6 +157,7 @@ i18n.use(initReactI18next).init({
                 'admin.validation.passwordMin': 'Ne peux contenir moins de 8 caracteres',
                 'admin.validation.passwordPattern': 'Doit contenir minuscule, majuscule, chiffre et caractere special',
                 'admin.validation.passwordSpecialChars': 'Caracteres speciaux autorises: !@#$%&*()_-+=',
+                'admin.validation.string': 'Entrée invalide : chaîne de caractères attendue, valeur indéfinie reçue',
                 //messagerie
                 
                 //profile
@@ -131,12 +190,181 @@ i18n.use(initReactI18next).init({
                 'chat.send' : 'Envoyer',
                 'chat.yourMsg' : 'votre message',
                 'chat.longMsg' : 'Votre message est trop long',
+              
+                'chat.moderation' : 'Votre message n est pas approprie',
+                
+                //login 
+                'login.delete.user' : 'votre compte a ete supprime',
+                'login.title': 'Connecte-toi pour jouer',
+                'login.noAccount': 'Pas de compte ?',
+                'login.loginBtn': 'Connexion',
+                'login.errorIncorrect': 'Email ou mot de passe incorrect',
+                'login.serverError': 'Serveur indisponible',
 
+                //register
+                'register.title': 'Inscris-toi pour Jouer',
+                'register.haveAccount': 'Déjà un compte ?',
+                'register.linkLogin': 'Se connecter',
+                'register.registerBtn': 'S\'inscrire',
+                'register.usernamePlaceholder': 'Nom d\'utilisateur',
+                'register.emailPlaceholder': 'Adresse mail',
+                'register.passwordPlaceholder': 'Mot de passe',
+                'register.confirmPasswordPlaceholder': 'Confirmer le mot de passe',
+                'register.errorDuplicate': 'Nom d\'utilisateur ou email déjà utilisé',
+                'register.serverError': 'Serveur indisponible',
+
+                //pong
+                'pong.localGame': 'Jeu local',
+                'pong.onlineGame': 'Jouer en ligne 🌐',
+                'pong.backBtn': 'Retour',
+
+                //leaderboard
+                'leaderboard.title': 'Classement',
+                'leaderboard.rank': 'Rang',
+                'leaderboard.player': 'Joueur',
+                'leaderboard.level': 'Niveau',
+                'leaderboard.experience': 'Expérience',
+                'leaderboard.noPlayers': 'Aucun joueur trouvé',
+                'leaderboard.showing': 'Affichage de {{count}} / {{total}} joueurs',
+                'leaderboard.unknownError': 'Erreur inconnue',
+
+                //matchmaking
+                'matchmaking.connectionError': '❌ Connexion impossible',
+                'matchmaking.notConnected': 'Vous n\'êtes pas connecté(e) ou votre session a expiré.',
+                'matchmaking.playAsGuest': 'Jouer en tant qu\'invité',
+                'matchmaking.joinQueue': 'Rejoindre la file',
+                'matchmaking.preparingQueue': 'Rejoindre la file (préparation)',
+                'matchmaking.searching': 'Recherche d\'adversaire…',
+                'matchmaking.queuePosition': 'Position dans la file : {{position}}',
+                'matchmaking.cancel': 'Annuler',
+                'matchmaking.guestPrefix': 'Invité',
+                'matchmaking.queueError': '⚠️ Impossible de rejoindre',
+                'matchmaking.queueErrorMsg': 'Attendez quelques secondes avant de réessayer.',
+                'matchmaking.connecting': 'Connexion…',
+                'matchmaking.readyPrompt': 'Prêt à chercher un adversaire ?',
+                'matchmaking.cleaningUp': '🔄 Fermeture du match précédent…',
+                'matchmaking.preparing': '⏳ Préparation du serveur…',
+                'matchmaking.joinClick': '✅ Cliquez pour rejoindre la file',
+                'matchmaking.serverPreparing': '⏳ Préparation du serveur…',
+
+                //pong game overlay & components
+                'pong.overlay.resuming': 'Reprise !',
+                'pong.overlay.ready': 'Prêt ?',
+                'pong.overlay.rematchRequested': 'Demande envoyée…',
+                'pong.overlay.rematchRejected': 'Revanche refusée',
+                'pong.overlay.victory': '🏆 Victoire !',
+                'pong.overlay.defeat': '💀 Défaite',
+                'pong.overlay.wellPlayed': 'Bien joué !',
+                'pong.overlay.nextTime': 'On l\'aura la prochaine fois.',
+                'pong.overlay.rematchChallenge': '{{player}} vous défie en revanche !',
+                'pong.overlay.rematch': 'Revanche ?',
+                'pong.game.youAre': 'Vous êtes à {{side}}',
+                'pong.game.controls': '— ↑ ↓ ou W S pour déplacer votre raquette',
+                'pong.score.firstTo': 'Premier à {{maxScore}} points',
+                'pong.multi.ready': 'Prêt à jouer',
+                'pong.multi.instructions': 'Utilisez les flèches ↑ et ↓ pour déplacer votre raquette',
+                'pong.multi.firstToFive': 'Premier à 5 points gagne la partie',
+                'pong.direction.left': 'gauche',
+                'pong.direction.right': 'droite',
+                'pong.game.quit': 'Quitter',
+                'pong.opponent.reconnecting': '⏳ En attente de la reconnexion de l\'adversaire...',
+                'pong.opponent.canQuitAfter': 'Vous pouvez abandonner la partie après {{time}}s d\'attente.',
+                'pong.opponent.abandon': 'Abandonner',
+
+                //scoreboard
+                'scoreboard.loading': 'Chargement…',
+                'scoreboard.noMatches': 'Aucune partie jouée pour l\'instant.',
+                'scoreboard.error': 'Erreur {{status}}',
+                'scoreboard.pagination': '{{page}} / {{totalPages}} ({{total}} parties)',
+                'scoreboard.liveUpdate': 'Mise à jour en temps réel',
+                'scoreboard.guest': 'invité',
+                'scoreboard.overtime': 'Prolongation',
+                'scoreboard.previous': 'Précédent',
+                'scoreboard.next': 'Suivant',
+                'scoreboard.wins': 'V',
+                'scoreboard.losses': 'D',
+
+                //pong overlay
+                'pong.overlay.opponentLeft': 'Adversaire parti',
+                'pong.overlay.defaultVictory': 'Victoire par forfait !',
+                'pong.overlay.closing': 'Fermeture en cours...',
+                'pong.overlay.backToMenu': 'Retour au menu',
+                'pong.overlay.accept': 'Accepter',
+                'pong.overlay.decline': 'Refuser',
+
+                //error page
+                'error.back': 'Retour',
+
+                //teams page
+                'teams.title': 'Équipes',
+
+                //profile level display
+                'profile.levelText': 'Niveau',
+                'profile.xpText': 'XP',
+              
                 ...frJson
             }
         },
         en: {
             translation: {
+                //Backend response
+                'backend.admin.incorect.query.params' : 'Incorrect query parameters',
+                'backend.admin.invalid.page.size' : 'Invalid page and size values',
+                'backend.admin.invalid.sorting.params' : 'Invalid sorting parameters',
+                'backend.admin.invalid.user.id' : 'Invalid user id',
+                'backend.admin.user.not.found' : 'User not found',
+                'backend.admin.delete.self.forbidden' : 'You cannot delete your own account',
+                'backend.admin.delete.success' : 'User deleted successfully',
+                'backend.admin.change.own.role.forbidden' : 'You cannot change your own role',
+                'backend.admin.role.required' : 'Role is required',
+
+                'backend.auth.duplicate.user' : 'A user with this email or username already exists',
+                'backend.auth.invalid.credentials' : 'Incorrect credentials',
+                'backend.auth.logout.success' : 'Logged out successfully',
+                'backend.auth.no.user.after.authentication' : 'No user found after authentication',
+                'backend.auth.no.valid.token' : 'No valid token',
+                'backend.auth.token.missing' : 'Access denied: token missing',
+                'backend.auth.token.invalid.or.expired' : 'Invalid or expired token',
+                'backend.auth.user.not.found' : 'User not found',
+                'backend.auth.server.error' : 'Server error during authentication',
+                'backend.auth.refresh.token.invalid' : 'Invalid refresh token',
+                'backend.auth.refresh.token.revoked' : 'Refresh token revoked',
+
+                'backend.profile.no.user.after.authentication' : 'No user found after authentication',
+                'backend.profile.invalid.user.id' : 'Invalid user id',
+                'backend.profile.user.not.found' : 'User not found',
+                'backend.profile.incorrect.credentials' : 'Incorrect credentials',
+                'backend.profile.password.updated' : 'Password updated successfully',
+                'backend.profile.no.file.uploaded' : 'No file uploaded',
+                'backend.profile.avatar.uploaded' : 'Avatar uploaded successfully',
+                'backend.profile.search.query.too.short' : 'Search query must contain at least 2 characters',
+
+                'backend.friends.no.user.after.authentication' : 'No user found after authentication',
+                'backend.friends.cannot.add.yourself' : 'You cannot add yourself',
+                'backend.friends.already.friends' : 'You are already friends',
+                'backend.friends.request.already.pending' : 'A friend request is already pending',
+                'backend.friends.blocked.by.you' : 'You have blocked this user',
+                'backend.friends.blocked.you' : 'You are blocked by this user',
+                'backend.friends.unable.to.send.request' : 'Unable to send request',
+                'backend.friends.invalid.request.id' : 'Invalid request id',
+                'backend.friends.request.not.found' : 'Friend request not found',
+                'backend.friends.not.authorized' : 'Not authorized',
+                'backend.friends.internal.error' : 'Internal error',
+                'backend.friends.only.receiver.can.accept' : 'Only receiver can accept',
+                'backend.friends.only.receiver.can.reject' : 'Only receiver can reject',
+                'backend.friends.only.sender.can.cancel' : 'Only sender can cancel',
+                'backend.friends.request.not.pending' : 'Request is not pending',
+                'backend.friends.invalid.action' : 'Invalid action',
+                'backend.friends.not.friends' : 'Not friends',
+                'backend.friends.unfriended' : 'Unfriended',
+
+                'backend.middleware.role.unauthorized' : 'Unauthorized',
+                'backend.middleware.role.forbidden' : 'Forbidden',
+                'backend.middleware.upload.not.image' : 'Please upload an image file',
+                'backend.middleware.upload.image.processing.error' : 'Error during image processing',
+
+                'backend.common.internal.server.error' : 'Internal server error',
+
                 //navbar
                 'navbar.home' : 'Home',
                 'navbar.pong' : 'PingPong',
@@ -225,6 +453,7 @@ i18n.use(initReactI18next).init({
                 'admin.validation.passwordMin': 'Must contain at least 8 characters',
                 'admin.validation.passwordPattern': 'Must include lowercase, uppercase, number and special character',
                 'admin.validation.passwordSpecialChars': 'Allowed special characters: !@#$%&*()_-+=',
+                'admin.validation.string': 'Invalid input: expected string, received undefined',
                 
                 //profile
                 'profile.modifier' : 'Update',
@@ -256,12 +485,181 @@ i18n.use(initReactI18next).init({
                 'chat.send' : 'Send',
                 'chat.yourMsg' : 'Your message',
                 'chat.longMsg' : 'Your message is too long',
+              
+                'chat.moderation' : 'Your message is not appropriate',
 
+                //login 
+                'login.delete.user' : 'your account has benn deleted',
+                'login.title': 'Login to play',
+                'login.noAccount': 'Don\'t have an account?',
+                'login.loginBtn': 'Login',
+                'login.errorIncorrect': 'Incorrect email or password',
+                'login.serverError': 'Server unavailable',
+
+                //register
+                'register.title': 'Sign up to Play',
+                'register.haveAccount': 'Already have an account?',
+                'register.linkLogin': 'Login',
+                'register.registerBtn': 'Sign up',
+                'register.usernamePlaceholder': 'Username',
+                'register.emailPlaceholder': 'Email address',
+                'register.passwordPlaceholder': 'Password',
+                'register.confirmPasswordPlaceholder': 'Confirm password',
+                'register.errorDuplicate': 'Username or email already in use',
+                'register.serverError': 'Server unavailable',
+
+                //pong
+                'pong.localGame': 'Local game',
+                'pong.onlineGame': 'Play online 🌐',
+                'pong.backBtn': 'Back',
+
+                //leaderboard
+                'leaderboard.title': 'Leaderboard',
+                'leaderboard.rank': 'Rank',
+                'leaderboard.player': 'Player',
+                'leaderboard.level': 'Level',
+                'leaderboard.experience': 'Experience',
+                'leaderboard.noPlayers': 'No players found',
+                'leaderboard.showing': 'Showing {{count}} / {{total}} players',
+                'leaderboard.unknownError': 'Unknown error',
+
+                //matchmaking
+                'matchmaking.connectionError': '❌ Connection failed',
+                'matchmaking.notConnected': 'You are not logged in or your session has expired.',
+                'matchmaking.playAsGuest': 'Play as guest',
+                'matchmaking.joinQueue': 'Join queue',
+                'matchmaking.preparingQueue': 'Join queue (preparing)',
+                'matchmaking.searching': 'Searching for opponent…',
+                'matchmaking.queuePosition': 'Queue position: {{position}}',
+                'matchmaking.cancel': 'Cancel',
+                'matchmaking.guestPrefix': 'Guest',
+                'matchmaking.queueError': '⚠️ Failed to join queue',
+                'matchmaking.queueErrorMsg': 'Wait a few seconds before trying again.',
+                'matchmaking.connecting': 'Connecting…',
+                'matchmaking.readyPrompt': 'Ready to find an opponent?',
+                'matchmaking.cleaningUp': '🔄 Closing previous match…',
+                'matchmaking.preparing': '⏳ Preparing server…',
+                'matchmaking.joinClick': '✅ Click to join queue',
+                'matchmaking.serverPreparing': '⏳ Preparing server…',
+
+                //pong game overlay & components
+                'pong.overlay.resuming': 'Resuming!',
+                'pong.overlay.ready': 'Ready?',
+                'pong.overlay.rematchRequested': 'Request sent…',
+                'pong.overlay.rematchRejected': 'Rematch rejected',
+                'pong.overlay.victory': '🏆 Victory!',
+                'pong.overlay.defeat': '💀 Defeat',
+                'pong.overlay.wellPlayed': 'Well played!',
+                'pong.overlay.nextTime': 'We\'ll get them next time.',
+                'pong.overlay.rematchChallenge': '{{player}} challenges you for a rematch!',
+                'pong.overlay.rematch': 'Rematch?',
+                'pong.game.youAre': 'You are the {{side}} player',
+                'pong.game.controls': '— ↑ ↓ or W S to move your paddle',
+                'pong.score.firstTo': 'First to {{maxScore}} points',
+                'pong.multi.ready': 'Ready to play',
+                'pong.multi.instructions': 'Use arrow keys ↑ and ↓ to move your paddle',
+                'pong.multi.firstToFive': 'First to 5 points wins the game',
+                'pong.direction.left': 'left',
+                'pong.direction.right': 'right',
+                'pong.game.quit': 'Quit',
+                'pong.opponent.reconnecting': '⏳ Waiting for opponent to reconnect...',
+                'pong.opponent.canQuitAfter': 'You can abandon the match after {{time}}s of waiting.',
+                'pong.opponent.abandon': 'Abandon',
+
+                //scoreboard
+                'scoreboard.loading': 'Loading…',
+                'scoreboard.noMatches': 'No matches played yet.',
+                'scoreboard.error': 'Error {{status}}',
+                'scoreboard.pagination': '{{page}} / {{totalPages}} ({{total}} matches)',
+                'scoreboard.liveUpdate': 'Real-time update',
+                'scoreboard.guest': 'guest',
+                'scoreboard.overtime': 'Overtime',
+                'scoreboard.previous': 'Previous',
+                'scoreboard.next': 'Next',
+                'scoreboard.wins': 'W',
+                'scoreboard.losses': 'L',
+
+                //pong overlay
+                'pong.overlay.opponentLeft': 'Opponent left',
+                'pong.overlay.defaultVictory': 'Victory by default!',
+                'pong.overlay.closing': 'Closing...',
+                'pong.overlay.backToMenu': 'Back to menu',
+                'pong.overlay.accept': 'Accept',
+                'pong.overlay.decline': 'Decline',
+
+                //error page
+                'error.back': 'Back',
+
+                //teams page
+                'teams.title': 'Teams',
+
+                //profile level display
+                'profile.levelText': 'Level',
+                'profile.xpText': 'XP',
+              
                 ...enJson
             }
         },
         es : {
             translation: {
+                //Backend response
+                'backend.admin.incorect.query.params' : 'Parámetros de consulta incorrectos',
+                'backend.admin.invalid.page.size' : 'Valores de pagina y tamano invalidos',
+                'backend.admin.invalid.sorting.params' : 'Parametros de ordenacion invalidos',
+                'backend.admin.invalid.user.id' : 'Identificador de usuario invalido',
+                'backend.admin.user.not.found' : 'Usuario no encontrado',
+                'backend.admin.delete.self.forbidden' : 'No puedes eliminar tu propia cuenta',
+                'backend.admin.delete.success' : 'Usuario eliminado correctamente',
+                'backend.admin.change.own.role.forbidden' : 'No puedes cambiar tu propio rol',
+                'backend.admin.role.required' : 'El rol es obligatorio',
+
+                'backend.auth.duplicate.user' : 'Ya existe un usuario con ese email o nombre',
+                'backend.auth.invalid.credentials' : 'Credenciales incorrectas',
+                'backend.auth.logout.success' : 'Sesion cerrada correctamente',
+                'backend.auth.no.user.after.authentication' : 'No se encontro usuario tras la autenticacion',
+                'backend.auth.no.valid.token' : 'Token no valido',
+                'backend.auth.token.missing' : 'Acceso denegado: falta el token',
+                'backend.auth.token.invalid.or.expired' : 'Token invalido o expirado',
+                'backend.auth.user.not.found' : 'Usuario no encontrado',
+                'backend.auth.server.error' : 'Error del servidor durante la autenticacion',
+                'backend.auth.refresh.token.invalid' : 'Refresh token invalido',
+                'backend.auth.refresh.token.revoked' : 'Refresh token revocado',
+
+                'backend.profile.no.user.after.authentication' : 'No se encontro usuario tras la autenticacion',
+                'backend.profile.invalid.user.id' : 'Identificador de usuario invalido',
+                'backend.profile.user.not.found' : 'Usuario no encontrado',
+                'backend.profile.incorrect.credentials' : 'Credenciales incorrectas',
+                'backend.profile.password.updated' : 'Contrasena actualizada correctamente',
+                'backend.profile.no.file.uploaded' : 'No se subio ningun archivo',
+                'backend.profile.avatar.uploaded' : 'Avatar subido correctamente',
+                'backend.profile.search.query.too.short' : 'La busqueda debe tener al menos 2 caracteres',
+
+                'backend.friends.no.user.after.authentication' : 'No se encontro usuario tras la autenticacion',
+                'backend.friends.cannot.add.yourself' : 'No puedes agregarte a ti mismo',
+                'backend.friends.already.friends' : 'Ya son amigos',
+                'backend.friends.request.already.pending' : 'Ya hay una solicitud pendiente',
+                'backend.friends.blocked.by.you' : 'Has bloqueado a este usuario',
+                'backend.friends.blocked.you' : 'Este usuario te ha bloqueado',
+                'backend.friends.unable.to.send.request' : 'No se pudo enviar la solicitud',
+                'backend.friends.invalid.request.id' : 'Identificador de solicitud invalido',
+                'backend.friends.request.not.found' : 'Solicitud de amistad no encontrada',
+                'backend.friends.not.authorized' : 'No autorizado',
+                'backend.friends.internal.error' : 'Error interno',
+                'backend.friends.only.receiver.can.accept' : 'Solo el receptor puede aceptar',
+                'backend.friends.only.receiver.can.reject' : 'Solo el receptor puede rechazar',
+                'backend.friends.only.sender.can.cancel' : 'Solo el emisor puede cancelar',
+                'backend.friends.request.not.pending' : 'La solicitud no esta pendiente',
+                'backend.friends.invalid.action' : 'Accion invalida',
+                'backend.friends.not.friends' : 'No son amigos',
+                'backend.friends.unfriended' : 'Amistad eliminada',
+
+                'backend.middleware.role.unauthorized' : 'No autenticado',
+                'backend.middleware.role.forbidden' : 'Acceso prohibido',
+                'backend.middleware.upload.not.image' : 'Debes subir un archivo de imagen',
+                'backend.middleware.upload.image.processing.error' : 'Error al procesar la imagen',
+
+                'backend.common.internal.server.error' : 'Error interno del servidor',
+
                 //navbar
                 'navbar.home' : 'Inicio',
                 'navbar.pong' : 'PingPong',
@@ -350,6 +748,7 @@ i18n.use(initReactI18next).init({
                 'admin.validation.passwordMin': 'Debe contener al menos 8 caracteres',
                 'admin.validation.passwordPattern': 'Debe incluir minuscula, mayuscula, numero y caracter especial',
                 'admin.validation.passwordSpecialChars': 'Caracteres especiales permitidos: !@#$%&*()_-+=',
+                'admin.validation.string': 'Entrada no válida: se esperaba una cadena, se recibió undefined.',
                 
                 //profile
                 'profile.modifier' : 'Modificar',
@@ -382,26 +781,194 @@ i18n.use(initReactI18next).init({
                 'chat.yourMsg' : 'Tu mensaje',
                 'chat.longMsg' : 'Tu mensaje es dmasiado largo',
 
+                'chat.longMsg' : 'Tu mensaje es demasiado largo',
+                'chat.moderation' : 'Tu mensaje no es apropiado',
+
+                //login 
+                'login.delete.user' : 'Tu cuenta ha sido eliminada',
+                'login.title': 'Inicia sesión para jugar',
+                'login.noAccount': '¿No tienes cuenta?',
+                'login.loginBtn': 'Inicia sesión',
+                'login.errorIncorrect': 'Correo o contraseña incorrectos',
+                'login.serverError': 'Servidor no disponible',
+
+                //register
+                'register.title': 'Regístrate para Jugar',
+                'register.haveAccount': '¿Ya tienes una cuenta?',
+                'register.linkLogin': 'Inicia sesión',
+                'register.registerBtn': 'Regístrate',
+                'register.usernamePlaceholder': 'Nombre de usuario',
+                'register.emailPlaceholder': 'Correo electrónico',
+                'register.passwordPlaceholder': 'Contraseña',
+                'register.confirmPasswordPlaceholder': 'Confirmar contraseña',
+                'register.errorDuplicate': 'Nombre de usuario o correo ya en uso',
+                'register.serverError': 'Servidor no disponible',
+
+                //pong
+                'pong.localGame': 'Juego local',
+                'pong.onlineGame': 'Jugar en línea 🌐',
+                'pong.backBtn': 'Volver',
+
+                //leaderboard
+                'leaderboard.title': 'Tabla de clasificación',
+                'leaderboard.rank': 'Posición',
+                'leaderboard.player': 'Jugador',
+                'leaderboard.level': 'Nivel',
+                'leaderboard.experience': 'Experiencia',
+                'leaderboard.noPlayers': 'No se encontraron jugadores',
+                'leaderboard.showing': 'Mostrando {{count}} / {{total}} jugadores',
+                'leaderboard.unknownError': 'Error desconocido',
+
+                //matchmaking
+                'matchmaking.connectionError': '❌ Fallo en la conexión',
+                'matchmaking.notConnected': 'No has iniciado sesión o tu sesión ha expirado.',
+                'matchmaking.playAsGuest': 'Jugar como invitado',
+                'matchmaking.joinQueue': 'Unirse a la cola',
+                'matchmaking.preparingQueue': 'Unirse a la cola (preparando)',
+                'matchmaking.searching': 'Buscando oponente…',
+                'matchmaking.queuePosition': 'Posición en la cola: {{position}}',
+                'matchmaking.cancel': 'Cancelar',
+                'matchmaking.guestPrefix': 'Invitado',
+                'matchmaking.queueError': '⚠️ No se pudo unir a la cola',
+                'matchmaking.queueErrorMsg': 'Espera unos segundos antes de intentar de nuevo.',
+                'matchmaking.connecting': 'Conectando…',
+                'matchmaking.readyPrompt': '¿Listo para encontrar un oponente?',
+                'matchmaking.cleaningUp': '🔄 Cerrando la partida anterior…',
+                'matchmaking.preparing': '⏳ Preparando servidor…',
+                'matchmaking.joinClick': '✅ Haz clic para unirte a la cola',
+                'matchmaking.serverPreparing': '⏳ Preparando servidor…',
+
+                //pong game overlay & components
+                'pong.overlay.resuming': '¡Reanudando!',
+                'pong.overlay.ready': '¿Listo?',
+                'pong.overlay.rematchRequested': 'Solicitud enviada…',
+                'pong.overlay.rematchRejected': 'Revancha rechazada',
+                'pong.overlay.victory': '🏆 ¡Victoria!',
+                'pong.overlay.defeat': '💀 Derrota',
+                'pong.overlay.wellPlayed': '¡Bien jugado!',
+                'pong.overlay.nextTime': 'La próxima vez los venceremos.',
+                'pong.overlay.rematchChallenge': '¡{{player}} te desafia para una revancha!',
+                'pong.overlay.rematch': '¿Revancha?',
+                'pong.game.youAre': 'Eres el jugador de la {{side}}',
+                'pong.game.controls': '— ↑ ↓ o W S para mover tu raqueta',
+                'pong.score.firstTo': 'Primero a {{maxScore}} puntos',
+                'pong.multi.ready': 'Listo para jugar',
+                'pong.multi.instructions': 'Usa las flechas ↑ y ↓ para mover tu raqueta',
+                'pong.multi.firstToFive': 'Primero a 5 puntos gana el juego',
+                'pong.direction.left': 'izquierda',
+                'pong.direction.right': 'derecha',
+                'pong.game.quit': 'Salir',
+                'pong.opponent.reconnecting': '⏳ Esperando a que el oponente se reconecte...',
+                'pong.opponent.canQuitAfter': 'Puedes abandonar la partida después de {{time}}s de espera.',
+                'pong.opponent.abandon': 'Abandonar',
+
+                //scoreboard
+                'scoreboard.loading': 'Cargando…',
+                'scoreboard.noMatches': 'No hay partidas jugadas todavía.',
+                'scoreboard.error': 'Error {{status}}',
+                'scoreboard.pagination': '{{page}} / {{totalPages}} ({{total}} partidas)',
+                'scoreboard.liveUpdate': 'Actualización en tiempo real',
+                'scoreboard.guest': 'invitado',
+                'scoreboard.overtime': 'Prórroga',
+                'scoreboard.previous': 'Anterior',
+                'scoreboard.next': 'Siguiente',
+                'scoreboard.wins': 'G',
+                'scoreboard.losses': 'P',
+
+                //pong overlay
+                'pong.overlay.opponentLeft': 'El oponente se fue',
+                'pong.overlay.defaultVictory': '¡Victoria por defecto!',
+                'pong.overlay.closing': 'Cerrando...',
+                'pong.overlay.backToMenu': 'Volver al menú',
+                'pong.overlay.accept': 'Aceptar',
+                'pong.overlay.decline': 'Rechazar',
+
+                //error page
+                'error.back': 'Atrás',
+
+                //teams page
+                'teams.title': 'Equipos',
+
+                //profile level display
+                'profile.levelText': 'Nivel',
+                'profile.xpText': 'XP',
                 ...esJson
             }
         },
 
         ar : {
             translation: {
+                //Backend response
+                'backend.admin.incorect.query.params' : 'معلمات الاستعلام غير صحيحة',
+                'backend.admin.invalid.page.size' : 'قيم الصفحة والحجم غير صالحة',
+                'backend.admin.invalid.sorting.params' : 'معلمات فرز غير صالحة',
+                'backend.admin.invalid.user.id' : 'معرف مستخدم غير صالح',
+                'backend.admin.user.not.found' : 'لم يتم العثور على المستخدم',
+                'backend.admin.delete.self.forbidden' : 'لا يمكنك حذف حسابك الخاص',
+                'backend.admin.delete.success' : 'تم حذف المستخدم بنجاح',
+                'backend.admin.change.own.role.forbidden' : 'لا يمكنك تغيير دورك الخاص',
+                'backend.admin.role.required' : 'الدور مطلوب',
+
+                'backend.auth.duplicate.user' : 'يوجد بالفعل مستخدم بهذا البريد الإلكتروني أو الاسم.',
+                'backend.auth.invalid.credentials' : 'بيانات اعتماد غير صحيحة',
+                'backend.auth.logout.success' : 'تم إغلاق الجلسة بشكل صحيح',
+                'backend.auth.no.user.after.authentication' : 'لم يتم العثور على أي مستخدم بعد المصادقة',
+                'backend.auth.no.valid.token' : 'رمز غير صالح',
+                'backend.auth.token.missing' : 'تم رفض الوصول: الرمز المميز مفقود',
+                'backend.auth.token.invalid.or.expired' : 'رمز غير صالح أو منتهي الصلاحية',
+                'backend.auth.user.not.found' : 'لم يتم العثور على المستخدم',
+                'backend.auth.server.error' : 'حدث خطأ في الخادم أثناء المصادقة',
+                'backend.auth.refresh.token.invalid' : 'تحديث الرمز المميز غير الصالح',
+                'backend.auth.refresh.token.revoked' : 'تم إلغاء رمز التحديث',
+
+                'backend.profile.no.user.after.authentication' : 'لم يتم العثور على أي مستخدم بعد المصادقة',
+                'backend.profile.invalid.user.id' : 'معرف مستخدم غير صالح',
+                'backend.profile.user.not.found' : 'لم يتم العثور على المستخدم',
+                'backend.profile.incorrect.credentials' : 'بيانات اعتماد غير صحيحة',
+                'backend.profile.password.updated' : 'تم تحديث كلمة المرور بنجاح',
+                'backend.profile.no.file.uploaded' : 'لم يتم تحميل أي ملف',
+                'backend.profile.avatar.uploaded' : 'تم تحميل الصورة الرمزية بنجاح',
+                'backend.profile.search.query.too.short' : 'يجب أن يتكون مصطلح البحث من حرفين على الأقل',
+
+                'backend.friends.no.user.after.authentication' : 'لم يتم العثور على أي مستخدم بعد المصادقة',
+                'backend.friends.cannot.add.yourself' : 'لا يمكنك إضافة نفسك',
+                'backend.friends.already.friends' : 'إنهم أصدقاء بالفعل',
+                'backend.friends.request.already.pending' : 'يوجد بالفعل طلب معلق.',
+                'backend.friends.blocked.by.you' : 'لقد قمت بحظر هذا المستخدم',
+                'backend.friends.blocked.you' : 'قام هذا المستخدم بحظرك',
+                'backend.friends.unable.to.send.request' : 'تعذر إرسال الطلب.',
+                'backend.friends.invalid.request.id' : 'معرّف الطلب غير صالح',
+                'backend.friends.request.not.found' : 'لم يتم العثور على طلب الصداقة',
+                'backend.friends.not.authorized' : 'غير مصرح به',
+                'backend.friends.internal.error' : 'خطأ داخلي',
+                'backend.friends.only.receiver.can.accept' : 'لا يمكن قبول ذلك إلا من قبل المستلم',
+                'backend.friends.only.receiver.can.reject' : 'لا يمكن رفض الرفض إلا من قبل المتلقي',
+                'backend.friends.only.sender.can.cancel' : 'لا يمكن إلغاء البطاقة إلا من قبل الجهة المصدرة.',
+                'backend.friends.request.not.pending' : 'الطلب ليس قيد الانتظار.',
+                'backend.friends.invalid.action' : 'إجراء غير صالح',
+                'backend.friends.not.friends' : 'إنهم ليسوا أصدقاء',
+                'backend.friends.unfriended' : 'تمت إزالة الصداقة',
+
+                'backend.middleware.role.unauthorized' : 'لم تتم المصادقة عليها',
+                'backend.middleware.role.forbidden' : 'ممنوع الوصول',
+                'backend.middleware.upload.not.image' : 'يجب عليك تحميل ملف صورة',
+                'backend.middleware.upload.image.processing.error' : 'خطأ في معالجة الصورة',
+
+                'backend.common.internal.server.error' : 'خطأ في الخادم الداخلي',
+
                 //navbar
                 'navbar.home' : 'الرئيسية',
                 'navbar.pong' : 'بونغ',
                 'navbar.scoreboard' : 'النتائج',
                 'navbar.chat' : 'الدردشة',
                 'navbar.profile' : 'الملف الشخصي',
-                // 'navbar.admin' : 'Admin',
                 'navbar.admin' : 'Admin',
                 'navbar.login' : 'تسجيل الدخول',
                 'navbar.register' : 'التسجيل',
                 'navbar.about' : 'حول',
 
-                //HomePage
-                // 'homepage.home' : 'Bienvenido a nuestra transcendence',
+                // HomePage
+                'homepage.home': 'مرحباً بك في transcendence الخاص بنا',
 
                 //types
                 'types.connexion.email' : 'البريد الإلكتروني غير صالح',
@@ -477,6 +1044,7 @@ i18n.use(initReactI18next).init({
                 'admin.validation.passwordMin': 'لا يمكن أن يحتوي على أقل من 8 أحرف',
                 'admin.validation.passwordPattern': 'يجب أن يحتوي على حرف صغير وكبير ورقم وحرف خاص',
                 'admin.validation.passwordSpecialChars': 'الأحرف الخاصة المسموح بها: !@#$%&*()_-+=',
+                'admin.validation.string': 'إدخال غير صالح: كان من المتوقع سلسلة نصية، ولكن تم استلام قيمة غير معرفة.',
                 
                 // //profile
                 'profile.modifier': 'تعديل',
@@ -509,6 +1077,118 @@ i18n.use(initReactI18next).init({
                 'chat.yourMsg' : 'رسالتك',
                 'chat.longMsg' : 'رسالتك طويلة جداً',
 
+                'chat.moderation': 'رسالتك غير مناسبة',
+                
+                //login 
+                'login.delete.user' : 'تم حذف حسابك',
+
+                //login
+                'login.title': 'تسجيل الدخول للعب',
+                'login.noAccount': 'ليس لديك حساب؟',
+                'login.loginBtn': 'تسجيل الدخول',
+                'login.errorIncorrect': 'البريد الإلكتروني أو كلمة المرور غير صحيحة',
+                'login.serverError': 'الخادم غير متاح',
+
+                //register
+                'register.title': 'إنشاء حساب للعب',
+                'register.haveAccount': 'هل لديك حساب بالفعل؟',
+                'register.linkLogin': 'تسجيل الدخول',
+                'register.registerBtn': 'إنشاء حساب',
+                'register.usernamePlaceholder': 'اسم المستخدم',
+                'register.emailPlaceholder': 'عنوان البريد الإلكتروني',
+                'register.passwordPlaceholder': 'كلمة المرور',
+                'register.confirmPasswordPlaceholder': 'تأكيد كلمة المرور',
+                'register.errorDuplicate': 'اسم المستخدم أو البريد الإلكتروني قيد الاستخدام بالفعل',
+                'register.serverError': 'الخادم غير متاح',
+
+                //pong
+                'pong.localGame': 'لعبة محلية',
+                'pong.onlineGame': 'العب أونلاين 🌐',
+                'pong.backBtn': 'عودة',
+
+                //leaderboard
+                'leaderboard.title': 'جدول المتصدرين',
+                'leaderboard.rank': 'المرتبة',
+                'leaderboard.player': 'اللاعب',
+                'leaderboard.level': 'المستوى',
+                'leaderboard.experience': 'الخبرة',
+                'leaderboard.noPlayers': 'لم يتم العثور على لاعبين',
+                'leaderboard.showing': 'عرض {{count}} من أصل {{total}} لاعب',
+                'leaderboard.unknownError': 'خطأ غير معروف',
+
+                //matchmaking
+                'matchmaking.connectionError': '❌ فشل الاتصال',
+                'matchmaking.notConnected': 'أنت لم تسجل الدخول أو انتهت جلستك.',
+                'matchmaking.playAsGuest': 'العب كضيف',
+                'matchmaking.joinQueue': 'انضم إلى الطابور',
+                'matchmaking.preparingQueue': 'انضم إلى الطابور (التحضير)',
+                'matchmaking.searching': 'البحث عن خصم…',
+                'matchmaking.queuePosition': 'موضعك في الطابور: {{position}}',
+                'matchmaking.cancel': 'إلغاء',
+                'matchmaking.guestPrefix': 'ضيف',
+                'matchmaking.queueError': '⚠️ فشل الانضمام إلى الطابور',
+                'matchmaking.queueErrorMsg': 'انتظر بضع ثوان قبل إعادة المحاولة.',
+                'matchmaking.connecting': 'جاري الاتصال…',
+                'matchmaking.readyPrompt': 'هل أنت مستعد للبحث عن خصم؟',
+                'matchmaking.cleaningUp': '🔄 إغلاق المباراة السابقة…',
+                'matchmaking.preparing': '⏳ جاري تحضير الخادم…',
+                'matchmaking.joinClick': '✅ انقر للانضمام إلى الطابور',
+                'matchmaking.serverPreparing': '⏳ جاري تحضير الخادم…',
+
+                //pong game overlay & components
+                'pong.overlay.resuming': 'استئناف!',
+                'pong.overlay.ready': 'مستعد؟',
+                'pong.overlay.rematchRequested': 'تم إرسال الطلب…',
+                'pong.overlay.rematchRejected': 'تم رفض المباراة الحتمية',
+                'pong.overlay.victory': '🏆 انتصار!',
+                'pong.overlay.defeat': '💀 هزيمة',
+                'pong.overlay.wellPlayed': 'لعبت بشكل جيد!',
+                'pong.overlay.nextTime': 'سنفوز بهم في المرة القادمة.',
+                'pong.overlay.rematchChallenge': '{{player}} يتحداك للعب مرة أخرى!',
+                'pong.overlay.rematch': 'مباراة إعادة؟',
+                'pong.game.youAre': 'أنت اللاعب في {{side}}',
+                'pong.game.controls': '— ↑ ↓ أو W S لتحريك مضربك',
+                'pong.score.firstTo': 'الأول الذي يصل إلى {{maxScore}} نقطة',
+                'pong.multi.ready': 'جاهز للعب',
+                'pong.multi.instructions': 'استخدم الأسهم ↑ و ↓ لتحريك مضربك',
+                'pong.multi.firstToFive': 'الأول الذي يصل إلى 5 نقاط يفوز باللعبة',
+                'pong.direction.left': 'الجانب الأيسر',
+                'pong.direction.right': 'الجانب الأيمن',
+                'pong.game.quit': 'خروج',
+                'pong.opponent.reconnecting': '⏳ في انتظار إعادة اتصال الخصم...',
+                'pong.opponent.canQuitAfter': 'يمكنك التخلي عن المباراة بعد {{time}}s من الانتظار.',
+                'pong.opponent.abandon': 'التخلي',
+
+                //scoreboard
+                'scoreboard.loading': 'جاري التحميل…',
+                'scoreboard.noMatches': 'لم يتم لعب أي مباريات حتى الآن.',
+                'scoreboard.error': 'خطأ {{status}}',
+                'scoreboard.pagination': '{{page}} / {{totalPages}} ({{total}} مباراة)',
+                'scoreboard.liveUpdate': 'تحديث فوري',
+                'scoreboard.guest': 'ضيف',
+                'scoreboard.overtime': 'وقت إضافي',
+                'scoreboard.previous': 'السابق',
+                'scoreboard.next': 'التالي',
+                'scoreboard.wins': 'ف',
+                'scoreboard.losses': 'خ',
+
+                //pong overlay
+                'pong.overlay.opponentLeft': 'غادر الخصم',
+                'pong.overlay.defaultVictory': 'انتصار افتراضي!',
+                'pong.overlay.closing': 'جاري الإغلاق...',
+                'pong.overlay.backToMenu': 'العودة للقائمة الرئيسية',
+                'pong.overlay.accept': 'قبول',
+                'pong.overlay.decline': 'رفض',
+
+                //error page
+                'error.back': 'رجوع',
+
+                //teams page
+                'teams.title': 'الفريق',
+
+                //profile level display
+                'profile.levelText': 'المستوى',
+                'profile.xpText': 'XP',
                 ...arJson
             }
         }

@@ -16,10 +16,10 @@ import { CiCircleRemove } from "react-icons/ci"; //refuser icon
 import { CiSearch } from "react-icons/ci"; //search icon
 import { IoIosArrowBack } from "react-icons/io"; //return icon
 import { useAuth } from '../main';
-import useUser from '../lib/user';
-
+import useUser, { defaultAvatar, AvatarErrorLoad } from '../lib/user';
+import Cropper, { type Area } from 'react-easy-crop';
+// import { mockUsers } from './../lib/fictif';
 import './style/Profile.css';
-
 export default function Profile ()
 {
 	const {t} = useTranslation();
@@ -48,6 +48,7 @@ export default function Profile ()
     const [ActiveUpdate, setActiveUpdate] = useState(0);
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const passwordVisibility = () => setShowPassword(!showPassword);
+
     const [errMsgForm, setErrMsgForm] = useState<string>('');
     const [errMsgAvatar, setErrMsgAvatar] = useState<string>('');
     const [errlogout, setLogout] = useState<string>('');
@@ -55,7 +56,7 @@ export default function Profile ()
     const logout_url = '/api/logout';
     const navigate = useNavigate();
 
-    
+  
     useEffect(() => {//recuperer mes informations
         fetchMe().then(user => {
             if (!user)
@@ -63,7 +64,6 @@ export default function Profile ()
             else
                 setSelectUser(user);
         });
-        // fetchMe();
     }, []);
 
     useEffect (() => {
@@ -82,12 +82,16 @@ export default function Profile ()
         }
         const update = lstFriends.find(f => f.id === selectUser.id);
         if (update)
-            setSelectUser(update);  
+            setSelectUser(prev => prev ? { ...prev, isOnline: update.isOnline} : prev);  
     }, [lstFriends, Myself]);
 
     const handleSearch = async (event:React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
         setSearchVal(value);
+        if (value.length < 2) {
+            setGetSeachVal([]);
+            return;
+        }
         try {
             const result = await axios.get(`/api/users/search?q=${value}`, {withCredentials:true});
             setGetSeachVal(result.data.users);
@@ -195,30 +199,87 @@ export default function Profile ()
         {
             if (axios.isAxiosError(err)) 
             {
-                if (err.response?.status == 400)
-                    setErrMsgForm(t('profile.err.data'))
-                if (err.response?.status == 401)
-                    setErrMsgForm(t('profile.err.wrongPassword'))
+                const errMsg = err.response?.data?.message;
+                if (err)
+                if (errMsg)
+                    setErrMsgForm(t(errMsg));
+                else
+                    setErrMsgForm(t('backend.common.internal.server.error'));
             }
         }
     }
 
+
+    const [image, setImage] = useState("");
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+    const [crop, setCrop] = useState({x:0, y:0});
+    const [zoom, setZoom] = useState(1);
+    // const [croppedImage, setCroppedImage] = useState<Area | null>(null);
+
+    const imgCroppedComplete = (_croppedArea:Area, croppedAreaPixels:Area) => {
+        setCroppedAreaPixels(croppedAreaPixels);
+    }
+
+    const selectAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]; //liste des fichiers selectionnes
+        if (!file)
+            return;
+        const reader = new FileReader();
+        reader.addEventListener("load", () => {
+            setImage(reader.result as string);
+        });
+        reader.readAsDataURL(file);
+    };
+
+    const getCroppedImg = async ( image:string , pixelcrop:Area): Promise<Blob | null> => {
+        const img = new Image();
+        img.src = image;
+        await new Promise(res => {img.onload = res; });
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = pixelcrop.width;
+        canvas.height = pixelcrop.height;
+        if (!ctx)
+            return null;
+        ctx.drawImage(
+            img,
+            //quoi prendre de l image
+            pixelcrop.x,
+            pixelcrop.y,
+            pixelcrop.width,
+            pixelcrop.height,
+
+            //ou sur le canvas
+            0, 0,
+            pixelcrop.width,
+            pixelcrop.height,
+
+        );
+
+        return new Promise<Blob | null>(resolve => canvas.toBlob(b => resolve(b), 'image/jpeg'));
+        
+    }
 //    https://blog.stackademic.com/uploading-files-with-react-post-request-dd6c1eebe933
-    const handleAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files; //liste des fichiers selectionnes 
-        const formData = new FormData();//creer un conteneur vide 
-        if (file)
-            formData.append('avatar', file[0]);//met le fichier, si il exite, dans le conteneur pour que axios puisse l envoyer au back
+    const handleAvatar = async () => {
+        if (!image || !croppedAreaPixels)
+            return;
         try {
+            const blob = await getCroppedImg(image, croppedAreaPixels);
+            if (!blob)
+                return;
+            const formData = new FormData();//creer un conteneur vide 
+        
+            formData.append('avatar', blob, 'avatar.jpg');//met le fichier, si il exite, dans le conteneur pour que axios puisse l envoyer au back
+        
             const res = await axios.put('/api/users/me/avatar', formData,  {headers: {"content-Type": "multipart/form-data"}, withCredentials: true});
-            
-            //permet de voir la modification dans le front
+            // permet de voir la modification dans le front
             setSelectUser({
                 ...selectUser!, avatarUrl:res.data.avatarUrl || selectUser?.avatarUrl
             });
             useUser.setState({userMyself : {
                 ...Myself!, avatarUrl:res.data.avatarUrl || Myself?.avatarUrl
             }});
+            setImage("")
         }
         catch(err) 
         {
@@ -229,6 +290,29 @@ export default function Profile ()
         }
         
     };
+
+    const ErrorAvatar = async (e:React.SyntheticEvent<HTMLImageElement>) => {
+        const img = e.currentTarget;
+        if (img.src.endsWith(defaultAvatar))
+            return;
+        img.src = defaultAvatar;
+        // if (selectUser)
+        //     setSelectUser({ ... selectUser, avatarUrl:defaultAvatar});
+        if (selectUser?.id === Myself?.id) {
+            try {
+                const blob = await fetch(defaultAvatar).then(r => r.blob());
+                const formData = new FormData();//creer un conteneur vide 
+            
+                formData.append("avatar", blob, "default_avatar.jpg");//met le fichier, si il exite, dans le conteneur pour que axios puisse l envoyer au back
+                
+                const res = await axios.put('/api/users/me/avatar', formData,  {headers: {"content-Type": "multipart/form-data"}, withCredentials: true});
+                const newUrl = res.data.avatarUrl ?? defaultAvatar;
+                setSelectUser(prev => prev ? { ...prev, avatarUrl: newUrl} : prev);
+                useUser.setState(state => ({ userMyself: state.userMyself ? { ...state.userMyself, avatarUrl: newUrl}: null, }));
+            }
+            catch {}
+        }
+    }
 
     useEffect(() => {
         setActiveUpdate(0);
@@ -256,11 +340,27 @@ export default function Profile ()
                     setlstFriendship(requests);
             })
         }
+        const handleProfile = async (data: { userId: string }) => {
+            if (!selectUser || selectUser.id === Myself.id || data.userId !== selectUser.id)
+                return;
+            try
+            {
+                await axios.get(`/api/users/${data.userId}`, {withCredentials: true});
+            }
+            catch (err)
+            {
+                if (axios.isAxiosError(err) && err.response?.status === 404)
+                    setSelectUser(Myself);
+            }
+        }
+
         socket.on("friend:request_received", handleRequest);
+        socket.on("friend:profile_updated", handleProfile);
         return () => {
             socket.off("friend:request_received", handleRequest);
+            socket.off("friend:profile_updated", handleProfile);
         }
-    }, [socket, Myself]);
+    }, [socket, Myself, selectUser]);
 
     useEffect(() => {//recuperer la liste des demandes d amis depuis le back
         if (!Myself)
@@ -334,6 +434,26 @@ export default function Profile ()
         setResponsive(true);
     }
 
+    const status = (isOnline: boolean) => {
+        if (isOnline)
+            return "bg-emerald-500";
+        return "bg-gray-300";
+    }
+
+    const matchWins = (Myself?.matchWins ?? [])?.map((m) => ({
+        ...m,
+        result: 'win',
+        opponent: m.loserLabel
+    }));
+
+    const matchLosses = (Myself?.matchLosses ?? [])?.map((m) => ({
+        ...m,
+        result: 'loose',
+        opponent: m.winnerLabel
+    }));
+
+    const MyMatches = [...matchWins, ...matchLosses];
+
     const WhichProfile = () => {
         if (!selectUser || !Myself)
             return null;
@@ -347,19 +467,43 @@ export default function Profile ()
                         {/* https://medium.com/@denis.mutunga/uploading-images-to-the-backend-in-react-with-formdata-c8035ae64a0c*/}                    
                         {ActiveUpdate === 0 && ( // si il est pas en mode modifier
                             <>
-                            {/* modifier avatar*/}
-                            <input
-                                id="getAvatar"
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                onChange={handleAvatar}
-                            />
+                            {image && (
+                                <div className="avatar_choose_box">
+                                    <div className="avatar_choose_crop">
+                                        <Cropper
+                                            image={image}
+                                            crop={crop}
+                                            zoom={zoom}
+                                            aspect={1}
+                                            cropShape="round"
+                                            onCropChange={setCrop}
+                                            onCropComplete={imgCroppedComplete}
+                                            onZoomChange={setZoom}
+                                        />
+                                    </div>
+                                    <div className='flex gap-4'>
+                                        <button className="avatar_choose_btn bg-green-500 hover:bg-green-700 transition" onClick={handleAvatar}>Save</button>
+                                        <button className="avatar_choose_btn bg-red-500 hover:bg-red-700 transition" onClick={() => setImage("")}>Annuler</button>
+                                    </div>
+                                </div>
+                            )}    
+                                <input
+                                    id="getAvatar"
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={selectAvatar}
+                                />
+                                
+                            
+                            
                             <div className="box_avatar">
                                 <div title= {`${t('profile.datecreate')} \n ${new Date(selectUser?.createdAt).toLocaleDateString('fr-FR')}`}><CiCircleInfo  className="w-6 h-6"/></div>
 
                                 {/* <div className="w-30 pl-1 "> */}
-                                    <img className="avatar" src={selectUser?.avatarUrl}></img>
+                                    <img className="avatar"
+                                        src={selectUser?.avatarUrl} onError={AvatarErrorLoad}
+                                    ></img>
                                     <button type="button" className="avatar_btn" onClick={() => document.getElementById('getAvatar')?.click()}><FaPencil size={20}/></button>
                                     {errMsgAvatar && <p className="error_input">{errMsgAvatar}</p>}
                                 {/* </div> */}
@@ -372,17 +516,15 @@ export default function Profile ()
                                         <p className="data_txt_email">{selectUser?.email}</p>
                                         {selectUser?.level !== undefined && (
                                             <div className="flex gap-4 text-sm text-slate-400 mt-2">
-                                                <span>Niveau: <span className="font-bold text-purple-300">{selectUser.level}</span></span>
-                                                <span>XP: <span className="font-bold text-indigo-300">{selectUser.experience}</span></span>
+                                                <span>{t('profile.levelText')}: <span className="font-bold text-purple-300">{selectUser.level}</span></span>
+                                                <span>{t('profile.xpText')}: <span className="font-bold text-indigo-300">{selectUser.experience}</span></span>
                                             </div>
                                         )}
                                     </div>
                                         
                                     <div className="flex gap-4 w-full items-center  justify-center">
                                         <button className="data_btn px-6" onClick={onShow}>{t('profile.modifier')}</button>
-                                        <button className="data_btn " onClick={handleLogout}> {t('profile.deconnecion')} 
-                                            {/* <BiLogOut className="w-5 h-5 "/> */}
-                                        </button>
+                                        <button className="data_btn " onClick={handleLogout}> {t('profile.deconnecion')}</button>
                                         {errlogout && <p className="error_input">{errlogout}</p>}
                                     </div>
                                 </div>
@@ -466,11 +608,11 @@ export default function Profile ()
             return (
                 <div className="profile_banner">
                     {/* <div className="box_avatar">
-                        <img className="avatar" src={selectUser?.avatarUrl}></img>
+                        <img className="avatar" src={selectUser?.avatarUrl} onError={AvatarErrorLoad}></img>
                     </div> */}
                     <div className="box_avatar">
                         <div title= {`${t('profile.datecreate')} \n ${new Date(selectUser?.createdAt).toLocaleDateString('fr-FR')}`}><CiCircleInfo  className="w-6 h-6"/></div>
-                            <img className="avatar" src={selectUser?.avatarUrl}></img>    
+                            <img className="avatar" src={selectUser?.avatarUrl} onError={ErrorAvatar}></img>    
                         </div>
                     {/* <div className="text-3xl text-left truncate flex flex-col mt-7"> */}
                         <div className="box_data">
@@ -479,8 +621,8 @@ export default function Profile ()
                                 <p className="data_txt_email">{selectUser?.email}</p>
                                 {selectUser?.level !== undefined && (
                                     <div className="flex gap-4 text-sm text-slate-400 mt-2">
-                                        <span>Niveau: <span className="font-bold text-purple-300">{selectUser.level}</span></span>
-                                        <span>XP: <span className="font-bold text-indigo-300">{selectUser.experience}</span></span>
+                                        <span>{t('profile.levelText')}: <span className="font-bold text-purple-300">{selectUser.level}</span></span>
+                                        <span>{t('profile.xpText')}: <span className="font-bold text-indigo-300">{selectUser.experience}</span></span>
                                     </div>
                                 )}
                             </div>
@@ -496,41 +638,8 @@ export default function Profile ()
                             
                         </div>
                 </div>
-
-                //ajouter bouton supprimer ami si c est un ami sinon addfriend
             );
         }
-
-    const status = (isOnline: boolean) => {
-        if (isOnline)
-            return "bg-emerald-500";
-        return "bg-gray-300";
-    }
-
-  type Match = {
-    id: string;
-    opponent: string;
-    result: 'win' | 'loss';
-    scoreWinner: number;
-    scoreLoser: number;
-    durationSec: number;
-    date: string;
-    };
-
-    const Scores: Record<string, Match[]> = {
-        '1': [ // nnn
-            { id: 'a1', opponent: 'Alrffffffffffffffffffffffice',   result: 'win',  scoreWinner: 11, scoreLoser: 7,  durationSec: 320, date: '2024-03-01' },
-            { id: 'a2', opponent: 'Bob',     result: 'loss', scoreWinner: 11, scoreLoser: 5,  durationSec: 280, date: '2024-02-28' },
-            { id: 'a3', opponent: 'Charlie', result: 'win',  scoreWinner: 11, scoreLoser: 9,  durationSec: 410, date: '2024-02-25' },
-        ],
-        '2': [ // Alice
-            { id: 'b1', opponent: 'nnn',     result: 'loss', scoreWinner: 11, scoreLoser: 7,  durationSec: 320, date: '2024-03-01' },
-            { id: 'b2', opponent: 'Charlie', result: 'win',  scoreWinner: 11, scoreLoser: 6,  durationSec: 300, date: '2024-02-22' },
-        ],
-        '3': [ // Bob
-            { id: 'c1', opponent: 'nnn',     result: 'win',  scoreWinner: 11, scoreLoser: 5,  durationSec: 280, date: '2024-02-28' },
-        ],
-    };
 
     return (
         <div className="all_screen">
@@ -538,39 +647,49 @@ export default function Profile ()
                 {/* //////////////////////////avatar + mon nom//////////////////////////////////// */}
                 <div className="box_me" onClick={()=>{setSelectUser(Myself); setResponsive(true); setActiveUpdate(0); setisShowNotif(0)}}>
                     <div className="display_me">
-                        <img className="rounded-full w-10 h-10" src={Myself?.avatarUrl}></img>
+                        <img className="rounded-full w-10 h-10" src={Myself?.avatarUrl} onError={ErrorAvatar}></img>
                         <span className="truncate">{Myself?.username}</span>
                     </div>
                 </div>
                  {/* //////////////////////////notifications//////////////////////////////////// */}
                 <div className="box_notif">
-                    <div className="input_form">
-                        <input placeholder={t('profile.search')}
-                            value={searchVal}
-                            onChange={handleSearch}
-                            className="input"/>
-                            
-                            <CiSearch className="icon"/>
-                    </div>
-                    <ul>
-                        { searchVal && (
-                            //SearchResults.filter((user) => user.username.includes(searchVal))//filtre les donnes et va afficher que les valeurs qui correspondent a linput
-                            getSearchVal.map((user) =>
-                                <li key={user.id} onClick={() => {
-                                        setSearchVal('');
-                                        setSelectUser(user);
-                                        setGetSeachVal([]);
-                                        setResponsive(true); }}>
-                                    {user.username}
-                                </li>)//parcour le tableau filte et affiche dans li
-                        )}
-                    </ul> 
                     <button className="notif" onClick={ShowNotif}>
                         {t('profile.notification')}
                         {count_notif > 0 && (
-                            <div className='absolute right-1 bottom-1 bg-green-500 w-3 h-3 rounded-full flex items-center justify-center'></div>
+                            <div className="indicator_notif"></div>
                         )}
                     </button>
+                    <div className="relative">
+                        <div className="input_form">
+                            <input placeholder={t('profile.search')}
+                                value={searchVal}
+                                onChange={handleSearch}
+                                className="search_input"
+                                />
+                                
+                                <CiSearch className="icon"/>
+                        </div>
+                        { searchVal && (
+                            <ul className="search_val_box">
+                                {/* SearchResults.filter((user) => user.username.includes(searchVal))//filtre les donnes et va afficher que les valeurs qui correspondent a linput */}
+                                {getSearchVal.map((user) =>
+                                    <li 
+                                        key={user.id}
+                                        className="search_val"
+                                        onClick={() => {
+                                            setSearchVal('');
+                                            setSelectUser(user);
+                                            setGetSeachVal([]);
+                                            setResponsive(true);
+                                        }}
+                                    >
+                                        {user.username}
+                                    </li>
+                                )}
+                            </ul>
+                        )}
+                    </div>
+                    
                 </div>
                 {/* //////////////////////////liste des amis//////////////////////////////////// */}
                 <div className="box_lst_friend">
@@ -582,7 +701,7 @@ export default function Profile ()
                                 setSelectUser(result.data.user);
                                 setResponsive(true);
                             }}>
-                            <img className="rounded-full w-9 h-9" src={theFriend.avatarUrl}></img>
+                            <img className="rounded-full w-9 h-9" src={theFriend.avatarUrl} onError={AvatarErrorLoad}></img>
                             <span className={`status ${status(theFriend.isOnline)}`}></span>
                             <span className="truncate">{theFriend.username}</span>
                         </div>
@@ -593,7 +712,7 @@ export default function Profile ()
             {/* /////////////////////////profile(moi ou user) + notif/////////////////////////////////////// */}
             <div className={`box_profile ${responsive ? 'flex flex-1' : 'hidden md:flex md:flex-1'}`}>
                 {responsive && (
-                    <button className="md:hidden bg-indigo-500 rounded-full items-center mr-auto p-2 " onClick={() => setResponsive(false)}><IoIosArrowBack/></button>
+                    <button className="responsive_backBtn" onClick={() => setResponsive(false)}><IoIosArrowBack/></button>
                 )}
                 {isShowNotif === 1 ? (
                     <div className="show_notif">
@@ -605,7 +724,7 @@ export default function Profile ()
                                     return (
                                         <div className="items" key={senderId}
                                             onClick = {() => navigate('/chat', { state : {friendId: senderId} })}>
-                                            <img className="avatar_notif" src={sender?.avatarUrl}></img>
+                                            <img className="avatar_notif" src={sender?.avatarUrl} onError={AvatarErrorLoad}></img>
                                             <span className="username_notif">{sender?.username}</span>
                                         </div>
                                     );
@@ -619,7 +738,7 @@ export default function Profile ()
                             <div className="p-3">
                                 {lstFriendship.map((theRequest) => (
                                     <div className="items" key={theRequest.id}>
-                                        <img className="avatar_notif" src={theRequest.avatarUrl}></img>
+                                        <img className="avatar_notif" src={theRequest.avatarUrl} onError={AvatarErrorLoad}></img>
                                         <span className="username_notif">{theRequest.username}</span>
                                         <div className="box_icon">
                                             <button onClick = {() => AcceptRequest(theRequest.id)}><CiCircleCheck className="icon_notif"/></button>
@@ -644,13 +763,13 @@ export default function Profile ()
                             <div className="w-1/3">{t('profile.time')}</div>
                             <div className="w-1/3">{t('profile.date')}</div>
                         </div>
-                        {(Scores[selectUser?.id ?? ''] ?? []).map(match => (
+                        {MyMatches.map(match => (
                             <div className="flex border-t border-gray-700 py-5">
                                 <div className="w-1/3 truncate">{match.opponent}</div>
                                 <div className="w-1/3">{match.result}</div>
                                 <div className="w-1/3">{match.scoreLoser} / {match.scoreWinner}</div>
                                 <div className="w-1/3">{match.durationSec}</div>
-                                <div className="w-1/3">{match.date}</div>
+                                <div className="w-1/3">{new Date(match.endedAt).toLocaleDateString('fr-FR')}</div>
                             </div>
                         ))}
                     </div>

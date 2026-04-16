@@ -12,13 +12,13 @@ EXPOSE $PORT
 COPY package.json /code/package.json
 COPY package-lock.json /code/package-lock.json
 RUN apt-get update && apt-get install -y \
-    openssl && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean
+	openssl && rm -rf /var/lib/apt/lists/* \
+	&& apt-get clean
 
 RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-    -keyout /etc/ssl/private/backend-selfsigned.key \
-    -out /etc/ssl/certs/backend-selfsigned.crt \
-    -subj "/C=FR/ST=Paris/L=Paris/O=42 School/CN=localhost"
+	-keyout /etc/ssl/private/backend-selfsigned.key \
+	-out /etc/ssl/certs/backend-selfsigned.crt \
+	-subj "/C=FR/ST=Paris/L=Paris/O=42 School/CN=localhost"
 
 RUN npm ci
 
@@ -29,6 +29,8 @@ COPY . /code
 
 RUN npx prisma generate
 
-RUN mkdir -p dist/public && cp -r src/public dist/
+RUN npm run build
 
-CMD [ "sh", "-c", "npm run db:deploy && npm run start:dev" ]
+RUN cp -r src/public dist/src/
+
+CMD [ "sh", "-c", "npm run db:deploy && npm run start" ]

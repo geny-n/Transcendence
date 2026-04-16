@@ -5,10 +5,8 @@ import sharp from "sharp";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
-console.log("Inside upload.ts __filename:", __filename);
 
 const __dirname = path.dirname(__filename);
-console.log("__dirname:", __dirname);
 
 const storage = multer.memoryStorage();
 
@@ -23,13 +21,12 @@ const storage = multer.memoryStorage();
 // 		cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
 // 	}
 // });
-console.log("storage:", storage);
 
 const fileFilter = (request: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
 	if (file.mimetype.startsWith('image/')) {
 		cb(null, true);
 	} else {
-		cb(new Error('Not an image! Please upload only images.'))
+		cb(new Error('backend.middleware.upload.not.image'))
 	}
 };
 
@@ -47,14 +44,13 @@ export const resizeAvatar = async (request:Request, response:Response, next: Nex
 	try {
 		request.file.filenameForMemoryStorage = request.file.fieldname + '-' + Date.now() + '-' + Math.round(Math.random() * 1E9) + path.extname(request.file.originalname);
 		const outputPath = path.join(__dirname, '../public/avatars', request.file.filenameForMemoryStorage);
-		console.log("Inside resizeAvatar outputPath:", outputPath);
 
 		await sharp(request.file.buffer, { animated: true })
 			.resize({
 				width: 512,
 				height: 512,
-				fit: 'fill',
-				// fit: 'cover',
+				// fit: 'fill',
+				fit: 'cover',
 				position: 'center',
 				withoutEnlargement: true
 			})
@@ -65,7 +61,7 @@ export const resizeAvatar = async (request:Request, response:Response, next: Nex
 		console.error('Erreur Sharp resisze:', error);
 		return response.status(500).json({
 			success: false,
-			message: "Error during image processing"
+			message: "backend.middleware.upload.image.processing.error"
 		});
 	}
 }

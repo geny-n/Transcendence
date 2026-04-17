@@ -71,18 +71,18 @@ export const loginUser = asyncHandler(async (request: Request, response: Respons
 	const { email, password } = matchedData(request) as { email: string, password: string};
 
 	// chercher l'utilisateur
-	const user = await prisma.user.findUnique({
+	let user = await prisma.user.findUnique({
 		where: { email: email },
 	});
 
-	if (user?.isOnline) {
-		console.log("[login] User already online, allowing re-login :", user.isOnline);
-		// Allow re-login even if already online - will be handled by socket disconnect
-		// return response.status(409).json({
-		// 	success: true,
-		// 	message: "already logged in"
-		// });
-	}
+	// if (user?.isOnline) {
+	// 	// console.log("[login] User already online, allowing re-login :", user.isOnline);
+	// 	// Allow re-login even if already online - will be handled by socket disconnect
+	// 	return response.status(409).json({
+	// 		success: true,
+	// 		message: "already logged in"
+	// 	});
+	// }
 
 	if (!user || !user.password) {
 		return response.status(401).json({
@@ -100,22 +100,25 @@ export const loginUser = asyncHandler(async (request: Request, response: Respons
 		});
 	}
 
-	// Generer les tokens
-	const accessToken = generateAccessToken(user.id);
-	const refreshToken = generateRefreshToken(user.id);
-
-	// Mettre a jour le refresh token en base
-	await prisma.user.update({
-		where : { id : user.id },
-		data: {
-			isOnline: true,
-			refreshToken : refreshToken
-		}
-	});
-
 	// Configurer les cookies
 	const isSecure = process.env.NODE_ENV === "production" || process.env.FRONTEND_URL?.startsWith("https");
 	console.log(`[login] Setting cookies: isSecure=${isSecure}, NODE_ENV=${process.env.NODE_ENV}, FRONTEND_URL=${process.env.FRONTEND_URL}`);
+
+	// Generer les tokens
+	const accessToken = generateAccessToken(user.id);
+	let refreshToken;
+	if (user.isOnline === false) {
+		refreshToken = generateRefreshToken(user.id);
+		// Mettre a jour le refresh token en base
+		user = await prisma.user.update({
+			where : { id : user.id },
+			data: {
+				isOnline: true,
+				refreshToken : refreshToken
+			}
+		});
+		console.log('user.refreshToken:', user.refreshToken)
+	}
 
 	response.cookie("access_token", accessToken, {
 		httpOnly: true,
@@ -125,7 +128,7 @@ export const loginUser = asyncHandler(async (request: Request, response: Respons
 	})
 	console.log("[login] access_token cookie set");
 
-	response.cookie("refresh_token", refreshToken, {
+	response.cookie("refresh_token", user.refreshToken, {
 		httpOnly: true,
 		secure: isSecure,
 		sameSite: "lax",
@@ -154,20 +157,23 @@ export const logoutUser = asyncHandler(async (request: Request, response: Respon
 	const user = request.user!;
 
 	const friendsIds = await getAllFriendIds(user.id);
+	const sockets = await io.in(`user:${user.id}`).fetchSockets();
 
-	await prisma.user.update({
-		where : { id: user.id },
-		data: {
-			refreshToken: null,
-			isOnline: false,
-		},
-	});
-	friendsIds.forEach(friendsId => {
-		io.to(`user:${friendsId}`).emit('friend:status_changed', {
-			userId: user.id,
-			isOnline: false,
+	if (sockets.length === 1) {
+		await prisma.user.update({
+			where : { id: user.id },
+			data: {
+				refreshToken: null,
+				isOnline: false,
+			},
 		});
-	});
+		friendsIds.forEach(friendsId => {
+			io.to(`user:${friendsId}`).emit('friend:status_changed', {
+				userId: user.id,
+				isOnline: false,
+			});
+		});
+	}
 
 	const isSecure = process.env.NODE_ENV === "production" || process.env.FRONTEND_URL?.startsWith("https");
 
@@ -202,21 +208,23 @@ export const authHandler = asyncHandler(async (request: Request, response: Respo
 	const { id, username } = request.user;
 	console.log(`User ${username} (${id}) authenticated via 42`);
 
-	// Generer les tokens
-	const accessToken = generateAccessToken(id);
-	const refreshToken = generateRefreshToken(id);
-
-	// Mettre a jour le refresh token en BDD
-	await prisma.user.update({
-		where : { id: id },
-		data: {
-			refreshToken: refreshToken,
-			isOnline: true
-		}
-	});
-
 	// Set cookies et rediriger
 	const isSecure = process.env.NODE_ENV === "production" || process.env.FRONTEND_URL?.startsWith("https");
+
+	// Generer les tokens
+	const accessToken = generateAccessToken(id);
+	let refreshToken;
+	if (request.user.isOnline === false) {
+		refreshToken = generateRefreshToken(id);
+		// Mettre a jour le refresh token en base
+		request.user = await prisma.user.update({
+			where : { id : id },
+			data: {
+				isOnline: true,
+				refreshToken : refreshToken
+			}
+		});
+	}
 
 	response.cookie("access_token", accessToken, {
 		httpOnly: true,
@@ -225,7 +233,7 @@ export const authHandler = asyncHandler(async (request: Request, response: Respo
 		maxAge: 15 * 60 * 1000
 	})
 
-	response.cookie("refresh_token", refreshToken, {
+	response.cookie("refresh_token", request.user.refreshToken, {
 		httpOnly: true,
 		secure: isSecure,
 		sameSite: "lax",

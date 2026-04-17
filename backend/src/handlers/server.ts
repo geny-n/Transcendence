@@ -53,13 +53,6 @@ export const refreshTokens = asyncHandler(async (request: Request, response: Res
 	// Generer un NOUVEL access token et refresh token
 	const newAccessToken = generateAccessToken(user.id);
 
-	const newRefreshToken = generateRefreshToken(user.id);
-
-	await prisma.user.update({
-		where : { id: user.id },
-		data: { refreshToken: newRefreshToken }
-	})
-
 	// Renvoyer le nouveau token
 	const isSecure = process.env.NODE_ENV === "production" || process.env.FRONTEND_URL?.startsWith("https");
 
@@ -70,16 +63,8 @@ export const refreshTokens = asyncHandler(async (request: Request, response: Res
 		maxAge: 15 * 60 * 1000
 	});
 
-	response.cookie("refresh_token",newRefreshToken, {
-		httpOnly: true,
-		secure: isSecure,
-		sameSite: "lax",
-		maxAge: 7 * 24 * 60 * 60 * 1000
-	});
-
 	return response.status(200).json({
 		success: true,
 		accessToken: newAccessToken,
-		refreshToken: newRefreshToken
 	});
 });

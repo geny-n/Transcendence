@@ -20,14 +20,14 @@ export function RefreshProvider({ children } : { children: React.ReactNode }) {
 					}
 					console.error(error.response?.data?.message);
 				}
-			}			
+			}
 		};
 
 		refreshAccess();
 		const id = setInterval(refreshAccess, 14 * 60 * 1000);
 
 		return () => clearInterval(id);
-	}, [user, navigate])
+	}, [user])
 
 	return <>{children}</>
 }

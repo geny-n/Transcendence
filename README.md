@@ -12,12 +12,15 @@ ddd
 
 ## Additional secitons
 ### Team Information :
-  - Assigned role(s) :
-    -  PO
-    -  PM
-    -  Teach Lead
-    -  Developers
-  - responsabilities
+- PO
+  - ewfef
+- Project Manager (ngeny)
+  - For the first day we met at school to choose the game, modules and we separated tasks. We use Discord to communicate, to monitor each person's progress and to schedule meetings. We also used GitHub to push our work on separate branches. We plan meetings every 2 weeks at school to gather everything and test before pushing to the main branch. Finally we decided what each person will work on for next time.
+    
+-  Teach Lead
+  - eefewf
+-  Developers
+  - wefewf
     
 ### Project Management :
   - sdfsdf
@@ -34,9 +37,16 @@ ddd
   - sdfsdf
 
 ### Features List :
-  - sdfsdf
-  - sdfsdf
-  - sdfsdf
+  - User profile (ngeny)
+    - The user can update their profile
+    - Search other users and send a friend request
+    - Can delete friends
+    - Receive notifications to accept or denie friend request, notification for arriving messages
+      
+  - Realtime chat (ngeny)
+    - User can send messages only to their friends
+    - When the user receives a message, he is noticed and is redirected to the conversation by clicking on the notificaton button
+    - When a user send a message the AI moderation system detecta and blocs it if it's toxic then the user will receive a waning message
 
 ### Modules :
 | Modules | Typel | Points | Team members(s) | Justification | Implementation |

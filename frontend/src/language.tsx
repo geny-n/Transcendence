@@ -1,5 +1,9 @@
 import i18n from "i18next";
 import { initReactI18next} from "react-i18next";
+import frJson from "./language/fr.json"
+import enJson from "./language/en.json"
+import esJson from "./language/es.json"
+import arJson from "./language/ar.json"
 
 i18n.use(initReactI18next).init({
     debug:false,
@@ -74,6 +78,7 @@ i18n.use(initReactI18next).init({
                 'navbar.admin' : 'Admin',
                 'navbar.login' : 'Connexion',
                 'navbar.register' : 'Inscription',
+                'navbar.about' : 'À propos',
 
                 //HomePage
                 'homepage.home' : 'Bienvenue sur notre transcendence',
@@ -185,6 +190,7 @@ i18n.use(initReactI18next).init({
                 'chat.send' : 'Envoyer',
                 'chat.yourMsg' : 'votre message',
                 'chat.longMsg' : 'Votre message est trop long',
+              
                 'chat.moderation' : 'Votre message n est pas approprie',
                 
                 //login 
@@ -295,6 +301,8 @@ i18n.use(initReactI18next).init({
                 //profile level display
                 'profile.levelText': 'Niveau',
                 'profile.xpText': 'XP',
+              
+                ...frJson
             }
         },
         en: {
@@ -366,6 +374,7 @@ i18n.use(initReactI18next).init({
                 'navbar.admin' : 'Admin',
                 'navbar.login' : 'Login',
                 'navbar.register' : 'Register',
+                'navbar.about' : 'About',
 
                 //HomePage
                 'homepage.home' : 'Welcome to our transcendence',
@@ -476,6 +485,7 @@ i18n.use(initReactI18next).init({
                 'chat.send' : 'Send',
                 'chat.yourMsg' : 'Your message',
                 'chat.longMsg' : 'Your message is too long',
+              
                 'chat.moderation' : 'Your message is not appropriate',
 
                 //login 
@@ -586,6 +596,8 @@ i18n.use(initReactI18next).init({
                 //profile level display
                 'profile.levelText': 'Level',
                 'profile.xpText': 'XP',
+              
+                ...enJson
             }
         },
         es : {
@@ -657,6 +669,7 @@ i18n.use(initReactI18next).init({
                 'navbar.admin' : 'Admin',
                 'navbar.login' : 'Iniciar sesion',
                 'navbar.register' : 'Registarse',
+                'navbar.about' : 'Sobre',
 
                 //HomePage
                 'homepage.home' : 'Bienvenido a nuestra transcendence',
@@ -766,7 +779,7 @@ i18n.use(initReactI18next).init({
                 //chat
                 'chat.send' : 'Enviar',
                 'chat.yourMsg' : 'Tu mensaje',
-                'chat.longMsg' : 'Tu mensaje es demasiado largo',
+                'chat.longMsg' : 'Tu mensaje es dmasiado largo',
                 'chat.moderation' : 'Tu mensaje no es apropiado',
 
                 //login 
@@ -877,6 +890,7 @@ i18n.use(initReactI18next).init({
                 //profile level display
                 'profile.levelText': 'Nivel',
                 'profile.xpText': 'XP',
+                ...esJson
             }
         },
 
@@ -949,6 +963,7 @@ i18n.use(initReactI18next).init({
                 'navbar.admin' : 'Admin',
                 'navbar.login' : 'تسجيل الدخول',
                 'navbar.register' : 'التسجيل',
+                'navbar.about' : 'حول',
 
                 // HomePage
                 'homepage.home': 'مرحباً بك في transcendence الخاص بنا',
@@ -1059,6 +1074,7 @@ i18n.use(initReactI18next).init({
                 'chat.send' : 'إرسال',
                 'chat.yourMsg' : 'رسالتك',
                 'chat.longMsg' : 'رسالتك طويلة جداً',
+
                 'chat.moderation': 'رسالتك غير مناسبة',
                 
                 //login 
@@ -1171,6 +1187,7 @@ i18n.use(initReactI18next).init({
                 //profile level display
                 'profile.levelText': 'المستوى',
                 'profile.xpText': 'XP',
+                ...arJson
             }
         }
     }

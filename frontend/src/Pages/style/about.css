@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@layer components
+{
+	.default-pos{
+		@apply h-screen pt-30 pb-8
+		flex flex-col space-y-5
+		text-2xl;
+	}
+
+	.detail-style{
+		@apply border w-4/5 mx-auto
+		border-1 border-solid;
+	}
+
+	.summary-title{
+		@apply cursor-pointer px-4 py-2
+		text-start;
+	}
+
+	.summary-txt{
+		@apply px-6 py-8 max-w-3xl mx-auto;
+	}
+
+	.markdown-h1{
+		@apply text-3xl font-bold text-orange-600;
+	}
+
+	.markdown-h2{
+		@apply text-2xl font-semibold mt-5 mb-3
+		text-white;
+	}
+
+	.markdown-h3{
+		@apply text-xl font-semibold mt-5 mb-3
+		text-white text-start;
+	}
+
+	.markdown-p{
+		@apply mb-4 leading-relaxed whitespace-normal overflow-visible min-w-0;
+	}
+
+	.markdown-ul{
+		@apply list-disc pl-6 mb-4 space-y-2 text-start
+		text-base;
+	}
+}

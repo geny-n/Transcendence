@@ -2,39 +2,44 @@
 
 @layer components
 {
-    .nav-style{
-        @apply fixed left-1/2 top-[20px] -translate-x-1/2 
-        flex justify-between items-center gap-16 
-        py-3 px-10 rounded-full 
-        bg-black/60 backdrop-blur-md 
-        text-white shadow-lg z-10;
-    }
+	.nav-style{
+		@apply fixed left-1/2 top-[20px] -translate-x-1/2 
+		flex justify-between items-center gap-16 
+		py-3 px-10 rounded-full 
+		bg-black/60 backdrop-blur-md 
+		text-white shadow-lg z-10;
+	}
 
-    .btn-nav{
-        @apply absolute left-0 bottom-[-5px]
-        w-0 h-1 rounded-xl bg-gradient-to-r
-        from-red-600 to-orange-500 transition-all duration-300;
-    }
-    .group:hover .btn-nav{
-        @apply w-full
-    }
+	.nav-style.nav-disabled{
+		@apply pointer-events-none opacity-50;
+	}
 
-    .btn-login{
-        @apply bg-gradient-to-r from-red-600 to-orange-500
-        py-1 px-6 rounded-3xl shadow-2xl
-        text-white text-lg font-semibold;
-    }
-    .btn-login:hover{
-        @apply from-red-500 to-orange-400;
-    }
+	.btn-nav{
+		@apply absolute left-0 bottom-[-5px]
+		w-0 h-1 rounded-xl bg-gradient-to-r
+		from-red-600 to-orange-500 transition-all duration-300;
+	}
+	.group:hover .btn-nav{
+		@apply w-full
+	}
 
-    .dropdown-icon{
-        @apply text-2xl lg:hidden bg-none border-none
-        cursor-pointer
-    }
-    .dropdown-menu{
-        @apply absolute top-12 left-0 w-48
-        bg-gray-900 shadow-lg rounded-xl
-        flex flex-col gap-4 p-4 lg:hidden
-    }
+	.btn-login{
+		@apply bg-gradient-to-r from-red-600 to-orange-500
+		py-1 px-6 rounded-3xl shadow-2xl
+		text-white text-lg font-semibold whitespace-nowrap;
+	}
+	.btn-login:hover{
+		@apply from-red-500 to-orange-400;
+	}
+
+	.dropdown-icon{
+		@apply text-2xl lg:hidden bg-none border-none
+		cursor-pointer
+	}
+	.dropdown-menu{
+		@apply absolute top-12 inset-s-0 w-40
+		bg-zinc-800 shadow-lg rounded-xl
+		flex flex-col gap-4 p-4 lg:hidden
+		border-1 border-solid
+	}
 }

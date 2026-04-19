@@ -8,8 +8,7 @@
     font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
     @apply leading-relaxed font-normal;
 
-    color-scheme: light dark;
-    @apply text-white/87 bg-gray-900;
+    /* @apply text-white/87 bg-gray-900; */
 
     font-synthesis: none;
     text-rendering: optimizeLegibility;
@@ -20,30 +19,37 @@
   a {
     @apply font-medium text-inherit no-underline;
   }
-
   a:hover {
     @apply text-inherit;
   }
 
   body {
-    @apply m-0 min-w-80 min-h-screen;
+    @apply bg-zinc-800 text-white min-h-screen m-0;
   }
 }
 
-@layer components {
+/* @layer components {
   .centerd-page {
     @apply flex place-items-center min-h-screen;
   }
-}
 
-@media (prefers-color-scheme: light) {
-  @layer base {
-    :root {
-      @apply text-gray-800 bg-white;
-    }
-
-    a:hover {
-      @apply text-blue-400;
-    }
+  .markdown-p {
+    @apply mb-4 leading-relaxed break-words;
   }
-}
+  
+  .markdown-ul {
+    @apply list-disc pl-5 mb-4;
+  }
+  
+  .markdown-h1 {
+    @apply text-xl font-bold mb-4;
+  }
+  
+  .markdown-h2 {
+    @apply text-lg font-semibold mb-3;
+  }
+  
+  .markdown-h3 {
+    @apply text-base font-semibold mb-2;
+  } */
+

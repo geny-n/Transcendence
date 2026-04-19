@@ -62,7 +62,7 @@ ddd
 | Right-to-left (RTL) language support | Minor | 1 | All | sss | sss |
 | Support for additional browsers | Minor | 1 | ???? | sss | sss |
 | Standard user management and authentication | Major | 2 | gtoure, ngeny | sss | sss |
-| Game statistics and match history | Minor | 1 | llabonde | sss | sss |
+| Game statistics and match history | Minor | 1 | llabonde | A scoreboard keeping track of the games and a leaderboard keeping track of the most experienced players. | When a match ends, the record and stats is stored and displayed on the scoreboard(and the personal history in the profile), and you can check your progress towards top players in the leaderboard. |
 | Implement remote authentication with OAuth 2.0 | Minor | 1 | gtoure, gpaupher | sss | sss |
 | Advanced permissions system | Major | 2 | gtoure | sss | sss |
 | Content moderation AI | Minor | 1 | ngeny | To filter messages before broadcasting to ensure a safe chat environment without a manual moderation | Using HuggingFace multilingual-toxic-xlm-roberta, the backend sends each message to the model API. It calculates the toxicity score (0 to 1), the function returns true if the message exceeds 0.5 (toxic), then the message is deleted from the database and the user receives a warning message. Model is warming up at server startup to eliminate latency. |
@@ -77,6 +77,6 @@ Total points : 21
    - gpaupher
      - dsdd
    - llabonde
-     - sdff
+     - Most of my work was making the game as playable as possible, and make the systems behind it(game,matchmaking,revenge,dc timers,play flow).
    - ngeny
      -  sdfdsf

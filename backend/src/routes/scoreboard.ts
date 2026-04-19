@@ -85,7 +85,7 @@ router.get("/leaderboard", async (req: Request, res: Response) => {
 
 	try {
 		const users = await prisma.user.findMany({
-			where: { role: "USER" }, // Exclude guests and admins
+			where: { role: { in: ["USER", "ADMIN"] } }, // Include both users and admins
 			select: {
 				id: true,
 				username: true,
@@ -110,7 +110,7 @@ router.get("/leaderboard", async (req: Request, res: Response) => {
 		}));
 
 		res.json({
-			total: await prisma.user.count({ where: { role: "USER" } }),
+			total: await prisma.user.count({ where: { role: { in: ["USER", "ADMIN"] } } }),
 			limit,
 			players: result,
 		});

@@ -1,12 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react'
 import './Navbar.css'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../main'
 
 const Navbar: React.FC = () => {
 	const { t, i18n } = useTranslation()
 	const { user } = useAuth();
+	const location = useLocation();
+	const isInMatchmaking = location.pathname === '/matchmaking';
 	const [menuOpen, setMenuOpen] = useState(false)
 
 	const listItems = [
@@ -46,12 +48,12 @@ const Navbar: React.FC = () => {
 	}, []);
 
 	return (
-		<div className="nav-style">
-			<button ref={buttonRef} className="dropdown-icon" onClick={() => setMenuOpen((prev) => !prev)}>
+		<div className={`nav-style ${isInMatchmaking ? 'nav-disabled' : ''}`}>
+			<button ref={buttonRef} className="dropdown-icon" onClick={() => setMenuOpen((prev) => !prev)} disabled={isInMatchmaking}>
 				☰
 			</button>
 
-			{menuOpen && (
+			{menuOpen && !isInMatchmaking && (
 				<ul ref={dropdownRef} className="dropdown-menu inset-e-5">
 					{listItems.map(({ label, path }) => (
 						<NavLink className="text-white hover:bg-orange-600" onClick={() => setMenuOpen(false)} key={label} to={path}>

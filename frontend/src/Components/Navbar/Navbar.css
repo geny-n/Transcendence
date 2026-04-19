@@ -10,6 +10,10 @@
 		text-white shadow-lg z-10;
 	}
 
+	.nav-style.nav-disabled{
+		@apply pointer-events-none opacity-50;
+	}
+
 	.btn-nav{
 		@apply absolute left-0 bottom-[-5px]
 		w-0 h-1 rounded-xl bg-gradient-to-r

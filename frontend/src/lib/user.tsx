@@ -1,7 +1,6 @@
 import {create} from 'zustand';
 import axios from "axios";
 import React from 'react';
-// import { mockMyself } from './fictif';
 
 export type Myself = {
     id: string,
@@ -55,16 +54,12 @@ interface UserStore {
     fetchFriends: () => Promise<void>;
 
     initsocket: (socket: any) => void;
-    // updateMyself: (newMe: Partial<Myself>) => void;
-    // AddFriend: (newFriend: Partial<Friends>) =>void
 };
 
 const useUser = create<UserStore>((set, get) => ({
 
     userMyself: null,
     userFriends: [],
-    // userMyself: mockMyself,
-    // userFriends: mockFriends,
     waitingRequest: [],
     NotifMsgUnread: [],
 
@@ -109,10 +104,6 @@ const useUser = create<UserStore>((set, get) => ({
                 throw Error(`Error API Friends: ${result.status} ${result.statusText}`);
             }
             const friends = result.data.friends.map((f: any) => {
-                // [
-                //     { "user1": { "id": "moi", ... }, "user2": { "id": "ami1", ... } },
-                //     { "user1": { "id": "ami2", ... }, "user2": { "id": "moi", ... } }
-                // ]
                 if (f.user1.id === myself.id)
                     return f.user2;
                 else
@@ -125,7 +116,6 @@ const useUser = create<UserStore>((set, get) => ({
             console.error('Error fetch : ', error);
         }
     },
-
 
     initsocket: (socket) => {
         socket.on("friend:request_accepted", () => {

@@ -8,14 +8,29 @@ ddd
 ddd
 
 ## Ressources
-ddd
+ //    https://blog.stackademic.com/uploading-files-with-react-post-request-dd6c1eebe933
+                        {/* https://medium.com/@denis.mutunga/uploading-images-to-the-backend-in-react-with-formdata-c8035ae64a0c*/}      
 
 ## Additional secitons
 ### Team Information :
 - PO
   - ewfef
 - Project Manager (ngeny)
-  - For the first day we met at school to choose the game, modules and we separated tasks. We use Discord to communicate, to monitor each person's progress and to schedule meetings. We also used GitHub to push our work on separate branches. We plan meetings every 2 weeks at school to gather everything and test before pushing to the main branch. Finally we decided what each person will work on for next time.
+  - Responsibilities :
+    - Meeting planning
+    - Monitoring each member's progress
+    - Cooperation in case of issues
+    - Meeting reviews
+  - Kickoff Meeting
+    - Define game scope and modules
+    - Create task list
+    - Assign tasks to team members
+    - Set up GitHub repository and code basic architecture
+  - Tools & Process
+    - Git + Discord
+    - One branch per team member
+    - Meetings : every 2 weeks at school (review + tasks for next meeting)
+    - Sharing of new features -> merge to Main -> test (conflict resolution)
     
 -  Teach Lead
     - eefewf

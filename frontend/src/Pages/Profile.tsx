@@ -18,8 +18,8 @@ import { IoIosArrowBack } from "react-icons/io"; //return icon
 import { useAuth } from '../main';
 import useUser, { defaultAvatar, AvatarErrorLoad } from '../lib/user';
 import Cropper, { type Area } from 'react-easy-crop';
-// import { mockUsers } from './../lib/fictif';
 import './style/Profile.css';
+
 export default function Profile ()
 {
 	const {t} = useTranslation();
@@ -82,7 +82,13 @@ export default function Profile ()
         }
         const update = lstFriends.find(f => f.id === selectUser.id);
         if (update)
-            setSelectUser(prev => prev ? { ...prev, isOnline: update.isOnline} : prev);  
+            setSelectUser(prev => prev ? {
+                ...prev,
+                isOnline: update.isOnline,
+                username: update.username,
+                email: update.email,
+                avatarUrl: update.avatarUrl,
+            } : prev);  
     }, [lstFriends, Myself]);
 
     const handleSearch = async (event:React.ChangeEvent<HTMLInputElement>) => {
@@ -140,12 +146,10 @@ export default function Profile ()
             await axios.post(`/api/friends/requests`,
                 { receiverId: selectUser.id },
                 { withCredentials: true }
-        );
-        useUser.setState(state => ({
-            waitingRequest: [...state.waitingRequest, selectUser.id]
-        }));
-            // setLstFriends([...lstFriends, selectUser]);
-            // setWatingRequest([...watingRequest, selectUser.id]);
+            );
+            useUser.setState(state => ({
+                waitingRequest: [...state.waitingRequest, selectUser.id]
+            }));
         }
         catch {}
     }
@@ -214,7 +218,6 @@ export default function Profile ()
     const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
     const [crop, setCrop] = useState({x:0, y:0});
     const [zoom, setZoom] = useState(1);
-    // const [croppedImage, setCroppedImage] = useState<Area | null>(null);
 
     const imgCroppedComplete = (_croppedArea:Area, croppedAreaPixels:Area) => {
         setCroppedAreaPixels(croppedAreaPixels);
@@ -259,7 +262,6 @@ export default function Profile ()
         return new Promise<Blob | null>(resolve => canvas.toBlob(b => resolve(b), 'image/jpeg'));
         
     }
-//    https://blog.stackademic.com/uploading-files-with-react-post-request-dd6c1eebe933
     const handleAvatar = async () => {
         if (!image || !croppedAreaPixels)
             return;
@@ -296,8 +298,6 @@ export default function Profile ()
         if (img.src.endsWith(defaultAvatar))
             return;
         img.src = defaultAvatar;
-        // if (selectUser)
-        //     setSelectUser({ ... selectUser, avatarUrl:defaultAvatar});
         if (selectUser?.id === Myself?.id) {
             try {
                 const blob = await fetch(defaultAvatar).then(r => r.blob());
@@ -406,7 +406,6 @@ export default function Profile ()
         if (!socket)
             return;
         const handleDenied = (data : {requestId:string; userId:string}) => { //recupere les datas envoyer par le back
-            // setWatingRequest(prev => prev.filter(id => id !== data.userId)); //enleve data.userId de waitinfrequest pour changer le statut du bouton en "ajouter en ami"
             useUser.setState(state => ({
                 waitingRequest: state.waitingRequest.filter(id => id !== data.userId)
             }));
@@ -429,7 +428,6 @@ export default function Profile ()
     }
 
     const ShowNotif = () => {
-        // reset({username: selectUser?.username, email:selectUser?.email, currentPassword:'', newPassword:''});//pre remplir les champs par les avaleurs actuelles 
         setisShowNotif(1);
         setResponsive(true);
     }
@@ -463,8 +461,7 @@ export default function Profile ()
         if (selectUser.id === Myself.id) // afficher mon profil
             return (
                 <div>
-                    <div className="profile_banner">
-                        {/* https://medium.com/@denis.mutunga/uploading-images-to-the-backend-in-react-with-formdata-c8035ae64a0c*/}                    
+                    <div className="profile_banner">             
                         {ActiveUpdate === 0 && ( // si il est pas en mode modifier
                             <>
                             {image && (
@@ -499,19 +496,16 @@ export default function Profile ()
                             
                             <div className="box_avatar">
                                 <div title= {`${t('profile.datecreate')} \n ${new Date(selectUser?.createdAt).toLocaleDateString('fr-FR')}`}><CiCircleInfo  className="w-6 h-6"/></div>
-
-                                {/* <div className="w-30 pl-1 "> */}
                                     <img className="avatar"
                                         src={selectUser?.avatarUrl} onError={AvatarErrorLoad}
                                     ></img>
                                     <button type="button" className="avatar_btn" onClick={() => document.getElementById('getAvatar')?.click()}><FaPencil size={20}/></button>
                                     {errMsgAvatar && <p className="error_input">{errMsgAvatar}</p>}
-                                {/* </div> */}
                             </div>
 
                                 <div className="box_data">
                             
-                                    <div /* className="text-center" */>
+                                    <div>
                                         <h1 className="data_txt_username">{selectUser?.username}</h1>
                                         <p className="data_txt_email">{selectUser?.email}</p>
                                         {selectUser?.level !== undefined && (
@@ -578,7 +572,6 @@ export default function Profile ()
                                                     type={showPassword ? "text" : "password"}
                                                     placeholder={t('profile.newmdp')}
                                                     className="input"/>
-                                                    {/* {errors.password && <p className="error_input">{`${errors.password.message}`}</p>} */}
                                                 {showPassword ? (
                                                     <LuEye className="icon"
                                                     onClick={passwordVisibility} />
@@ -607,14 +600,10 @@ export default function Profile ()
         else //afficher profile des autres users
             return (
                 <div className="profile_banner">
-                    {/* <div className="box_avatar">
-                        <img className="avatar" src={selectUser?.avatarUrl} onError={AvatarErrorLoad}></img>
-                    </div> */}
                     <div className="box_avatar">
                         <div title= {`${t('profile.datecreate')} \n ${new Date(selectUser?.createdAt).toLocaleDateString('fr-FR')}`}><CiCircleInfo  className="w-6 h-6"/></div>
                             <img className="avatar" src={selectUser?.avatarUrl} onError={ErrorAvatar}></img>    
                         </div>
-                    {/* <div className="text-3xl text-left truncate flex flex-col mt-7"> */}
                         <div className="box_data">
                             <div>
                                 <h1 className="data_txt_username">{selectUser?.username}</h1>
@@ -671,7 +660,6 @@ export default function Profile ()
                         </div>
                         { searchVal && (
                             <ul className="search_val_box">
-                                {/* SearchResults.filter((user) => user.username.includes(searchVal))//filtre les donnes et va afficher que les valeurs qui correspondent a linput */}
                                 {getSearchVal.map((user) =>
                                     <li 
                                         key={user.id}
@@ -694,8 +682,7 @@ export default function Profile ()
                 {/* //////////////////////////liste des amis//////////////////////////////////// */}
                 <div className="box_lst_friend">
                     {lstFriends.map((theFriend, idx) => (
-                        <div className="display_friends" key={idx} 
-                            // onClick={()=>{setSelectUser(theFriend); setResponsive(true);}}>
+                        <div className="display_friends" key={idx}
                             onClick={async () => {
                                 const result = await axios.get(`api/users/${theFriend.id}`, {withCredentials:true})
                                 setSelectUser(result.data.user);

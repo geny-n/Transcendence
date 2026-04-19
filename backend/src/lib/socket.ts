@@ -19,7 +19,7 @@ const onConnection = async (socket:Socket) => {
 		socket.disconnect();
 		return;
 	}
-	
+
 	console.log(`User ${user.username} connecté${socket.isGuest ? " (invité)" : ""}.`);
 
 	if (!socket.isGuest) {
@@ -36,7 +36,7 @@ const onConnection = async (socket:Socket) => {
 		const keepAlive = setInterval(() => {
 			toxicityScale("ping").catch(() => {});
 		}, 30 * 1000);
-		
+
 		// Notifier les amis
 		const friends = await getAllFriendIds(user.id);
 		friends.forEach(friendId => {
@@ -52,7 +52,7 @@ const onConnection = async (socket:Socket) => {
 			//envoie du message dans la bdd
 			if (!text || text.length > 500)
 				return;
-			
+
 			const message = await prisma.chatMessage.create ({
 				data: {
 					message: text,
@@ -63,7 +63,7 @@ const onConnection = async (socket:Socket) => {
 					status: "PENDING",
 				}
 			});
-			
+
 			socket.emit("privMessage", { user, text, time, senderId: socket.user.id, id: message.id });
 			toxicityScale(text).then(async ({ flag }) => {
 				if (flag)
@@ -83,7 +83,7 @@ const onConnection = async (socket:Socket) => {
 				}
 			})
 			// const { flag } = await toxicityScale(text);
-			
+
 		});
 
 		// Gérer la déconnexion (met à jour la DB)

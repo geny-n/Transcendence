@@ -1,27 +1,34 @@
-import { request as _request } from "https";
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
+import http from "http";
+import https from "https";
+import fs from "fs";
 
 dotenv.config();
-import fs from 'fs';
+
+const isProduction = process.env.NODE_ENV === "production";
+const requestModule = isProduction ? https : http;
 
 const options = {
 	timeout: 2000,
 	host: "localhost",
 	port: process.env.PORT,
 	path: "/health",
-	key: fs.readFileSync('/etc/ssl/private/backend-selfsigned.key'),
-	cert: fs.readFileSync('/etc/ssl/certs/backend-selfsigned.crt')
+	...(isProduction
+		? {
+				key: fs.readFileSync("/etc/ssl/private/backend-selfsigned.key"),
+				cert: fs.readFileSync("/etc/ssl/certs/backend-selfsigned.crt"),
+			}
+		: {}),
 };
 
-const request = _request(options, res => {
-	console.info("STATUS: " + res.statusCode);
-	process.exitCode = res.statusCode === 200 ? 0 : 1;
-	process.exit();
+const request = requestModule.request(options, (res) => {
+	console.info("STATUS:", res.statusCode);
+	process.exit(res.statusCode === 200 ? 0 : 1);
 });
 
-request.on("error", function(err) {
+request.on("error", (err) => {
 	console.error("ERROR", err);
 	process.exit(1);
-})
+});
 
 request.end();

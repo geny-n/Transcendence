@@ -6,18 +6,12 @@ node_modules/
 # Build outputs
 dist/
 #chache de configuration typescript
-*.tsbuildinfo 
+*.tsbuildinfo
 
 # IDE
 .vscode/
 
 # Prisma
 backend/prisma/generated/prisma
-
-backend/generated/prisma
-
-backend/generated/prisma
-
-backend/generated/prisma
 
 backend/generated/prisma

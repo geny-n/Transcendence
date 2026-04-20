@@ -13,16 +13,21 @@ It is a full-stack web application whose key features are : real-time multiplaye
 - To see the database ```make bd```  
 
 ## Ressources
-- https://blog.stackademic.com/uploading-files-with-react-post-request-dd6c1eebe933
-- https://medium.com/@denis.mutunga/uploading-images-to-the-backend-in-react-with-formdata-c8035ae64a0c
-- https://blog.bitsrc.io/creating-a-multiple-instances-socket-react-context-library-a-step-by-step-guide-52443cd1d19a
-- https://tailwindcss.com/
-- https://react.dev/learn/updating-arrays-in-state
-- https://socket.io/how-to/use-with-react
-- https://huggingface.co/citizenlab/distilbert-base-multilingual-cased-toxicity?text=pute
-- https://react-icons.github.io/react-icons/search/#q=info
-- https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Global_Objects/Array/push
-- https://dev.to/nardin/real-time-notification-react-socket-io-5e76
+- React
+  - https://blog.stackademic.com/uploading-files-with-react-post-request-dd6c1eebe933
+  - https://medium.com/@denis.mutunga/uploading-images-to-the-backend-in-react-with-formdata-c8035ae64a0c
+  - https://react.dev/learn/updating-arrays-in-state
+  - https://react-icons.github.io/react-icons/search/#q=info
+- Socket
+  - https://blog.bitsrc.io/creating-a-multiple-instances-socket-react-context-library-a-step-by-step-guide-52443cd1d19a
+  - https://socket.io/how-to/use-with-react
+  - https://dev.to/nardin/real-time-notification-react-socket-io-5e76
+- Tailwind
+  - https://tailwindcss.com/
+- Huggingface
+  - https://huggingface.co/citizenlab/distilbert-base-multilingual-cased-toxicity?text=pute
+- JS
+  - https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Global_Objects/Array/push
 
 ## Additional secitons
 ### Team Information :
@@ -83,13 +88,14 @@ It is a full-stack web application whose key features are : real-time multiplaye
 | Modules | Typel | Points | Team members(s) | Justification | Implementation |
 | :------ | :---- | :----  | :-------------- | :------------ | :------------- |
 | Use a framework for both the frontend and backend | Major | 2 | All | sss | ssss |
-| Implement real-time features using WebSockets or similar technology | Major | 2 | All | Essential for live chat, see updates in reel time of users profile | Socket.IO for bidirectional communicaiton |
-| Allow users to interact with other users | Major | 2 | gtoure, ngeny | sss | sss |
+| Implement real-time features using WebSockets or similar technology | Major | 2 | All | Essential for live chat. Real-time updates of user profile | Socket.IO for bidirectional communicaiton |
+| Allow users to interact with other users | Major | 2 | gtoure, ngeny | To have a user-friendly game platform where players can chat with friends and see all users profile | Using Socket.IO for the real-time chat. Implement tables in the database to manage chat messages, friend request list, friend list, users data |
 | Use an ORM for the database | Minor | 1 | gtoure | sss | sss |
-| Support for multiple languages (at least 3 languages) | Minor | 1 | All | sss | sss |
-| Right-to-left (RTL) language support | Minor | 1 | All | sss | sss |
+| A complete notification system | Minor | 1 | ngeny | To notify if the user receives new messages or a friend request   | Using Socket.io, the backend emits events to the user's personal room when the user receives a friend request or a new message. The frontend listens to these events to display in the notification panel on the profile page |
+| Support for multiple languages (at least 3 languages) | Minor | 1 | ngeny | Allow a wider community to access our platform (English, French, Spanish) | Implementation of the react-i18next library. The default langage is set to French. Each displayed text is replaced by a translation key, which returns the correct value based on the user's selected language. |
+| Right-to-left (RTL) language support | Minor | 1 | ngeny | Allow a wider community to access our platform (Arabic) | The implementation is the same as above. To mirror the entire page layout, we use the HTML dir attribute |
 | Support for additional browsers | Minor | 1 | ???? | sss | sss |
-| Standard user management and authentication | Major | 2 | gtoure, ngeny | sss | sss |
+| Standard user management and authentication | Major | 2 | gtoure, ngeny | To have a user-friendly game platform where players can chat with friends and see all users profile. Allow user to update their profile (avatar, username, email, password), add or delete friends | sss |
 | Game statistics and match history | Minor | 1 | llabonde | A scoreboard keeping track of the games and a leaderboard keeping track of the most experienced players. | When a match ends, the record and stats is stored and displayed on the scoreboard(and the personal history in the profile), and you can check your progress towards top players in the leaderboard. |
 | Implement remote authentication with OAuth 2.0 | Minor | 1 | gtoure, gpaupher | sss | sss |
 | Advanced permissions system | Major | 2 | gtoure | sss | sss |

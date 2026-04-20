@@ -12,16 +12,13 @@
         flex flex-col
         overflow-hidden
         bg-gray-900
-        /* shrink-0 */
     }
     /* ── Notification ──────────────────────────────────────────────── */
 
     .box_notif {  /* afficher bouton vers notif */
         @apply p-3
-        
         flex gap-3
         md:flex-col
-        /* overflow-auto */
         border-y-1
     }
 
@@ -44,7 +41,6 @@
 
     .search_input {
        @apply w-full
-       /* focus:border focus:rounded-lg focus:border-gray-800 */
        outline-none
     }
 
@@ -132,7 +128,6 @@
         overflow-auto
     }
 
-    
     .display_friends {
         @apply m-1
         relative
@@ -168,11 +163,8 @@
         @apply 
         bg-gray-900
         flex flex-col md:flex-row
-        /* md:grid grid-cols-[auto_1fr_auto] */
         p-3
         gap-5
-        /* md:m-35 */
-        /* overflow-x-auto */
     }
 
     .box_avatar {
@@ -218,19 +210,11 @@
     .box_data {
         @apply 
         md:w-96 md:h-auto  flex-auto
-        /* h-30 */
         flex flex-col
-        /* px-40 */
         p-2
         gap-5
         self-center
-        /* justify-self-center */
-        /* absolute left-1/2 -translate-x-1/2 */
-        /* text-center */
-        /* bg-red-300 */
     }
-
-    
 
     .data_txt_username {
         @apply truncate text-2xl self-center
@@ -293,7 +277,6 @@
     }
 
     .icon {
-        /* @apply absolute right-5 cursor-pointer */
         @apply absolute inset-e-5 cursor-pointer
     }
 
@@ -316,15 +299,6 @@
     }
 
     /* ── scoreboard ──────────────────────────────────────────────── */
-    /* .scoreboad_frame {
-        @apply bg-gray-900
-            
-        @apply flex-1
-        @apply overflow-hidden
-
-        @apply border border-indigo-500
-        
-    } */
     .scoreboad_frame {
         @apply bg-gray-900
         flex flex-col flex-1 p-5
@@ -333,3 +307,4 @@
     }
     
 }
+

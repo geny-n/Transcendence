@@ -29,17 +29,6 @@ export default function Chat ()
   //permet de garder en memoire touts les messages (le 1er message n es pas ecraser par le 2eme)
   const [errMsg, setErrMsg] = useState('');
   const scrollAuto = useRef<HTMLDivElement>(null);
-
-  // To send authorization credentials using the Fetch API in JavaScript, 
-  // you need to allow the credentials to be sent to the server by adding the «credential: 'include'» parameter when calling the fetch() method. 
-  // Default Fetch API requests do not contain user credentials such as cookies and HTTP authentication headers. 
-  // This is done for security reasons because user authentication data allows JavaScript to act on behalf of the user and obtain private information. 
-  // If you want to send credentials only to the original domain, use the «credentials: 'same-origin'» parameter. 
-  // To prevent the browser from sending credentials at all, use the «credentials: 'omit'» option. 
-  // In this JavaScript Fetch API with Credentials example, we send a request with «credential: 'include'» 
-  // parameter to the ReqBin echo URL using the fetch() method. 
-  // Click Execute to run the JavaScript Fetch API with Credentials example online and see the result.
- 
  
   useEffect(() => {//recuperer mes informations
       fetchMe().then(user => {
@@ -72,7 +61,6 @@ export default function Chat ()
       time: string;
       senderId: string;
     }) => {
-      // console.log('socket recu:', incoming, 'selectFriend:', selectFriend.username);
       if (incoming.senderId !== selectFriend.id && incoming.senderId !== Myself?.id)
           return;
       setPrevMsg(prev => [...prev, {
@@ -98,7 +86,6 @@ export default function Chat ()
     axios.patch(`/api/users/chat/${selectFriend.id}/read`, {}, {withCredentials:true});
     axios.get(`/api/users/chat/${selectFriend.id}`, {withCredentials:true})
       .then(res => {
-        // console.log('messages recu:', res.data);
         const loaded = res.data.messages.map((m:any) =>({
           id: m.id,
           msg:m.message,
@@ -126,8 +113,6 @@ export default function Chat ()
       time: theTime,
       receivedId: selectFriend.id,
     });
-
-    // setPrevMsg([...prevMsg, {msg:NewMsg, time:theTime, senderId: Myself.id}]);
     setNewMsg('');
     setErrMsg('');
   }

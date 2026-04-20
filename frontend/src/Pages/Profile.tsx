@@ -464,47 +464,48 @@ export default function Profile ()
                     <div className="profile_banner">             
                         {ActiveUpdate === 0 && ( // si il est pas en mode modifier
                             <>
-                            {image && (
-                                <div className="avatar_choose_box">
-                                    <div className="avatar_choose_crop">
-                                        <Cropper
-                                            image={image}
-                                            crop={crop}
-                                            zoom={zoom}
-                                            aspect={1}
-                                            cropShape="round"
-                                            onCropChange={setCrop}
-                                            onCropComplete={imgCroppedComplete}
-                                            onZoomChange={setZoom}
-                                        />
+                                {image && (
+                                    <div className="avatar_choose_box">
+                                        <div className="avatar_choose_crop">
+                                            <Cropper
+                                                image={image}
+                                                crop={crop}
+                                                zoom={zoom}
+                                                aspect={1}
+                                                cropShape="round"
+                                                onCropChange={setCrop}
+                                                onCropComplete={imgCroppedComplete}
+                                                onZoomChange={setZoom}
+                                            />
+                                        </div>
+                                        <div className='flex gap-4'>
+                                            <button className="avatar_choose_btn bg-green-500 hover:bg-green-700 transition" onClick={handleAvatar}>Save</button>
+                                            <button className="avatar_choose_btn bg-red-500 hover:bg-red-700 transition" onClick={() => setImage("")}>Annuler</button>
+                                        </div>
                                     </div>
-                                    <div className='flex gap-4'>
-                                        <button className="avatar_choose_btn bg-green-500 hover:bg-green-700 transition" onClick={handleAvatar}>Save</button>
-                                        <button className="avatar_choose_btn bg-red-500 hover:bg-red-700 transition" onClick={() => setImage("")}>Annuler</button>
-                                    </div>
-                                </div>
-                            )}    
-                                <input
-                                    id="getAvatar"
-                                    type="file"
-                                    accept="image/*"
-                                    className="hidden"
-                                    onChange={selectAvatar}
-                                />
+                                )}    
+                                    <input
+                                        id="getAvatar"
+                                        type="file"
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={selectAvatar}
+                                    />
+                                    
                                 
-                            
-                            
-                            <div className="box_avatar">
-                                <div title= {`${t('profile.datecreate')} \n ${new Date(selectUser?.createdAt).toLocaleDateString('fr-FR')}`}><CiCircleInfo  className="w-6 h-6"/></div>
-                                    <img className="avatar"
-                                        src={selectUser?.avatarUrl} onError={AvatarErrorLoad}
-                                    ></img>
-                                    <button type="button" className="avatar_btn" onClick={() => document.getElementById('getAvatar')?.click()}><FaPencil size={20}/></button>
-                                    {errMsgAvatar && <p className="error_input">{errMsgAvatar}</p>}
-                            </div>
+                                
+                                <div className="box_avatar">
+                                    <div title= {`${t('profile.datecreate')} \n ${new Date(selectUser?.createdAt).toLocaleDateString('fr-FR')}`}>
+                                        <CiCircleInfo  className="w-6 h-6"/>
+                                    </div>
+                                        <img className="avatar"
+                                            src={selectUser?.avatarUrl} onError={AvatarErrorLoad}
+                                        ></img>
+                                        <button type="button" className="avatar_btn" onClick={() => document.getElementById('getAvatar')?.click()}><FaPencil size={20}/></button>
+                                        {errMsgAvatar && <p className="error_input">{errMsgAvatar}</p>}
+                                </div>
 
                                 <div className="box_data">
-                            
                                     <div>
                                         <h1 className="data_txt_username">{selectUser?.username}</h1>
                                         <p className="data_txt_email">{selectUser?.email}</p>
@@ -515,7 +516,6 @@ export default function Profile ()
                                             </div>
                                         )}
                                     </div>
-                                        
                                     <div className="flex gap-4 w-full items-center  justify-center">
                                         <button className="data_btn px-6" onClick={onShow}>{t('profile.modifier')}</button>
                                         <button className="data_btn " onClick={handleLogout}> {t('profile.deconnecion')}</button>
@@ -592,43 +592,43 @@ export default function Profile ()
                                 </div>
                             </div>
                         )}
-                    
-                </div>
-              </div> 
+                    </div>
+                </div> 
             );
         /////////////////////////////////////////////////////////////////
         else //afficher profile des autres users
             return (
                 <div className="profile_banner">
                     <div className="box_avatar">
-                        <div title= {`${t('profile.datecreate')} \n ${new Date(selectUser?.createdAt).toLocaleDateString('fr-FR')}`}><CiCircleInfo  className="w-6 h-6"/></div>
-                            <img className="avatar" src={selectUser?.avatarUrl} onError={ErrorAvatar}></img>    
+                        <div title= {`${t('profile.datecreate')} \n ${new Date(selectUser?.createdAt).toLocaleDateString('fr-FR')}`}>
+                            <CiCircleInfo  className="w-6 h-6"/>
                         </div>
-                        <div className="box_data">
-                            <div>
-                                <h1 className="data_txt_username">{selectUser?.username}</h1>
-                                <p className="data_txt_email">{selectUser?.email}</p>
-                                {selectUser?.level !== undefined && (
-                                    <div className="flex gap-4 text-sm text-slate-400 mt-2">
-                                        <span>{t('profile.levelText')}: <span className="font-bold text-purple-300">{selectUser.level}</span></span>
-                                        <span>{t('profile.xpText')}: <span className="font-bold text-indigo-300">{selectUser.experience}</span></span>
-                                    </div>
-                                )}
-                            </div>
-                            <div className="flex gap-4 w-full items-center justify-center">
-                                {IsFriend(selectUser?.id) ? (
-                                    <button className="delete_btn" onClick={DeleteFriend}>{t('profile.delete')}</button>
-                                ) : waitingRequest.includes(selectUser.id) ? (
-                                        <button className="pending_btn" disabled>{t('profile.pending')}</button>
-                                ) : (
-                                        <button className="add_btn" onClick={AddFriend}>{t('profile.add')}</button>
-                                )}
-                            </div>
-                            
+                        <img className="avatar" src={selectUser?.avatarUrl} onError={ErrorAvatar}></img>    
+                    </div>
+                    <div className="box_data">
+                        <div>
+                            <h1 className="data_txt_username">{selectUser?.username}</h1>
+                            <p className="data_txt_email">{selectUser?.email}</p>
+                            {selectUser?.level !== undefined && (
+                                <div className="flex gap-4 text-sm text-slate-400 mt-2">
+                                    <span>{t('profile.levelText')}: <span className="font-bold text-purple-300">{selectUser.level}</span></span>
+                                    <span>{t('profile.xpText')}: <span className="font-bold text-indigo-300">{selectUser.experience}</span></span>
+                                </div>
+                            )}
                         </div>
+                        <div className="flex gap-4 w-full items-center justify-center">
+                            {IsFriend(selectUser?.id) ? (
+                                <button className="delete_btn" onClick={DeleteFriend}>{t('profile.delete')}</button>
+                            ) : waitingRequest.includes(selectUser.id) ? (
+                                    <button className="pending_btn" disabled>{t('profile.pending')}</button>
+                            ) : (
+                                    <button className="add_btn" onClick={AddFriend}>{t('profile.add')}</button>
+                            )}
+                        </div>            
+                    </div>
                 </div>
             );
-        }
+    }
 
     return (
         <div className="all_screen">

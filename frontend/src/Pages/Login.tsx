@@ -24,7 +24,7 @@ const Login = () => {
 	const navigate = useNavigate();
 	const login_url = '/api/login';
 	const fortyAuth_url = 'api/auth/42';
-	// const dicordAuth_url = 'api/auth/discord';
+	const discordAuth_url = 'api/auth/discord';
 
 	const { t } = useTranslation();
 
@@ -40,9 +40,9 @@ const Login = () => {
 		window.location.href = fortyAuth_url;
     }
 
-	// const discordAuth = () => {
-	// 	window.location.href = discordAuth_url;
-	// }
+	const discordAuth = () => {
+		window.location.href = discordAuth_url;
+	}
 
 	const onSubmit = async (data: FieldValues) => {
 		console.log("Connexion data: ", data);
@@ -139,8 +139,8 @@ const Login = () => {
 
 				<button disabled={isSubmitting} type="submit" className="btn-sign">{t('login.connexion')}</button>
 
-				<div className="icon-btn-overall" /*onClick={discordAuth}*/ >
-					<div className="icon-btn">
+				<div className="icon-btn-overall" >
+					<div className="icon-btn" onClick={discordAuth}>
 						<FaDiscord className="text-lg md:text-xl" />
 					</div>
 					<div className="icon-btn" onClick={fortyAuth}>

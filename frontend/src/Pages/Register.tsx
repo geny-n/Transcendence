@@ -26,7 +26,7 @@ const Register = () => {
 	const navigate = useNavigate();
 	const register_url = '/api/register';
 	const fortyAuth_url = 'api/auth/42';
-	// const dicordAuth_url = 'api/auth/discord';
+	const discordAuth_url = 'api/auth/discord';
 
 	const { t } = useTranslation();
 
@@ -42,9 +42,9 @@ const Register = () => {
 		window.location.href = fortyAuth_url;
     }
 
-	// const discordAuth = () => {
-	// 	window.location.href = discordAuth_url;
-	// }
+	const discordAuth = () => {
+		window.location.href = discordAuth_url;
+	}
 
 	const onSubmit = async (data: FieldValues) => {
 		console.log("Inscription data :", data);
@@ -146,8 +146,8 @@ const Register = () => {
 
 				<button disabled={isSubmitting} type="submit" className="btn-sign">{t('register.to-register')}</button>
 
-				<div className="icon-btn-overall" /*onClick={discordAuth}*/ >
-					<div className="icon-btn">
+				<div className="icon-btn-overall" >
+					<div className="icon-btn" onClick={discordAuth}>
 						<FaDiscord className="text-lg md:text-xl" />
 					</div>
 					<div className="icon-btn" onClick={fortyAuth}>

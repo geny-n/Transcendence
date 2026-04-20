@@ -36,10 +36,8 @@ export default passport.use(new Strategy(options, async (accessToken, refreshTok
 			user = await prisma.user.update({
 				where: { id: user.id },
 				data: {
-					username: profile.username,
 					email: profile.email ?? null,
 					discordId: profile.id,
-					avatarUrl: profile.avatarUrl ?? '/avatars/default_avatar.png'
 				}
 			})
 		} else {

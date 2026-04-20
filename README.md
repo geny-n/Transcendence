@@ -2,14 +2,27 @@
 _This project has been created as part of the 42 curriculum by gtoure, gpaupher, llabonde, ngeny._
 
 ## Desciption
-ddd
+Our project named Pong is a videogame simulating table tennis matches.
+It is a full-stack web application whose key features are : real-time multiplayer game (1 versus 1), user management system, a profile page with a friend list system, a real-time chat, a scoreboard to track match history and a leaderboard to rank players 
 
 ## Instruction
-ddd
+- git clone the project
+- To build the project ``` make ```
+- To clean the project ```make fclean```
+- To clean and rebuild the project ```make re```
+- To see the database ```make bd```  
 
 ## Ressources
- //    https://blog.stackademic.com/uploading-files-with-react-post-request-dd6c1eebe933
-                        {/* https://medium.com/@denis.mutunga/uploading-images-to-the-backend-in-react-with-formdata-c8035ae64a0c*/}      
+- https://blog.stackademic.com/uploading-files-with-react-post-request-dd6c1eebe933
+- https://medium.com/@denis.mutunga/uploading-images-to-the-backend-in-react-with-formdata-c8035ae64a0c
+- https://blog.bitsrc.io/creating-a-multiple-instances-socket-react-context-library-a-step-by-step-guide-52443cd1d19a
+- https://tailwindcss.com/
+- https://react.dev/learn/updating-arrays-in-state
+- https://socket.io/how-to/use-with-react
+- https://huggingface.co/citizenlab/distilbert-base-multilingual-cased-toxicity?text=pute
+- https://react-icons.github.io/react-icons/search/#q=info
+- https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Global_Objects/Array/push
+- https://dev.to/nardin/real-time-notification-react-socket-io-5e76
 
 ## Additional secitons
 ### Team Information :
@@ -30,7 +43,7 @@ ddd
     - Git + Discord
     - One branch per team member
     - Meetings : every 2 weeks at school (review + tasks for next meeting)
-    - Sharing of new features -> merge to Main -> test (conflict resolution)
+    - Sharing of new features -> merge to Main -> test (conflict resolution) -> push to Main bransh
     
 -  Teach Lead
     - eefewf

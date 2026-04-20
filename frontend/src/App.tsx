@@ -26,9 +26,6 @@ function App() {
 		<>
 			<Navbar />
 			<Routes>
-				{/* Public Routes */}
-				<Route path="/" element={<HomeP />} />
-				<Route path='/about' element={<About />}></Route>
 
 				<Route element={<RequireVisitor />}>
 					<Route path="/login" element={<Login />} />
@@ -36,8 +33,14 @@ function App() {
 				</Route>
 
 				{/* Protected Routes */}
-				<Route element={<RequireAuth />}>
-					<Route element={<SocketProvider><Outlet/></SocketProvider>}>
+				<Route element={<SocketProvider><Outlet/></SocketProvider>}>
+
+					{/* Public Routes */}
+					<Route path="/" element={<HomeP />} />
+					<Route path='/about' element={<About />}></Route>
+
+					{/* User Routes */}
+					<Route element={<RequireAuth />}>
 						<Route path="/pong" element={<Pong />} />
 						<Route path="/pong-multi" element={<PongMulti />} />
 						<Route path="/scoreBoard" element={<ScoreB />} />
@@ -47,13 +50,13 @@ function App() {
 						<Route path="/profile" element={<Profile />} />
 						<Route path="/matchmaking" element={<Matchmaking />} />
 						<Route path="*" element={<Navigate to="/" replace />} />
-
-						{/* Admin Routes */}
-						<Route element={<RequireAdmin />}>
-							<Route path='/admin' element={<Admin />}/>
-						</Route>
-
 					</Route>
+
+					{/* Admin Routes */}
+					<Route element={<RequireAdmin />}>
+						<Route path='/admin' element={<Admin />}/>
+					</Route>
+
 				</Route>
 
 				<Route path="*" element={<Navigate to="/" replace />} />

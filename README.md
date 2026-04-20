@@ -84,6 +84,25 @@ It is a full-stack web application whose key features are : real-time multiplaye
     - Messages are scanned by AI moderation system and blocked if toxic: a warning is sent to sender
     - Conversation includes message history with timestamp
 
+  - PongGame (llabonde)
+    - Each player control his own paddle, and try to prevent the ball from reaching their own edge of the board. Notice that the ball's speed increases each time it bouce off something.
+    - The paddles are meant to be controlled by the up and down arrow keys on keyboard, but there is also buttons usable directly next to the board.
+    - First to score 5 points, or most after 5min, wins the match.
+    - Overtime if scores are equal after 5min, 2min are added to finish the match, as much time needed to have a clear winner at the end of timer.
+    - Players can forfeit at anytime during the match, ending the match.
+    - If a player is disconnected, a 1min timer is set to wait for his return.
+    - At the end of the match, players have the opportunity to ask for a rematch, wich sents a notification to the opponent, if he agrees, the rematch begins.
+
+  - Matchmaking (llabonde)
+    - Players are put in a line, waiting for opponents to start a match.
+  
+  - ScoreBoard (llabonde)
+    - Keep track of the match happening generally, displaying winner and loser, score, game duration, player stats.
+
+  - LeaderBoard (llabonde)
+    - Keep track of the most experienced players, and display their stats and progress.
+    - Experience levels follow Fibonnacci sequence, and the max level is 12, after that, only total experience progresses.
+
 ### Modules :
 | Modules | Typel | Points | Team members(s) | Justification | Implementation |
 | :------ | :---- | :----  | :-------------- | :------------ | :------------- |
@@ -100,8 +119,8 @@ It is a full-stack web application whose key features are : real-time multiplaye
 | Implement remote authentication with OAuth 2.0 | Minor | 1 | gtoure, gpaupher | sss | sss |
 | Advanced permissions system | Major | 2 | gtoure | sss | sss |
 | Content moderation AI | Minor | 1 | ngeny | To filter messages before broadcasting to ensure a safe chat environment without a manual moderation | Using HuggingFace multilingual-toxic-xlm-roberta, the backend sends each message to the model API. It calculates the toxicity score (0 to 1), the function returns true if the message exceeds 0.5 (toxic), then the message is deleted from the database and the user receives a warning message. Model is warming up at server startup to eliminate latency. |
-| Implement a complete web-based game where users can play against each other | Major | 2 | llabonde | sss | sss |
-| Remote players — Enable two players on separate computers to play the same game in real-time | Major | 2 | llabonde | sss | sss |
+| Implement a complete web-based game where users can play against each other | Major | 2 | llabonde | Pong is the natural choice considering the ressources availables,and our (mine here) lack of experience in the matter. | The game is made of React objects, working as Pong shall. |
+| Remote players — Enable two players on separate computers to play the same game in real-time | Major | 2 | llabonde | Having just a local mode would not be as cool as having another player play on his own pc. | A macthmaking system with Socket.IO allows players to do so. |
 
 Total points : 21
 

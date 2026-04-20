@@ -25,12 +25,12 @@ It is a full-stack web application whose key features are : real-time multiplaye
 - https://dev.to/nardin/real-time-notification-react-socket-io-5e76
 ### Backend :
 - Express + TypeScript
- - https://www.youtube.com/watch?v=nH9E25nkk3I
- - https://www.youtube.com/watch?v=Be7X6QJusJA
+  - https://www.youtube.com/watch?v=nH9E25nkk3I
+  - https://www.youtube.com/watch?v=Be7X6QJusJA
 - MariaDB + Prisma ORM
   - https://www.prisma.io/docs
 - AI
- - AI was used to find relevant resources for the different modules. For example, it found two YouTube videos to introduce me to Express and TypeScript. It was also used for error messages, to test different features and to find bugs.
+  - AI was used to find relevant resources for the different modules. For example, it found two YouTube videos to introduce me to Express and TypeScript. It was also used for error messages, to test different features and to find bugs.
 
 ## Additional secitons
 ### Team Information :
@@ -105,12 +105,12 @@ It is a full-stack web application whose key features are : real-time multiplaye
     - Conversation includes message history with timestamp
 
   - The User and Authentication System (gtoure)
-   - Classic Registration/Login: Endpoints to create an account and log in with email/password
-   - JWT Generation and Validation: Create a token system (access_token, refresh_token) to maintain user sessions
-   - OAuth 2.0: Manage the callback, check if the user exists, otherwise create it
-   - User Profile Management: API to read and update the nickname, avatar, etc
-   - Friends System: Logic for sending, accepting, rejecting, and deleting friend requests, manage the friend list and their online status
-   - Basic Permissions: Check if a user is logged in (auth guard) and if they have the right to access a resource (for example, modify their own profile only).
+    - Classic Registration/Login: Endpoints to create an account and log in with email/password
+    - JWT Generation and Validation: Create a token system (access_token, refresh_token) to maintain user sessions
+    - OAuth 2.0: Manage the callback, check if the user exists, otherwise create it
+    - User Profile Management: API to read and update the nickname, avatar, etc
+    - Friends System: Logic for sending, accepting, rejecting, and deleting friend requests, manage the friend list and their online status
+    - Basic Permissions: Check if a user is logged in (auth guard) and if they have the right to access a resource (for example, modify their own profile only).
 
 ### Modules :
 | Modules | Typel | Points | Team members(s) | Justification | Implementation |

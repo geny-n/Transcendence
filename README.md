@@ -189,7 +189,7 @@ Total points : 21
    - gtoure
      - My role was to build and maintain the brain and memory of the application. I was responsible for everything that happens "under the hood": the logic, the data, and the real-time communication.
    - gpaupher
-     - dsdd
+     - My work was mostly in the front end. I made sure that users could register or login the way they are intended to. Allowing users to seamlessly navigate within our single-page application.
    - llabonde
      - Most of my work was making the game as playable as possible, and make the systems behind it(game,matchmaking,revenge,dc timers,play flow).
    - ngeny

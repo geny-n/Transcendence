@@ -10,5 +10,13 @@
     .btn-online{
         @apply bg-green-500 hover:bg-green-700;
     }
+
+    .btn-left{
+        @apply px-10 py-4 text-xl font-extrabold text-white bg-blue-600 rounded-full shadow-xl hover:rotate-1 hover:scale-110 transition-all;
+    }
+
+    .btn-right{
+        @apply px-10 py-4 text-xl font-extrabold text-white bg-orange-600 rounded-full shadow-xl hover:-rotate-1 hover:scale-110 transition-all;
+    }
 }
 

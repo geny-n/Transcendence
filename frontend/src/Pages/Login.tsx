@@ -95,7 +95,7 @@ const Login = () => {
 
 	return (
 		<form onSubmit={handleSubmit(onSubmit)}
-			className="w-full h-screen flex items-center justify-center">
+			className="min-h-screen flex flex-col items-center justify-start pt-32 px-4">
 			<div className="form-box">
 
 				<img src={logo} alt="Logo" className="w-50 md:70" />

@@ -29,12 +29,12 @@ export default function Pong()
   return(
     <div className="w-full flex flex-col items-center min-h-screen flex items-center justify-center gap-5">
 
-        <button className="btn-play"
+        <button className="btn-left"
         onClick={() => setShowPong(true)}>
         {t('pong.localGame')}</button>
 
         <button 
-          className="btn-play"
+          className="btn-right"
           onClick={() => navigate('/matchmaking')}
         >
           {t('pong.onlineGame')}

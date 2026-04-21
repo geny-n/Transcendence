@@ -163,6 +163,16 @@ It is a full-stack web application whose key features are : real-time multiplaye
     - User Profile Management: API to read and update the nickname, avatar, etc
     - Friends System: Logic for sending, accepting, rejecting, and deleting friend requests, manage the friend list and their online status
     - Basic Permissions: Check if a user is logged in (auth guard) and if they have the right to access a resource (for example, modify their own profile only).
+   
+  -Athentication forms (gpaupher)
+	  - registration and login pages with their own logic and regex to register or login users into database using API.
+	  - Regex used to allow only certain combination of characters and forbid other characters to avoid breaches and conflicts with the database.
+	  - Checking the authentication process with the backend using API. Proceeds if the returned status is good or return an error to the UI.
+	  - Connect OAuth 2.0 to the front to allow login via Discord and 42.
+  -Navigation (gpaupher)
+	  - Simple responsive navbar to allow seamless navigation within the app
+	  - protected routes to allow only certain type of users into certain pages (Profile page only accessible by a USER client)
+	  - non-existent urls kept in check and redirected to an other page of our app to avoid strays
 
 ### Modules :
 | Modules | Typel | Points | Team members(s) | Justification | Implementation |

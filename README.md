@@ -38,6 +38,11 @@ It is a full-stack web application whose key features are : real-time multiplaye
 - https://react-icons.github.io/react-icons/search/#q=info
 - https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Global_Objects/Array/push
 - https://dev.to/nardin/real-time-notification-react-socket-io-5e76
+
+- Pong
+  -https://gist.github.com/straker/81b59eecf70da93af396f963596dfdc5
+  -https://indiegamedev.net/2020/02/09/making-your-first-game-pong-the-architecture/
+
 ### Backend :
 - Express + TypeScript
   - https://www.youtube.com/watch?v=nH9E25nkk3I
@@ -115,8 +120,10 @@ It is a full-stack web application whose key features are : real-time multiplaye
   - Express : It requires to understand and configure basic concepts (like middlewares for parsing JSON) manually, which builds a much stronger foundational knowledge
   - TypeScript : TypeScript adds a static type system to JavaScript to catch errors before the code runs
   - Socket.io : if we use classic WebSockets for our application, we will stil eventually need to implement most of the features already included in Socket.io, such as automatic reconnection, acknowledgments, or event broadcasting
-- sdfsdf
-- sdfsdf
+- Frontend technologies and frameworks used :
+  - TailwindCSS : A utility-first CSS framework packed with classes like flex, pt-4, text-center and rotate-90 that can be composed to build any design, directly in your markup.
+  - Vite : (Recommended by former studs) is a helpful tool to ease the development of the project. It saves a lot of time by allowing us to see our modifications in almost real-time.
+  - React : (Recommended by former studs) React is a tool used to build user interfaces out of individual pieces called components. Which we used to create our pages and game.
 
 ### Database Schema :
 <img width="700" alt="Screenshot from 2026-04-18 23-17-34" src="https://github.com/user-attachments/assets/39d889ea-8e3a-4797-a82e-6b428027e3b2" />

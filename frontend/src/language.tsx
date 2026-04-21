@@ -186,6 +186,11 @@ i18n.use(initReactI18next).init({
 				'profile.err.data' : 'Nom d utilisateur ou email déjà utilise',
 				'profile.err.wrongPassword' : 'Le mot de passe ne correspond pas au mot de passe actuel',
 				'profile.err.avatar' : 'Erreur lors du chargement de l image',
+				'profile.err.friendRequest' : 'Erreur lors du chargement des demandes d amis',
+				'profile.err.deniefriendRequest' : 'La demande ami n a pas pu etre refuse',	
+				'profile.err.acceptfriendRequest' : 'La demande ami n a pas pu etre accepte',		
+				'profile.err.addfriend' : 'La demande ami n a pas pu etre envoye',
+				'profile.err.deletefriend' : 'L ami n a pas pu etre supprime',
 
 				//chat
 				'chat.send' : 'Envoyer',
@@ -482,6 +487,11 @@ i18n.use(initReactI18next).init({
 				'profile.err.data' : 'Username or email already in use',
 				'profile.err.wrongPassword' : 'Password does not match current password',
 				'profile.err.avatar' : 'Error loading image',
+				'profile.err.friendRequest' : 'Failed to load friend requests',
+				'profile.err.deniefriendRequest' : 'Failed to decline friend request',	
+				'profile.err.acceptfriendRequest' : 'Failed to accept friend request',		
+				'profile.err.addfriend' : 'Failed to send friend request',
+				'profile.err.deletefriend' : 'Failed to remove friend',
 
 				//chat
 				'chat.send' : 'Send',
@@ -778,6 +788,11 @@ i18n.use(initReactI18next).init({
 				'profile.err.data' : 'Nombre de usuario o correo electrónico ya en uso',
 				'profile.err.wrongPassword' : 'La contraseña no coincide con la contraseña actual',
 				'profile.err.avatar' : 'Error al cargen la imagen',
+				'profile.err.friendRequest' : 'Error al cargar las solicitudes de amistad',
+				'profile.err.deniefriendRequest' : 'No se pudo rechazar la solicitud de amistad',
+				'profile.err.acceptfriendRequest' : 'No se pudo aceptar la solicitud de amistad',
+				'profile.err.addfriend' : 'No se pudo enviar la solicitud de amistad',
+				'profile.err.deletefriend' : 'No se pudo eliminar al amigo',
 
 				//chat
 				'chat.send' : 'Enviar',
@@ -1073,6 +1088,11 @@ i18n.use(initReactI18next).init({
 				'profile.err.data': 'اسم المستخدم أو البريد الإلكتروني مستخدم بالفعل',
 				'profile.err.wrongPassword': 'كلمة المرور لا تتطابق مع كلمة المرور الحالية',
 				'profile.err.avatar': 'خطأ في تحميل الصورة',
+				'profile.err.friendRequest' : 'فشل تحميل طلبات الصداقة',
+				'profile.err.deniefriendRequest' : 'تعذر رفض طلب الصداقة',
+				'profile.err.acceptfriendRequest' : 'تعذر قبول طلب الصداقة',
+				'profile.err.addfriend' : 'تعذر إرسال طلب الصداقة',
+				'profile.err.deletefriend' : 'تعذر إزالة الصديق',
 
 				//chat
 				'chat.send' : 'إرسال',
@@ -1083,8 +1103,6 @@ i18n.use(initReactI18next).init({
 
 				//login
 				'login.delete.user' : 'تم حذف حسابك',
-
-				//login
 				'login.title': 'تسجيل الدخول للعب',
 				'login.noAccount': 'ليس لديك حساب؟',
 				'login.loginBtn': 'تسجيل الدخول',

@@ -51,7 +51,9 @@ export default function Profile ()
 
     const [errMsgForm, setErrMsgForm] = useState<string>('');
     const [errMsgAvatar, setErrMsgAvatar] = useState<string>('');
+    const [errFriendReq, setErrFriendReq] = useState<string>('');
     const [errlogout, setLogout] = useState<string>('');
+    const [errMsgFriend, setErrMsgFriend] = useState<string>('');
     
     const logout_url = '/api/logout';
     const navigate = useNavigate();
@@ -86,7 +88,7 @@ export default function Profile ()
                 ...prev,
                 isOnline: update.isOnline,
                 username: update.username,
-                email: update.email,
+                email: update.email || prev.email,
                 avatarUrl: update.avatarUrl,
             } : prev);  
     }, [lstFriends, Myself]);
@@ -136,7 +138,9 @@ export default function Profile ()
                 waitingRequest : state.waitingRequest.filter(id => id !== selectUser.id)
             }));
         }
-        catch {}
+        catch {
+            setErrMsgFriend(t('profile.err.deletefriend'));
+        }
     }
     
     const AddFriend = async () => { //envoie une demande d ami et ajoute dans la bd friendship
@@ -151,7 +155,9 @@ export default function Profile ()
                 waitingRequest: [...state.waitingRequest, selectUser.id]
             }));
         }
-        catch {}
+        catch {
+            setErrMsgFriend(t('profile.err.addfriend'));
+        }
     }
 
     const { // retourne des outils pour gerer le formulaire
@@ -293,14 +299,15 @@ export default function Profile ()
         
     };
 
-    const ErrorAvatar = async (e:React.SyntheticEvent<HTMLImageElement>) => {
+    //en cas d erreur ca affiche l image par defaut et met a jour la bd avec l image par defaut
+    const ErrorAvatar = async (e:React.SyntheticEvent<HTMLImageElement>) => { 
         const img = e.currentTarget;
         if (img.src.endsWith(defaultAvatar))
             return;
         img.src = defaultAvatar;
         if (selectUser?.id === Myself?.id) {
             try {
-                const blob = await fetch(defaultAvatar).then(r => r.blob());
+                const blob = await fetch(defaultAvatar).then(r => r.blob());//binary large object, contenu brut de l image sous forme de donnee binaires necessaire pour l envoyer au back via formData
                 const formData = new FormData();//creer un conteneur vide 
             
                 formData.append("avatar", blob, "default_avatar.jpg");//met le fichier, si il exite, dans le conteneur pour que axios puisse l envoyer au back
@@ -310,7 +317,9 @@ export default function Profile ()
                 setSelectUser(prev => prev ? { ...prev, avatarUrl: newUrl} : prev);
                 useUser.setState(state => ({ userMyself: state.userMyself ? { ...state.userMyself, avatarUrl: newUrl}: null, }));
             }
-            catch {}
+            catch {
+                setErrMsgAvatar(t('profile.err.avatar'));
+            }
         }
     }
 
@@ -384,7 +393,7 @@ export default function Profile ()
                 setlstFriendship(requests);
             }
             catch(error) {
-                console.log('Error fetch : ', error);
+                setErrFriendReq(t('profile.err.friendRequest'));
             }
         }
         fetchRequestF();
@@ -399,7 +408,9 @@ export default function Profile ()
             setlstFriendship(lstFriendship.filter(r => r.id !== requestId));
             getFriend ();
         }
-        catch {}
+        catch {
+            setErrFriendReq(t('profile.err.acceptfriendRequest'));
+        }
     }
 
     useEffect (() => {
@@ -424,7 +435,9 @@ export default function Profile ()
             );
             setlstFriendship(lstFriendship.filter(r => r.id !== requestId));
         }
-        catch {}
+        catch {
+            setErrFriendReq(t('profile.err.deniefriendRequest'));
+        }
     }
 
     const ShowNotif = () => {
@@ -624,7 +637,8 @@ export default function Profile ()
                             ) : (
                                     <button className="add_btn" onClick={AddFriend}>{t('profile.add')}</button>
                             )}
-                        </div>            
+                        </div>
+                        {errMsgFriend && <p className="error_input">{errMsgFriend}</p>}
                     </div>
                 </div>
             );
@@ -723,6 +737,7 @@ export default function Profile ()
 
                             <div className="title_notif">{t('profile.friendRequest')}</div>
                             <div className="p-3">
+                                { errFriendReq && <p className="error_input"> {errFriendReq}</p>}
                                 {lstFriendship.map((theRequest) => (
                                     <div className="items" key={theRequest.id}>
                                         <img className="avatar_notif" src={theRequest.avatarUrl} onError={AvatarErrorLoad}></img>

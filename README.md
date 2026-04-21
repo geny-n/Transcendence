@@ -47,7 +47,7 @@ It is a full-stack web application whose key features are : real-time multiplaye
 - AI
   - AI was used to find relevant resources for the different modules. For example, it found two YouTube videos to introduce me to Express and TypeScript. It was also used for error messages, to test different features and to find bugs.
 
-## Additional secitons
+## Additional sections
 ### Team Information :
 - PO
   - ewfef
@@ -84,6 +84,24 @@ It is a full-stack web application whose key features are : real-time multiplaye
     - Ensure that new features using the backend function correctly
     - Listening to and evaluating suggestions for improving the backend
     - Helping in merge conflict
+
+- Teach Lead Frontend (llabonde)
+  - Defines technical architecture :
+    - Design the flow of information between each service
+  - Makes technology stack decisions :
+    - Choose the framework
+    - Gathering information on development needs
+    - Approves all additions of new extensions
+  - Ensures code quality and best practices :
+    - Design the frontend file architecture
+    - Review the changes made to the front
+    - Ensure that safety standards are met
+  - Reviews critical code changes :
+    - Leading the technical part in meeting
+    - Ensure that new features using the frontend function correctly
+    - Listening to and evaluating suggestions for improving the frontend
+    - Helping in merge conflict
+
 -  Developers
     - wefewf
 

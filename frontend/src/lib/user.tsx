@@ -113,7 +113,7 @@ const useUser = create<UserStore>((set, get) => ({
             set({userFriends:friends});
         }
         catch(error) {
-            console.error('Error fetch : ', error);
+            console.log('Error fetch : ', error);
         }
     },
 

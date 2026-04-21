@@ -18,7 +18,7 @@ export function RefreshProvider({ children } : { children: React.ReactNode }) {
 					if (error.response?.status == 401 || error.response?.status == 403) {
 						navigate('/login', { replace: true });
 					}
-					console.error(error.response?.data?.message);
+					console.log(error.response?.data?.message);
 				}
 			}
 		};

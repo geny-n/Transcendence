@@ -384,7 +384,7 @@ export default function Profile ()
                 setlstFriendship(requests);
             }
             catch(error) {
-                console.error('Error fetch : ', error);
+                console.log('Error fetch : ', error);
             }
         }
         fetchRequestF();

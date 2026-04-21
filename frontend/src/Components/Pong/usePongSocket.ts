@@ -340,10 +340,10 @@ export function usePongSocket(guestName?: string, accessToken?: string | null) {
 						}
 					}
 				} else {
-					console.error("[usePongSocket] Token refresh failed:", response.status);
+					console.log("[usePongSocket] Token refresh failed:", response.status);
 				}
 			} catch (err) {
-				console.error("[usePongSocket] Token refresh error:", err);
+				console.log("[usePongSocket] Token refresh error:", err);
 			}
 		}, 10 * 60 * 1000); // 10 minutes
 

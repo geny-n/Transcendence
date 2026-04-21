@@ -6,12 +6,14 @@ import { TheSocket } from "../socket"
 import { useLocation } from 'react-router-dom';
 import useUser from '../lib/user';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../main';
 
 export default function Chat ()
 {
   const {t} = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
 
   const Myself = useUser (state => state.userMyself);
   const fetchMe = useUser (state => state.fetchMe);
@@ -31,11 +33,11 @@ export default function Chat ()
   const scrollAuto = useRef<HTMLDivElement>(null);
  
   useEffect(() => {//recuperer mes informations
-      fetchMe().then(user => {
-        if (!user)
+       if (!user)
           navigate('/login');
-      });
-    }, []);
+        else if (!Myself)
+          fetchMe();
+    }, [user]);
 
   useEffect (() => {
     if (!socket)

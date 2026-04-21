@@ -24,7 +24,7 @@ export default function Profile ()
 {
 	const {t} = useTranslation();
 	const { socket } = TheSocket();
-	const { setAccessToken, setUser: setAuthUser } = useAuth();
+	const { user, setAccessToken, setUser: setAuthUser } = useAuth();
 
     const Myself = useUser (state => state.userMyself);
     const fetchMe = useUser (state => state.fetchMe);
@@ -60,13 +60,11 @@ export default function Profile ()
 
   
     useEffect(() => {//recuperer mes informations
-        fetchMe().then(user => {
             if (!user)
                 navigate('/login');
             else
-                setSelectUser(user);
-        });
-    }, []);
+                fetchMe().then(u => { if (u) setSelectUser(u); });
+    }, [user]);
 
     useEffect (() => {
         if (!socket)

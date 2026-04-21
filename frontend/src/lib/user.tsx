@@ -96,25 +96,20 @@ const useUser = create<UserStore>((set, get) => ({
         const myself = get().userMyself;
         if (!myself)
             return;
-        try {
-            const result = await axios.get('/api/friends', {
-                withCredentials: true,
-            });
-            if (!result.data.success || !Array.isArray(result.data.friends)) {
-                throw Error(`Error API Friends: ${result.status} ${result.statusText}`);
-            }
-            const friends = result.data.friends.map((f: any) => {
-                if (f.user1.id === myself.id)
-                    return f.user2;
-                else
-                    return f.user1;
-                
-            });
-            set({userFriends:friends});
+        const result = await axios.get('/api/friends', {
+            withCredentials: true,
+        });
+        if (!result.data.success || !Array.isArray(result.data.friends)) {
+            throw Error(`Error API Friends: ${result.status} ${result.statusText}`);
         }
-        catch(error) {
-            console.error('Error fetch : ', error);
-        }
+        const friends = result.data.friends.map((f: any) => {
+            if (f.user1.id === myself.id)
+                return f.user2;
+            else
+                return f.user1;
+
+        });
+        set({userFriends:friends});
     },
 
     initsocket: (socket) => {

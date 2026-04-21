@@ -84,11 +84,20 @@ export const updateMyProfile = asyncHandler(async (request:Request, response:Res
 		throw new Error("backend.profile.no.user.after.authentication");
 	}
 
+	const isOauthUser = Boolean(request.user.discordId || request.user.fortyTwoId);
+
+	if (email !== request.user.email && isOauthUser) {
+		return response.status(400).json({
+			success: false,
+			message: "backend.profile.oauth.email.readonly"
+		});
+	}
+
 	const updateUser = await prisma.user.update({
 		where: { id: request.user.id },
 		data: {
-			email: email? email : request.user.email,
-			username: username? username : request.user.username,
+			email: email ?? request.user.email,
+			username: username ?? request.user.username,
 		},
 	});
 
@@ -131,10 +140,10 @@ export const changePassword = asyncHandler(async (request:Request, response:Resp
 
 	let { currentPassword, newPassword } = matchedData(request) as { currentPassword: string, newPassword: string };
 
-	if (!request.user || !request.user.password) {
+	if (!request.user) {
 		throw new Error("backend.profile.no.user.after.authentication");
 	}
-	const isPasswordValid = comparePassword(currentPassword, request.user.password);
+	const isPasswordValid = comparePassword(currentPassword, request.user.password ?? '');
 
 	if (!isPasswordValid) {
 		return response.status(401).json({

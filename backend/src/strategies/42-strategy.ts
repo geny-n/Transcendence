@@ -34,10 +34,8 @@ export default passport.use(
 					user = await prisma.user.update({
 						where: { id: user.id },
 						data: {
-							username: profile.username,
 							email: profile.emails?.[0]?.value ?? null,
 							fortyTwoId: profile.id,
-							avatarUrl: avatarUrl ?? '/avatars/default_avatar.png'
 						}
 					})
 				} else {
@@ -46,7 +44,7 @@ export default passport.use(
 							username: profile.username,
 							email: profile.emails?.[0]?.value ?? null,
 							fortyTwoId: profile.id,
-							avatarUrl: avatarUrl ?? '/avatars/default_avatar.png'							
+							avatarUrl: avatarUrl ?? '/avatars/default_avatar.png'
 						}
 					})
 				}

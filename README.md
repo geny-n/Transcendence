@@ -170,7 +170,7 @@ It is a full-stack web application whose key features are : real-time multiplaye
 	- Checking the authentication process with the backend using API. Proceeds if the returned status is good or return an error to the UI.
 	- Connect OAuth 2.0 to the front to allow login via Discord and 42.
 
-  -Navigation (gpaupher)
+  - Navigation (gpaupher)
 	- Simple responsive navbar to allow seamless navigation within the app
 	- protected routes to allow only certain type of users into certain pages (Profile page only accessible by a USER client)
 	- non-existent urls kept in check and redirected to an other page of our app to avoid strays

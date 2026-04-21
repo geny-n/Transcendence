@@ -28,22 +28,10 @@ It is a full-stack web application whose key features are : real-time multiplaye
   - https://huggingface.co/citizenlab/distilbert-base-multilingual-cased-toxicity?text=pute
 - JS
   - https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Global_Objects/Array/push
-- https://blog.stackademic.com/uploading-files-with-react-post-request-dd6c1eebe933
-- https://medium.com/@denis.mutunga/uploading-images-to-the-backend-in-react-with-formdata-c8035ae64a0c
-- https://blog.bitsrc.io/creating-a-multiple-instances-socket-react-context-library-a-step-by-step-guide-52443cd1d19a
-- https://tailwindcss.com/
-- https://react.dev/learn/updating-arrays-in-state
-- https://socket.io/how-to/use-with-react
-- https://huggingface.co/citizenlab/distilbert-base-multilingual-cased-toxicity?text=pute
-- https://react-icons.github.io/react-icons/search/#q=info
-- https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Global_Objects/Array/push
-- https://dev.to/nardin/real-time-notification-react-socket-io-5e76
-
 - Pong
-  -https://gist.github.com/straker/81b59eecf70da93af396f963596dfdc5
-  -https://indiegamedev.net/2020/02/09/making-your-first-game-pong-the-architecture/
-
-### Backend :
+  - https://gist.github.com/straker/81b59eecf70da93af396f963596dfdc5
+  - https://indiegamedev.net/2020/02/09/making-your-first-game-pong-the-architecture/
+    
 - Express + TypeScript
   - https://www.youtube.com/watch?v=nH9E25nkk3I
   - https://www.youtube.com/watch?v=Be7X6QJusJA
@@ -55,23 +43,12 @@ It is a full-stack web application whose key features are : real-time multiplaye
 ## Additional sections
 ### Team Information :
 - PO
-  - ewfef
+  - We defined every key features and what we want as a final project
+  - we defined priorities and splited the work
+
 - Project Manager (ngeny)
-  - Responsibilities :
-    - Meeting planning
-    - Monitoring each member's progress
-    - Cooperation in case of issues
-    - Meeting reviews
-  - Kickoff Meeting
-    - Define game scope and modules
-    - Create task list
-    - Assign tasks to team members
-    - Set up GitHub repository and code basic architecture
-  - Tools & Process
-    - Git + Discord
-    - One branch per team member
-    - Meetings : every 2 weeks at school (review + tasks for next meeting)
-    - Sharing of new features -> merge to Main -> test (conflict resolution) -> push to Main bransh
+  - We used Discord to communicate and plan meetings
+  - Everytime we met up and merged each others code, to keep an updated main to see the state of the project
 
 - Teach Lead Backend (gtoure)
   - Defines technical architecture :
@@ -107,13 +84,30 @@ It is a full-stack web application whose key features are : real-time multiplaye
     - Listening to and evaluating suggestions for improving the frontend
     - Helping in merge conflict
 
--  Developers
-    - wefewf
+-  Developers (all)
+    - Every member contributed to code and build the project
+    - Each one had a feature assigned to them
+    - Helping each other to solve problems 
+    - Testing other developpers code to see any flows
+    - Each one documented their part, so that other developpers could see how it works
+    
 
 ### Project Management :
-  - sdfsdf
-  - sdfsdf
-  - sdfsdf
+  - Responsibilities :
+    - Meeting planning
+    - Monitoring each member's progress
+    - Cooperation in case of issues
+    - Meeting reviews
+  - Kickoff Meeting
+    - Define game scope and modules
+    - Create task list
+    - Assign tasks to team members
+    - Set up GitHub repository and code basic architecture
+  - Tools & Process
+    - Git + Discord
+    - One branch per team member
+    - Meetings : every 2 weeks at school (review + tasks for next meeting)
+    - Sharing of new features -> merge to Main -> test (conflict resolution) -> push to Main bransh
 
 ### Technical Stack :
 - Backend technologies and frameworks used :

@@ -5,7 +5,7 @@
 		"faq"			: "P&R",
 		"terms-txt"		: "/content/terms.es.md", 
 		"privacy-txt"	: "/content/privacy.es.md",
-		"faq-txt"		: ""
+		"faq-txt"		: "/content/faq.es.md"
 	},
 
 	"login": {

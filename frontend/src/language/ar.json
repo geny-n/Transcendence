@@ -5,7 +5,7 @@
 		"faq"			: "الأسئلة الشائعة",
 		"terms-txt"		: "/content/terms.ar.md", 
 		"privacy-txt"	: "/content/privacy.ar.md",
-		"faq-txt"		: ""
+		"faq-txt"		: "/content/faq.ar.md"
 	},
 
 	"login": {

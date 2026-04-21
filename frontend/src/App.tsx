@@ -38,17 +38,18 @@ function App() {
 					{/* Public Routes */}
 					<Route path="/" element={<HomeP />} />
 					<Route path='/about' element={<About />}></Route>
+					<Route path="/pong" element={<Pong />} />
+					<Route path="/pong-multi" element={<PongMulti />} />
+					<Route path="/scoreBoard" element={<ScoreB />} />
+					<Route path="/leaderboard" element={<Leaderboard />} />
+					<Route path="/matchmaking" element={<Matchmaking />} />
+					<Route path="*" element={<Navigate to="/" replace />} />
 
 					{/* User Routes */}
 					<Route element={<RequireAuth />}>
-						<Route path="/pong" element={<Pong />} />
-						<Route path="/pong-multi" element={<PongMulti />} />
-						<Route path="/scoreBoard" element={<ScoreB />} />
-						<Route path="/leaderboard" element={<Leaderboard />} />
 						<Route path="/teams" element={<Teams />} />
 						<Route path="/chat" element={<Chat />} />
 						<Route path="/profile" element={<Profile />} />
-						<Route path="/matchmaking" element={<Matchmaking />} />
 						<Route path="*" element={<Navigate to="/" replace />} />
 					</Route>
 

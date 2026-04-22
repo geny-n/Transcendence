@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import logo from '../assets/logo.png';
 import './style/Pong.css'
 
 export default function Pong()
@@ -29,16 +30,22 @@ export default function Pong()
   return(
     <div className="w-full flex flex-col items-center min-h-screen flex items-center justify-center gap-5">
 
-        <button className="btn-play"
-        onClick={() => setShowPong(true)}>
-        {t('pong.localGame')}</button>
+      <div className="min-h-screen flex flex-col items-center justify-start mt-16 pt-32 px-4">
 
-        <button 
-          className="btn-play"
-          onClick={() => navigate('/matchmaking')}
-        >
-          {t('pong.onlineGame')}
-        </button>
+        <img src={logo} alt="logo" className="block mx-auto w-96" />
+        <div className="flex gap-6 justify-center">
+          <button className="btn-left"
+          onClick={() => setShowPong(true)}>
+          {t('pong.localGame')}</button>
+
+          <button 
+            className="btn-right"
+            onClick={() => navigate('/matchmaking')}
+            >
+            {t('pong.onlineGame')}
+          </button>
+        </div>
+      </div>
 
 
         {showPong && (

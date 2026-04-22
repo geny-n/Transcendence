@@ -42,16 +42,24 @@ It is a full-stack web application whose key features are : real-time multiplaye
 
 ## Additional sections
 ### Team Information :
-- PO
-  - We defined every key features and what we want as a final project
-  - we defined priorities and splited the work
-
-- Project Manager (ngeny)
-  - Used Discord as a communication tool to organize meetings and coordinate tasks
-  - Scheduled meetings every two weeks to review progress
-  - Checked in around the halfway point with everyone to monitor their progress and identify any delays
-  - Planned the next meeting based on the team's overall progress
-  - Adjusted the modules to implement based on the remaining time and deadlines
+- Project Owner (gpaupher)
+ - Feature definition
+  - Identifying and defining the core features required for the application 
+  - Discussing additional feature to enhance the user experience
+  - Making decisions on features prioritization (what to keep, improve, or remove)
+  - Ensuring a smooth and intuitive user experience (UX)
+ 
+ - User stories
+  - The project was divided into user stories, focusing on user needs. It helped prioritize tasks and maintain a user-centered approach during development 
+  - As a user, I can create an account and log in
+  - As a user, I can play Pong against another player online
+  - As a user, I can view my match history and statistics
+  - As a user, I can interact with other players through chat
+	
+ - Project monitoring
+  - Helping organize the workflow to keep the team on track
+  - Regularly testing and reviewing new versions of the application
+  - Verifying that implemented features meet the project requirements and expectations
     
 - Teach Lead Backend (gtoure)
   - Defines technical architecture :

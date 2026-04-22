@@ -47,9 +47,12 @@ It is a full-stack web application whose key features are : real-time multiplaye
   - we defined priorities and splited the work
 
 - Project Manager (ngeny)
-  - We used Discord to communicate and plan meetings
-  - Everytime we met up and merged each others code, to keep an updated main to see the state of the project
-
+  - Used Discord as a communication tool to organize meetings and coordinate tasks
+  - Scheduled meetings every two weeks to review progress
+  - Checked in around the halfway point with everyone to monitor their progress and identify any delays
+  - Planned the next meeting based on the team's overall progress
+  - Adjusted the modules to implement based on the remaining time and deadlines
+    
 - Teach Lead Backend (gtoure)
   - Defines technical architecture :
     - Design the flow of information between each service
@@ -205,4 +208,4 @@ Total points : 21
    - llabonde
      - Most of my work was making the game as playable as possible, and make the systems behind it(game,matchmaking,revenge,dc timers,play flow).
    - ngeny
-     -  sdfdsf
+     -  My work was focused on the frontend. I built a real-time private chat between friends. I also developed the profile page which includes profile updating, friend management, notifications and user search

@@ -26,6 +26,16 @@ It is a full-stack web application whose key features are : real-time multiplaye
   - https://tailwindcss.com/
 - Huggingface
   - https://huggingface.co/citizenlab/distilbert-base-multilingual-cased-toxicity?text=pute
+- React-router
+  - https://reactrouter.com/
+  - https://www.youtube.com/watch?v=Cv_JhlKUpto
+- React-hook-form
+  - https://react-hook-form.com/get-started
+  - https://www.youtube.com/watch?v=brcHK3P6ChQ&list=PL0Zuz27SZ-6PRCpm9clX0WiBEMB70FWwd
+  - https://www.youtube.com/watch?v=u6PQ5xZAv7Q
+- Axios
+  - https://axios-http.com/docs/intro
+  - https://www.youtube.com/watch?v=nI8PYZNFtac
 - JS
   - https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Global_Objects/Array/push
 - Pong

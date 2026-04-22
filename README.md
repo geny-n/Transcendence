@@ -47,9 +47,12 @@ It is a full-stack web application whose key features are : real-time multiplaye
   - we defined priorities and splited the work
 
 - Project Manager (ngeny)
-  - We used Discord to communicate and plan meetings
-  - Everytime we met up and merged each others code, to keep an updated main to see the state of the project
-
+  - Used Discord as a communication tool to organize meetings and coordinate tasks
+  - Scheduled meetings every two weeks to review progress
+  - Checked in around the halfway point with everyone to monitor their progress and identify any delays
+  - Planned the next meeting based on the team's overall progress
+  - Adjusted the modules to implement based on the remaining time and deadlines
+    
 - Teach Lead Backend (gtoure)
   - Defines technical architecture :
     - Design the flow of information between each service
@@ -190,7 +193,7 @@ It is a full-stack web application whose key features are : real-time multiplaye
 | Standard user management and authentication | Major | 2 | gtoure, ngeny | To have a user-friendly game platform where players can chat with friends, scoreboard, leaderboard and see all users profile. Allow user to update their profile (avatar, username, email, password), add or delete friends, visualise personal match history | Creates backend endpoints that manage profile changes via a form sent to the associated endpoints. The avatar is handled by the Multer extension. A friends system has been implemented for adding friends and viewing their status; a variable that updates when a user logs in allows users to see their status. |
 | Game statistics and match history | Minor | 1 | llabonde | A scoreboard keeping track of the games and a leaderboard keeping track of the most experienced players. | When a match ends, the record and stats is stored and displayed on the scoreboard(and the personal history in the profile), and you can check your progress towards top players in the leaderboard. |
 | Implement remote authentication with OAuth 2.0 | Minor | 1 | gtoure, gpaupher | Offers an alternative to manual registration if the user does not want the hassle of creating an account. | Implemented using the Passport.js middleware, which allows the implementation of authentication strategies via API calls in the case of OAuth 2.0. |
-| Advanced permissions system | Major | 2 | gtoure | The system controls access to sensitive features such as user management. This module enhances the overall security of the project and adheres to the principle of least privilege. | Implementation of a complete Role Based Access Control system with 2 roles (USER, ADMIN). Creation of reusable guards to protect HTTP routes and Socket.io events. |
+| Advanced permissions system | Major | 2 | gtoure | The system controls access to sensitive features such as user management. This module enhances the overall security of the project and adheres to the principle of least privilege. | Implementation of a complete Role Based Access Control system with 2 roles (USER, ADMIN). Creation of reusable guards to protect HTTP routes. |
 | Content moderation AI | Minor | 1 | ngeny | To filter messages before broadcasting to ensure a safe chat environment without a manual moderation | Using HuggingFace multilingual-toxic-xlm-roberta, the backend sends each message to the model API. It calculates the toxicity score (0 to 1), the function returns true if the message exceeds 0.5 (toxic), then the message is deleted from the database and the user receives a warning message. Model is warming up at server startup to eliminate latency. |
 | Implement a complete web-based game where users can play against each other | Major | 2 | llabonde | Pong is the natural choice considering the ressources availables,and our (mine here) lack of experience in the matter. | The game is made of React objects, working as Pong shall. |
 | Remote players — Enable two players on separate computers to play the same game in real-time | Major | 2 | llabonde | Having just a local mode would not be as cool as having another player play on his own pc. | A macthmaking system with Socket.IO allows players to do so. |
@@ -205,4 +208,4 @@ Total points : 21
    - llabonde
      - Most of my work was making the game as playable as possible, and make the systems behind it(game,matchmaking,revenge,dc timers,play flow).
    - ngeny
-     -  sdfdsf
+     -  My work was focused on the frontend. I built a real-time private chat between friends. I also developed the profile page which includes profile updating, friend management, notifications and user search

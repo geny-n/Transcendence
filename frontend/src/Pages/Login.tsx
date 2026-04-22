@@ -32,7 +32,7 @@ const Login = () => {
 
 	useEffect (() => {
         if (!user) return;
-        if (user.role === "USER"){
+        if (user){
             navigate('/', { replace: true });
             return
         }

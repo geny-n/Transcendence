@@ -35,7 +35,7 @@ const onConnection = async (socket:Socket) => {
 		void toxicityScale("1st ping");
 		const keepAlive = setInterval(() => {
 			toxicityScale("ping").catch(() => {});
-		}, 30 * 1000);
+		}, 10 * 1000);
 
 		// Notifier les amis
 		const friends = await getAllFriendIds(user.id);

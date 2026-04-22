@@ -33,4 +33,4 @@ RUN npm run build
 
 RUN cp -r src/public dist/src/
 
-CMD [ "sh", "-c", "npm run db:deploy && npm run start:dev" ]
+CMD [ "sh", "-c", "npm run db:deploy && npm run start" ]

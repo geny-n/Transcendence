@@ -23,6 +23,7 @@ interface AuthContextType {
 	setUser: React.Dispatch<React.SetStateAction<User | null>>
 	accessToken: string | null;
 	setAccessToken: React.Dispatch<React.SetStateAction<string | null>>
+	loadingAuth: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -30,6 +31,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 function AuthProvider({ children }: { children: React.ReactNode }) {
 	const [user, setUser] = useState<User | null>(null);
 	const [accessToken, setAccessToken] = useState<string | null>(null);
+	const [loadingAuth, setLoadingAuth] = useState<boolean>(true);
 
 	useEffect(() => {
 		const fetchMe = async () => {
@@ -38,6 +40,8 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
 				setUser(response.data?.user)
 			} catch {
 				setUser(null)
+			} finally {
+				setLoadingAuth(false)
 			}
 		}
 
@@ -45,7 +49,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
 	}, [])
 
 	return (
-		<AuthContext.Provider value={{ user, setUser, accessToken, setAccessToken }}>
+		<AuthContext.Provider value={{ user, setUser, accessToken, setAccessToken, loadingAuth }}>
 			{children}
 		</AuthContext.Provider>
 	)

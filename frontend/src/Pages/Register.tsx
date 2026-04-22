@@ -32,10 +32,10 @@ const Register = () => {
 	const { t } = useTranslation();
 
 	const { user } = useAuth();
-	
+
 		useEffect (() => {
 			if (!user) return;
-			if (user.role === "USER"){
+			if (user) {
 				navigate('/', { replace: true });
 				return
 			}

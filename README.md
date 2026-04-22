@@ -51,10 +51,10 @@ It is a full-stack web application whose key features are : real-time multiplaye
   
   - User stories
    - The project was divided into user stories, focusing on user needs. It helped prioritize tasks and maintain a user-centered approach during development
-    - As a user, I can create an account and log in
-    - As a user, I can play Pong against another player online
-    - As a user, I can view my match history and statistics
-    - As a user, I can interact with other players through chat
+   - As a user, I can create an account and log in
+   - As a user, I can play Pong against another player online
+   - As a user, I can view my match history and statistics
+   - As a user, I can interact with other players through chat
 	
   - Project monitoring
     - Helping organize the workflow to keep the team on track

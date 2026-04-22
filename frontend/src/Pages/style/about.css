@@ -9,8 +9,9 @@
 	}
 
 	.detail-style{
-		@apply border w-4/5 mx-auto
-		border-1 border-solid;
+		@apply w-4/5 mx-auto mb-4
+		border border-white/20 rounded-xl
+		bg-white/5 backdrop-blur-sm
 	}
 
 	.summary-title{

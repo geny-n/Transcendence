@@ -108,14 +108,14 @@ export default function Matchmaking() {
 
 	useEffect(() => {
 		if (shouldNavigateAfterCleanup && !isCleaningUp) {
-			navigate("/pong");
+			navigate("/");
 			setShouldNavigateAfterCleanup(false);
 		}
 	}, [shouldNavigateAfterCleanup, isCleaningUp, navigate]);
 
 	const handleCancelQueue = useCallback(() => {
 		leaveQueue();
-		navigate("/pong");
+		navigate("/");
 	}, [leaveQueue, navigate]);
 
 	const handleLeaveGame = useCallback(() => {
@@ -138,7 +138,7 @@ export default function Matchmaking() {
 						{t('matchmaking.playAsGuest')}
 					</button>
 
-					<button className="btn-play btn-play-secondary" onClick={() => navigate("/pong")}>
+					<button className="btn-play btn-play-secondary" onClick={() => navigate("/")}>
 						{t('pong.backBtn')}
 					</button>
 				</div>
@@ -206,7 +206,7 @@ export default function Matchmaking() {
 						{isReadyForQueue && !isCleaningUp ? t('matchmaking.joinQueue') : t('matchmaking.preparingQueue')}
 					</button>
 
-					<button className="btn-play btn-play-secondary" onClick={() => navigate("/pong")}>
+					<button className="btn-play btn-play-secondary" onClick={() => navigate("/")}>
 					{t('pong.backBtn')}
 					</button>
 				</div>

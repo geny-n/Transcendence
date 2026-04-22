@@ -74,6 +74,7 @@ i18n.use(initReactI18next).init({
 				'navbar.home' : 'Accueil',
 				'navbar.pong' : 'PingPong',
 				'navbar.scoreboard' : 'Scores',
+				'navbar.leaderboard' : 'Classement',
 				'navbar.chat' : 'Messagerie',
 				'navbar.profile' : 'Profile',
 				'navbar.admin' : 'Admin',
@@ -301,9 +302,6 @@ i18n.use(initReactI18next).init({
 				//error page
 				'error.back': 'Retour',
 
-				//teams page
-				'teams.title': 'Équipes',
-
 				//profile level display
 				'profile.levelText': 'Niveau',
 				'profile.xpText': 'XP',
@@ -376,6 +374,7 @@ i18n.use(initReactI18next).init({
 				'navbar.home' : 'Home',
 				'navbar.pong' : 'PingPong',
 				'navbar.scoreboard' : 'Scoreboard',
+				'navbar.leaderboard' : 'Leaderboard',
 				'navbar.chat' : 'Chat',
 				'navbar.profile' : 'Profile',
 				'navbar.admin' : 'Admin',
@@ -602,9 +601,6 @@ i18n.use(initReactI18next).init({
 				//error page
 				'error.back': 'Back',
 
-				//teams page
-				'teams.title': 'Teams',
-
 				//profile level display
 				'profile.levelText': 'Level',
 				'profile.xpText': 'XP',
@@ -677,6 +673,7 @@ i18n.use(initReactI18next).init({
 				'navbar.home' : 'Inicio',
 				'navbar.pong' : 'PingPong',
 				'navbar.scoreboard' : 'Tabla de puntuaciones',
+				'navbar.leaderboard' : 'clasificación',
 				'navbar.chat' : 'Chat',
 				'navbar.profile' : 'Perfil',
 				'navbar.admin' : 'Admin',
@@ -902,9 +899,6 @@ i18n.use(initReactI18next).init({
 				//error page
 				'error.back': 'Atrás',
 
-				//teams page
-				'teams.title': 'Equipos',
-
 				//profile level display
 				'profile.levelText': 'Nivel',
 				'profile.xpText': 'XP',
@@ -977,6 +971,7 @@ i18n.use(initReactI18next).init({
 				'navbar.home' : 'الرئيسية',
 				'navbar.pong' : 'بونغ',
 				'navbar.scoreboard' : 'النتائج',
+				'navbar.leaderboard' : 'لوحة الصدارة',
 				'navbar.chat' : 'الدردشة',
 				'navbar.profile' : 'الملف الشخصي',
 				'navbar.admin' : 'Admin',
@@ -1202,9 +1197,6 @@ i18n.use(initReactI18next).init({
 
 				//error page
 				'error.back': 'رجوع',
-
-				//teams page
-				'teams.title': 'الفريق',
 
 				//profile level display
 				'profile.levelText': 'المستوى',

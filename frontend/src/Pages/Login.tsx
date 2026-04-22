@@ -33,7 +33,7 @@ const Login = () => {
 	useEffect (() => {
         if (!user) return;
         if (user.role === "USER"){
-            navigate('/profile', { replace: true });
+            navigate('/', { replace: true });
             return
         }
     }, [user]);
@@ -48,16 +48,15 @@ const Login = () => {
 
 	const fortyAuth = () => {
 		window.location.href = fortyAuth_url;
-		navigate("/matchmaking");
+		// navigate("/matchmaking");
     }
 
 	const discordAuth = () => {
 		window.location.href = discordAuth_url;
-		navigate("/matchmaking");
+		// navigate("/matchmaking");
 	}
 
 	const onSubmit = async (data: FieldValues) => {
-		console.log("Connexion data: ", data);
 		const email = data.email;
 		const password = data.password;
 		try{

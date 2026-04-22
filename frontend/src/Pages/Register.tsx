@@ -36,7 +36,7 @@ const Register = () => {
 		useEffect (() => {
 			if (!user) return;
 			if (user.role === "USER"){
-				navigate('/profile', { replace: true });
+				navigate('/', { replace: true });
 				return
 			}
 		}, [user]);
@@ -60,7 +60,6 @@ const Register = () => {
 	}
 
 	const onSubmit = async (data: FieldValues) => {
-		console.log("Inscription data :", data);
 		const username = data.username;
 		const email = data.email;
 		const password = data.password;

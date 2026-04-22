@@ -1,11 +1,10 @@
 import './App.css'
 import Navbar from './Components/Navbar/Navbar'
-import HomeP from './Pages/HomePage'
+// import HomeP from './Pages/HomePage'
 import Pong from './Pages/Pong'
 import PongMulti from './Pages/PongMulti'
 import ScoreB from './Pages/ScoreBoard'
 import Leaderboard from './Pages/Leaderboard'
-import Teams from './Pages/Teams'
 import Chat from './Pages/Chat'
 import Profile from './Pages/Profile'
 import Login from './Pages/Login'
@@ -29,9 +28,9 @@ function App() {
 				<Route element={<SocketProvider><Outlet/></SocketProvider>}>
 
 					{/* Public Routes */}
-					<Route path="/" element={<HomeP />} />
+					{/* <Route path="/" element={<HomeP />} /> */}
+					<Route path="/" element={<Pong />} />
 					<Route path='/about' element={<About />}></Route>
-					<Route path="/pong" element={<Pong />} />
 					<Route path="/pong-multi" element={<PongMulti />} />
 					<Route path="/scoreBoard" element={<ScoreB />} />
 					<Route path="/leaderboard" element={<Leaderboard />} />
@@ -40,7 +39,6 @@ function App() {
 
 					{/* User Routes */}
 					<Route element={<RequireAuth />}>
-						<Route path="/teams" element={<Teams />} />
 						<Route path="/chat" element={<Chat />} />
 						<Route path="/profile" element={<Profile />} />
 						<Route path="*" element={<Navigate to="/" replace />} />

@@ -12,10 +12,10 @@ const Navbar: React.FC = () => {
 	const [menuOpen, setMenuOpen] = useState(false)
 
 	const listItems = [
-		{label: t('navbar.home'), path: "/"},
-		{label: t('navbar.pong'), path: "/pong"},
+		// {label: t('navbar.home'), path: "/"},
+		{label: t('navbar.pong'), path: "/"},
 		{label: t('navbar.scoreboard'), path: "/scoreBoard"},
-		{label: "Leaderboard", path: "/leaderboard"},
+		{label: t('navbar.leaderboard'), path: "/leaderboard"},
 		{label: t('navbar.chat'), path: "/chat"},
 		{label: t('navbar.about'), path: "/about"},
 		...(user?.role === 'ADMIN' ? [{label: t('navbar.admin'), path: "/admin"}] : [])

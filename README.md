@@ -54,10 +54,10 @@ It is a full-stack web application whose key features are : real-time multiplaye
     - Regularly testing and reviewing new versions of the application
     - Verifying that implemented features meet the project requirements and expectations
     - project divided into user stories, focusing on user needs to prioritize tasks and maintain
-     - As a user, I can create an account and log in
-     - As a user, I can play Pong against another player online
-     - As a user, I can view my match history and statistics
-     - ...
+      - As a user, I can create an account and log in
+      - As a user, I can play Pong against another player online
+      - As a user, I can view my match history and statistics
+      - ...
    
 - Project Manager (ngeny)
   - Used Discord as a communication tool to organize meetings and coordinate tasks

@@ -25,7 +25,7 @@ const Navbar: React.FC = () => {
 		if (lng === "ar")
 			document.documentElement.dir = "rtl";
 		else
-			document.documentElement.dir = "ltl";
+			document.documentElement.dir = "ltr";
 		i18n.changeLanguage(lng);
 	}
 

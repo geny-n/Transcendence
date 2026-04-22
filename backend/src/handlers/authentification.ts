@@ -241,7 +241,7 @@ export const authHandler = asyncHandler(async (request: Request, response: Respo
 	});
 
 	// redirection frontend
-	return response.redirect("https://localhost:1443/");
+	return response.redirect(process.env.FRONTEND_URL + "/profile");
 });
 
 /**

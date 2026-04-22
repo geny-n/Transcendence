@@ -15,22 +15,15 @@ import Admin from './Pages/Admin'
 import About from './Pages/About'
 import { SocketProvider } from './socket.tsx'
 import {Routes, Route, Outlet, Navigate } from "react-router-dom"
-// import RequireAuth  from "./lib/RequireAuth";
-// import RequireAdmin from "./lib/RequireAdmin";
-// import RequireVisitor from "./lib/RequireVisitor";
-// import NotFound from './Components/NotFound.tsx';
-
+import RequireAuth  from "./lib/RequireAuth";
 
 function App() {
 	return (
 		<>
 			<Navbar />
 			<Routes>
-
-				{/* <Route element={<RequireVisitor />}> */}
-					<Route path="/login" element={<Login />} />
-					<Route path="/register" element={<Register />} />
-				{/* </Route> */}
+				<Route path="/login" element={<Login />} />
+				<Route path="/register" element={<Register />} />
 
 				{/* Protected Routes */}
 				<Route element={<SocketProvider><Outlet/></SocketProvider>}>
@@ -46,21 +39,15 @@ function App() {
 					<Route path="*" element={<Navigate to="/" replace />} />
 
 					{/* User Routes */}
-					{/* <Route element={<RequireAuth />}> */}
-						<Route path="/pong" element={<Pong />} />
-						<Route path="/pong-multi" element={<PongMulti />} />
-						<Route path="/scoreBoard" element={<ScoreB />} />
-						<Route path="/leaderboard" element={<Leaderboard />} />
+					<Route element={<RequireAuth />}>
 						<Route path="/teams" element={<Teams />} />
 						<Route path="/chat" element={<Chat />} />
 						<Route path="/profile" element={<Profile />} />
 						<Route path="*" element={<Navigate to="/" replace />} />
-					{/* </Route> */}
+					</Route>
 
 					{/* Admin Routes */}
-					{/* <Route element={<RequireAdmin />}> */}
-						<Route path='/admin' element={<Admin />}/>
-					{/* </Route> */}
+						<Route path='/admin' element={<Admin />} />
 
 				</Route>
 

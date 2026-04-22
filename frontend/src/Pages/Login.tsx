@@ -28,6 +28,16 @@ const Login = () => {
 
 	const { t } = useTranslation();
 
+	const { user } = useAuth();
+
+	useEffect (() => {
+        if (!user) return;
+        if (user.role === "USER"){
+            navigate('/profile', { replace: true });
+            return
+        }
+    }, [user]);
+
 	const {
 		register,
 		handleSubmit,
@@ -38,10 +48,12 @@ const Login = () => {
 
 	const fortyAuth = () => {
 		window.location.href = fortyAuth_url;
+		navigate("/matchmaking");
     }
 
 	const discordAuth = () => {
 		window.location.href = discordAuth_url;
+		navigate("/matchmaking");
 	}
 
 	const onSubmit = async (data: FieldValues) => {

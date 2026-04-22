@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import type { FieldValues } from 'react-hook-form';
@@ -12,6 +12,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { type T_inscriptionForm, inscriptionForm } from '../lib/types';
 import axios from "axios";
 import "./style/login.css";
+import { useAuth } from '../main';
 import { useTranslation } from 'react-i18next';
 
 const Register = () => {
@@ -30,6 +31,16 @@ const Register = () => {
 
 	const { t } = useTranslation();
 
+	const { user } = useAuth();
+	
+		useEffect (() => {
+			if (!user) return;
+			if (user.role === "USER"){
+				navigate('/profile', { replace: true });
+				return
+			}
+		}, [user]);
+
 	const {
 		register,
 		handleSubmit,
@@ -40,10 +51,12 @@ const Register = () => {
 
 	const fortyAuth = () => {
 		window.location.href = fortyAuth_url;
+		navigate("/matchmaking");
     }
 
 	const discordAuth = () => {
 		window.location.href = discordAuth_url;
+		navigate("/matchmaking");
 	}
 
 	const onSubmit = async (data: FieldValues) => {
